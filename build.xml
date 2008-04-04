@@ -1,0 +1,44 @@
+<project name="yaz4j" default="compile" basedir=".">
+
+  <description>Build the java side of Yaz4J</description>
+
+  <property name="version" value="0.9.3"/>	
+  <property name="src" location="src"/>
+  <property name="bin" location="bin"/>
+  <property name="distributions"  location="distributions"/>
+	
+  <path id="project.classpath">
+    <pathelement location="${bin}"/>
+  </path>
+
+  <target name="init">
+    <mkdir dir="${bin}"/>
+  </target>
+
+  <target name="compile" depends="init" description="compile the source">
+    <javac srcdir="${src}" destdir="${bin}">
+       <classpath refid="project.classpath"/>
+    </javac>
+  </target>
+
+  <target name="build-dist" depends="compile" description="generate the distribution">
+    <mkdir dir="${distributions}/${version}"/>
+    <jar jarfile="${distributions}/${version}/yaz4j.jar" basedir="${bin}">
+      <manifest>
+        <attribute name="Version" value="${version}"/>
+        <attribute name="Author" value="Talis Information Ltd"/>
+        <attribute name="About" value="Java wrapper for the ZOOM API of YAZ"/>
+        <attribute name="Main-Class" value="org.yaz4j.Yaz4jMain"/>
+      </manifest>
+    </jar>
+    <copy file="libyaz4j/lib/libyaz4j.so" tofile="${distributions}/${version}/libyaz4j.so"/>
+    <copy file="dependencies/yaz-2.1.28/lib/libyaz.so" tofile="${distributions}/${version}/libyaz.so"/>
+  </target>
+
+  <target name="clean" description="clean up" >
+    <!-- Delete various paths as part of the clean trees -->
+    <delete dir="${bin}"/>
+    <!-- delete dir="${distributions}/${version}"/ -->
+  </target>
+
+</project>
