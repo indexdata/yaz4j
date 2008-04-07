@@ -23,10 +23,20 @@
     </javac>
   </target>
 
-  <target name="test" depends="compile" description="test the code">
+  <target name="compile-test" depends="compile" description="compile test the code">
     <javac srcdir="${test}" destdir="${bin}">
        <classpath refid="project.classpath"/>
     </javac>
+  </target>
+
+  <!-- LD_LIBRARY_PATH=libyaz4j/lib java -cp bin:dependencies/JUnit-4.3.1/junit-4.3.1.jar org.junit.runner.JUnitCore yaz4jtest.ConnectionTest -->
+
+  <target name="unit-test" depends="compile-test" description="test the code">
+    <junit fork="on">
+       <env key="LD_LIBRARY_PATH" value="libyaz4j/lib"/>
+       <classpath refid="project.classpath"/>
+       <test name="yaz4jtest.ConnectionTest"/>
+    </junit>
   </target>
 
   <target name="build-dist" depends="compile" description="generate the distribution">
