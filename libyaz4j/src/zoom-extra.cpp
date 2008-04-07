@@ -1,5 +1,4 @@
 #include "zoom-extra.h"
-#include <zoom.h>
 #include <string.h>
 
 struct CharStarByteArray ZOOM_record_get_bytes(ZOOM_record rec, const char *type, int *len)

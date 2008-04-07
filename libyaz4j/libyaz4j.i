@@ -2,7 +2,7 @@
 %module yaz4jlib
 	%{
 		#include "zoom-extra.h"
-		#include <zoom.h>
+		#include <yaz/zoom.h>
 	%}
 	%include "typemaps.i"
 	%include "arrays_java.i"
@@ -19,5 +19,5 @@
 	%define YAZ_BEGIN_CDECL %enddef
 	%define YAZ_END_CDECL %enddef
 	%include "zoom-extra.h"
-	%include <zoom.h>
+	%include <yaz/zoom.h>
 
