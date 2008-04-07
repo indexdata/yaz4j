@@ -1,8 +1,5 @@
 #!/bin/bash
-
-JNI_DIR=$( find / -type f -name jni.h 2>/dev/null | xargs dirname );
-
-echo using JNI include directory - $JNI_DIR;
+JNI_DIR=${JAVA_HOME}/include
 
 swig -I"include" -I"../dependencies/yaz-2.1.28/include/yaz/" -outdir ../src/org/yaz4j/jni -package org.yaz4j.jni -o src/libyaz4j.cpp -c++ -java libyaz4j.i
 
