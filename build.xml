@@ -4,11 +4,13 @@
 
   <property name="version" value="0.9.3"/>	
   <property name="src" location="src"/>
+  <property name="test" location="test"/>
   <property name="bin" location="bin"/>
   <property name="distributions"  location="distributions"/>
 	
   <path id="project.classpath">
     <pathelement location="${bin}"/>
+    <pathelement location="dependencies/JUnit-4.3.1/junit-4.3.1.jar"/>
   </path>
 
   <target name="init">
@@ -17,6 +19,12 @@
 
   <target name="compile" depends="init" description="compile the source">
     <javac srcdir="${src}" destdir="${bin}">
+       <classpath refid="project.classpath"/>
+    </javac>
+  </target>
+
+  <target name="test" depends="compile" description="test the code">
+    <javac srcdir="${test}" destdir="${bin}">
        <classpath refid="project.classpath"/>
     </javac>
   </target>
