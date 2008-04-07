@@ -4,7 +4,7 @@ set -x
 YAZ_CONFIG=yaz-config
 YAZ_PREFIX=`${YAZ_CONFIG} --prefix`
 YAZ_CFLAGS=`${YAZ_CONFIG} --cflags`
-YAZ_lIBS=`${YAZ_CONFIG} --libs`
+YAZ_LIBS=`${YAZ_CONFIG} --libs`
 
 swig -I"include" -I"${YAZ_PREFIX}/include" -outdir ../src/org/yaz4j/jni -package org.yaz4j.jni -o src/libyaz4j.cpp -c++ -java libyaz4j.i
 
