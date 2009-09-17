@@ -1,7 +1,7 @@
 #ifndef INCLUDED_WRAPPER
 #define INCLUDED_WRAPPER
 #include <yaz/zoom.h>
-typedef struct CharStarByteArray
+struct CharStarByteArray
 {
 	char* data;
 	long length;
