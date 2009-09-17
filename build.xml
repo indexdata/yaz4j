@@ -50,7 +50,6 @@
       </manifest>
     </jar>
     <copy file="libyaz4j/lib/libyaz4j.so" tofile="${distributions}/${version}/libyaz4j.so"/>
-    <copy file="dependencies/yaz-2.1.28/lib/libyaz.so" tofile="${distributions}/${version}/libyaz.so"/>
   </target>
 
   <target name="clean" description="clean up" >
