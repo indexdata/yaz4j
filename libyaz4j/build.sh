@@ -1,5 +1,5 @@
 #!/bin/bash
-JNI_DIR=${JAVA_HOME}/include
+JNI_DIR=${JAVA_HOME:-/usr/lib/jvm/java-6-sun}/include
 set -x
 YAZ_CONFIG=yaz-config
 YAZ_PREFIX=`${YAZ_CONFIG} --prefix`
