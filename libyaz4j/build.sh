@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# You may need to do something like this:
+#	env JAVA_HOME=/usr/lib/jvm/java-6-sun ./build.sh
+
 JNI_DIR=${JAVA_HOME}/include
 set -x
 YAZ_CONFIG=yaz-config
