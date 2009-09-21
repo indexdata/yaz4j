@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <!-- POM Relationships -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.yaz4j</groupId>
+    <artifactId>yaz4j</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <!-- Project Information -->
+    <name>yaz4j</name>
+    <url>http://indexdata.com/yaz4j</url>
+    <inceptionYear>2008</inceptionYear>
+    <licenses>
+        <license>
+            <name>BSD</name>
+            <url>http://www.opensource.org/licenses/bsd-license.php</url>
+        </license>
+    </licenses>
+    <description>Java wrapper for the ZOOM API of YAZ</description>
+
+    <developers>
+        <developer>
+            <name>Rob Styles</name>
+            <id />
+            <email>Rob.Styles@talis.com</email>
+            <organization />
+            <organizationUrl />
+            <roles />
+            <timezone />
+        </developer>
+        <developer>
+            <name>Adam Dickmeiss</name>
+            <id />
+            <email>adam@indexdata.dk</email>
+            <organization />
+            <organizationUrl />
+            <roles />
+            <timezone />
+        </developer>
+    </developers>
+    <!-- ///////////////// -->
+
+    <!-- Project Dependencies -->
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.3.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <!-- ///////////////// -->
+
+    <!-- Build Settings -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>true</showWarnings>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>once</forkMode>
+                    <workingDirectory>target</workingDirectory>
+                    <argLine>-Djava.library.path=${basedir}/libyaz4j/lib</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Reporting -->
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <enableRSS>false</enableRSS>
+                    <include>**/*.java</include>
+                    <sourceDirectory>src/main/java</sourceDirectory>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>
+                maven-project-info-reports-plugin
+                </artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>dependencies</report>
+                            <report>project-team</report>
+                            <report>mailing-list</report>
+                            <report>issue-tracking</report>
+                            <report>summary</report>
+                            <report>scm</report>
+                            <report>index</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <chartset>UTF-8</chartset>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+    <!-- ////////////// -->
+
+    <!-- Build Environment -->
+    <!-- Environment Information -->
+    <mailingLists>
+        <mailingList>
+            <name />
+            <subscribe />
+            <unsubscribe />
+            <post />
+            <archive />
+        </mailingList>
+    </mailingLists>
+
+    <scm>
+        <connection />
+        <url />
+    </scm>
+
+    <issueManagement>
+        <system />
+        <url />
+    </issueManagement>
+
+    <ciManagement>
+        <system />
+        <url />
+    </ciManagement>
+    <!-- /////////////////////// -->
+
+    <!-- Maven Environment -->
+    <repositories />
+    <pluginRepositories />
+    <!-- ///////////////// -->
+
+    <!-- Maven Common Properties -->
+    <properties />
+    <!-- /////////////////// -->
+</project>
+
+

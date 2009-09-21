@@ -7,11 +7,11 @@ Copyright (C) 2006-2007, Talis Group Ltd.
 Copyright (C) 2008-2009, Index Data.
 See LICENSE for details.
 
-In order to built yaz4j the Java JDK, ant, YAZ and Swig must be installed.
+In order to built yaz4j the Java JDK, Maven, YAZ and Swig must be installed.
 The exact process varies from platform to platform.
 
 For example, on Ubuntu/Debian the following installs the components:
-  apt-get install sun-java6-jdk ant libyaz3-dev swig
+  apt-get install sun-java6-jdk maven2 libyaz3-dev swig
 
 The compilation is a two-step process. The environment variable JAVA_HOME
 should point to the Java JDK of your preference. For example,
@@ -21,9 +21,9 @@ Build the shared libary (.so) with:
   cd libyaz4j
   ./build.sh
 
-Rest is built by ant which reads build.xml:
+Rest is built by maven which reads pom.xml:
   cd ..
-  ant
+  mvn compile
 
 If you network-connected you should be able to run tests with:
-  ant unit-test
+  mvn test

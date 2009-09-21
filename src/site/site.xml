@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="librae-common-yaz4j">
+    <bannerLeft>
+        <name>yaz4j</name>
+        <src>http://www.indexdata.com/sites/indexdata.com/themes/indexd/topbar.gif</src>
+        <href>http://indexdata.com/yaz</href>
+    </bannerLeft>
+    <publishDate format="dd MMM yyyy"/>
+    <skin>
+        <groupId>org.apache.tapestry</groupId>
+        <artifactId>maven-skin</artifactId>
+        <version>1.1</version>
+    </skin>
+    <body>
+        <menu ref="modules"/>
+        ${reports}
+    </body>
+</project>
+
