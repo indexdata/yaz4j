@@ -196,22 +196,22 @@
     <!-- Environment Information -->
     <mailingLists>
         <mailingList>
-            <name />
+            <name>Yazlist</name>
             <subscribe />
             <unsubscribe />
-            <post />
-            <archive />
+            <post>yazlist@lists.indexdata.dk</post>
+            <archive>http://lists.indexdata.dk/pipermail/yazlist/</archive>
         </mailingList>
     </mailingLists>
 
     <scm>
-        <connection />
-        <url />
+        <connection>scm:git:git://git.indexdata.com/yaz4j</connection>
+        <url>http://git.indexdata.com/?p=yaz4j.git</url>
     </scm>
 
     <issueManagement>
-        <system />
-        <url />
+        <system>Bugzilla</system>
+        <url>http://bugzilla.indexdata.dk</url>
     </issueManagement>
 
     <ciManagement>
