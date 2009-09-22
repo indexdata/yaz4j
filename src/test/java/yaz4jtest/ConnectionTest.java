@@ -20,5 +20,8 @@ public class ConnectionTest {
 		// first SUTRS record
 		assertEquals(content.length, 1940);
 		assertEquals(content[0], 103);
+                assertEquals(rec.getSyntax(), "SUTRS");
+                assertEquals(rec.getDatabase(), "gils");
+
 	}
 }
