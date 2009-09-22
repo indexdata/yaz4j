@@ -3,7 +3,7 @@ to write Z39.50 clients in Java.
 
 yaz4j is distributed under the revised BSD license.
 
-Copyright (C) 2006-2007, Talis Group Ltd.
+Copyright (C) 2006-2007, Talis.
 Copyright (C) 2008-2009, Index Data.
 See LICENSE for details.
 

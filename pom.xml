@@ -6,12 +6,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.yaz4j</groupId>
     <artifactId>yaz4j</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <!-- Project Information -->
     <name>yaz4j</name>
-    <url>http://indexdata.com/yaz4j</url>
+    <url>http://www.indexdata.com/yaz4j/</url>
     <inceptionYear>2008</inceptionYear>
     <licenses>
         <license>
@@ -24,17 +24,26 @@
     <developers>
         <developer>
             <name>Rob Styles</name>
-            <id />
+            <id>rob</id>
             <email>Rob.Styles@talis.com</email>
-            <organization />
-            <organizationUrl />
+            <organization>Talis</organization>
+            <organizationUrl>http://www.talis.com/</organizationUrl>
             <roles />
             <timezone />
         </developer>
         <developer>
             <name>Adam Dickmeiss</name>
-            <id />
+            <id>adam</id>
             <email>adam@indexdata.dk</email>
+            <organization>Index Data</organization>
+            <organizationUrl>http://www.indexdata.com/</organizationUrl>
+            <roles />
+            <timezone />
+        </developer>
+        <developer>
+            <name>Juan Cayetano</name>
+            <id>cayetano</id>
+            <email>juancayetano.delgado@gmail.com</email>
             <organization />
             <organizationUrl />
             <roles />
