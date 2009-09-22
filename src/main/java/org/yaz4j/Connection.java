@@ -8,8 +8,6 @@ import org.yaz4j.jni.SWIGTYPE_p_p_char;
 import org.yaz4j.jni.yaz4jlib;
 import org.yaz4j.jni.yaz4jlibConstants;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class Connection
 {
 	private String host ;
@@ -127,7 +125,7 @@ public class Connection
         	else if( queryType == QueryType.PrefixQuery )
         		yaz4jlib.ZOOM_query_prefix(yazQuery, query);
         	else
-        		throw new NotImplementedException();
+        		throw new InvalidQueryException("queryType");
         	
         	SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(zoomConnection, yazQuery);
             
