@@ -23,4 +23,4 @@ lib/libyaz4j.so: obj/zoom-extra.o obj/libyaz4j.o
 	g++ -shared obj/libyaz4j.o obj/zoom-extra.o  -o lib/libyaz4j.so $(YAZ_LIBS)
 
 clean:
-	rm -f obj/*.o lib/libyaz4j.* src/libyaz4j.cpp ../src/main/java/org/jni/*.java
+	rm -f obj/*.o lib/libyaz4j.* src/libyaz4j.cpp ../src/main/java/org/yaz4j/jni/*.java
