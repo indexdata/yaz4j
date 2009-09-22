@@ -1,4 +1,5 @@
 package yaz4jtest;
+
 import org.junit.*;
 import static org.junit.Assert.*;
 import org.yaz4j.*;
@@ -7,6 +8,7 @@ import org.yaz4j.*;
  * @author adam
  */
 public class DinosaurTest {
+
     @Test
     public void test() {
         Connection con = new Connection("z3950.loc.gov:7090/voyager", 0);
@@ -17,7 +19,7 @@ public class DinosaurTest {
         ResultSet set = con.Search(pqf);
         assertNotNull(set);
         Record rec = set.getRecord(0);
-	assertNotNull(rec);
-	// System.out.println(rec.render());
+        assertNotNull(rec);
+        // System.out.println(rec.render());
     }
 }

@@ -6,56 +6,47 @@ import org.yaz4j.jni.SWIGTYPE_p_ZOOM_record_p;
 import org.yaz4j.jni.SWIGTYPE_p_int;
 import org.yaz4j.jni.yaz4jlib;
 
-public class Record
-{
-	private SWIGTYPE_p_ZOOM_record_p record = null ;
-	private ResultSet resultSet = null ;
-	private boolean disposed = false;	
+public class Record {
 
-	Record(SWIGTYPE_p_ZOOM_record_p record, ResultSet resultSet)
-	{
-		this.resultSet = resultSet;
-		this.record = record;
-	}
+    private SWIGTYPE_p_ZOOM_record_p record = null;
+    private ResultSet resultSet = null;
+    private boolean disposed = false;
 
-	public void finalize()
-	{
-		Dispose();
-	}
+    Record(SWIGTYPE_p_ZOOM_record_p record, ResultSet resultSet) {
+        this.resultSet = resultSet;
+        this.record = record;
+    }
 
-        public byte[] get(String type)
-        {
-		SWIGTYPE_p_int length = null ;
-		return yaz4jlib.ZOOM_record_get_bytes(record, type, length) ;
+    public void finalize() {
+        Dispose();
+    }
+
+    public byte[] get(String type) {
+        SWIGTYPE_p_int length = null;
+        return yaz4jlib.ZOOM_record_get_bytes(record, type, length);
+    }
+
+    public String render() {
+        return new String(get("render"));
+    }
+
+    public byte[] getContent() {
+        return get("raw");
+    }
+
+    public String getSyntax() {
+        return new String(get("syntax"));
+    }
+
+    public String getDatabase() {
+        return new String(get("database"));
+    }
+
+    public void Dispose() {
+        if (!disposed) {
+            resultSet = null;
+            record = null;
+            disposed = true;
         }
-
-       	public String render()
-        {
-                return new String(get("render"));
-        }
-
-	public byte[] getContent()
-	{
-                return get("raw");
-	}
-
-	public String getSyntax()
-	{
-                return new String(get("syntax"));
-	}
-	
-	public String getDatabase()
-	{
-                return new String(get("database"));
-	}
-
-	public void Dispose()
-	{
-		if (!disposed)
-		{
-			resultSet = null;
-			record = null;
-			disposed = true;
-		}
-	}
+    }
 }

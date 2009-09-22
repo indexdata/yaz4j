@@ -1,23 +1,20 @@
 package org.yaz4j;
 
-public class ScanTerm
-{
-	private String term;
-	private long occurences;
-	
-	ScanTerm( String term, long occurences )
-	{
-		this.term = term;
-		this.occurences = occurences;
-	}
+public class ScanTerm {
 
-	public String getTerm()
-	{
-		return term;
-	}
+    private String term;
+    private long occurences;
 
-	public long getOccurences()
-	{
-		return occurences;
-	}
+    ScanTerm(String term, long occurences) {
+        this.term = term;
+        this.occurences = occurences;
+    }
+
+    public String getTerm() {
+        return term;
+    }
+
+    public long getOccurences() {
+        return occurences;
+    }
 }
