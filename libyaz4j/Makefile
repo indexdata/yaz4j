@@ -6,6 +6,10 @@ YAZ_LIBS=`${YAZ_CONFIG} --libs`
 
 all: lib/libyaz4j.so
 
+.PHONY: generate-sources
+
+generate-sources: src/libyaz4j.cpp
+
 src/libyaz4j.cpp: libyaz4j.i
 	swig -I"include" -I"$(YAZ_PREFIX)/include" -outdir ../src/main/java/org/yaz4j/jni -package org.yaz4j.jni -o src/libyaz4j.cpp -c++ -java libyaz4j.i
 

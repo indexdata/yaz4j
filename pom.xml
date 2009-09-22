@@ -100,6 +100,21 @@
 	      <artifactId>maven-antrun-plugin</artifactId>
 	      <executions>
 		<execution>
+		  <id>native-sources</id>
+		  <phase>generate-sources</phase>
+		  <goals>
+		    <goal>run</goal>
+		  </goals>
+		  <configuration>
+		    <tasks>
+		      <exec dir="libyaz4j" executable="make" failonerror="true">
+			<arg value="generate-sources"/>
+		      </exec>
+		    </tasks>
+		  </configuration>
+		</execution>
+
+		<execution>
 		  <id>build-native</id>
 		  <phase>compile</phase>
 		  <goals>
