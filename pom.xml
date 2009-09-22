@@ -95,6 +95,42 @@
                     <argLine>-Djava.library.path=${basedir}/libyaz4j/lib</argLine>
                 </configuration>
             </plugin>
+
+	    <plugin>
+	      <artifactId>maven-antrun-plugin</artifactId>
+	      <executions>
+		<execution>
+		  <id>build-native</id>
+		  <phase>compile</phase>
+		  <goals>
+		    <goal>run</goal>
+		  </goals>
+		  <configuration>
+		    <tasks>
+		      <exec dir="libyaz4j" executable="make" failonerror="true">
+			<arg value="all"/>
+		      </exec>
+		    </tasks>
+		  </configuration>
+		</execution>
+		
+		<execution>
+		  <id>clean-native</id>
+		  <phase>clean</phase>
+		  <goals>
+		    <goal>run</goal>
+		  </goals>
+		  <configuration>
+		    <tasks>
+		      <exec dir="libyaz4j" executable="make" failonerror="true">
+			<arg value="clean"/>
+		      </exec>
+		    </tasks>
+		  </configuration>
+		</execution>
+	      </executions>
+	    </plugin>
+
         </plugins>
     </build>
 

@@ -13,16 +13,12 @@ The exact process varies from platform to platform.
 For example, on Ubuntu/Debian the following installs the components:
   apt-get install sun-java6-jdk maven2 libyaz3-dev swig
 
-The compilation is a two-step process. The environment variable JAVA_HOME
-should point to the Java JDK of your preference. For example,
-  export JAVA_HOME=/usr/lib/jvm/java-6-sun
+The compilation for native code (JNI) is performed by good old make.
+Adjust libyaz4j/Makefile as necessary. Tune JAVA_HOME and perhaps path to
+yaz-config in the Makefile.
 
-Build the shared libary (.so) with:
-  cd libyaz4j
-  ./build.sh
-
-Rest is built by maven which reads pom.xml:
-  cd ..
+The Maven pom.xml will automatically invoke libyaz4j/Makefile , so
+this is what it takes:
   mvn compile
 
 If you network-connected you should be able to run tests with:
