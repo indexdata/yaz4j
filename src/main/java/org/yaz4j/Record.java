@@ -22,41 +22,31 @@ public class Record
 	{
 		Dispose();
 	}
-	
+
+        public byte[] get(String type)
+        {
+		SWIGTYPE_p_int length = null ;
+		return yaz4jlib.ZOOM_record_get_bytes(record, type, length) ;
+        }
+
+       	public String render()
+        {
+                return new String(get("render"));
+        }
+
 	public byte[] getContent()
 	{
-		String type = "raw";
-		SWIGTYPE_p_int length = null ;	
-		return yaz4jlib.ZOOM_record_get_bytes(record, type, length) ;
-//		String contentString = yaz4jlib.ZOOM_record_get(record, type, length) ;
-//		System.err.println("!!!!!");
-//		System.err.println(contentString);
-//		System.err.println(contentString.length());
-//		System.err.println("!!!!!");
-//		try {
-//			byte[] bytes = contentString.getBytes("UTF8");
-//			System.err.println(bytes.length);
-//			return bytes ;
-//		} catch (UnsupportedEncodingException e) {
-//			throw new RuntimeException(e);
-//		}
+                return get("raw");
 	}
 
 	public String getSyntax()
 	{
-		String type = "syntax";
-		SWIGTYPE_p_int length = null ;		
-		String syntax = yaz4jlib.ZOOM_record_get(record, type, length);
-		return syntax ;
+                return new String(get("syntax"));
 	}
 	
 	public String getDatabase()
 	{
-		String type = "database";
-		SWIGTYPE_p_int length = null ;		
-		String database = yaz4jlib.ZOOM_record_get(record, type, length);
-	
-		return database ;
+                return new String(get("database"));
 	}
 
 	public void Dispose()
