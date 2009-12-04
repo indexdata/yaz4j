@@ -2,6 +2,7 @@ package org.yaz4j;
 
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_scanset_p;
 import org.yaz4j.jni.SWIGTYPE_p_int;
+import org.yaz4j.jni.SWIGTYPE_p_size_t;
 import org.yaz4j.jni.yaz4jlib;
 
 public class ScanSet {
@@ -20,12 +21,12 @@ public class ScanSet {
     }
 
     public ScanTerm get(long index) {
-        SWIGTYPE_p_int occ = yaz4jlib.new_intp();
-        SWIGTYPE_p_int length = yaz4jlib.new_intp();
+        SWIGTYPE_p_size_t occ = yaz4jlib.new_size_tp();
+        SWIGTYPE_p_size_t length = yaz4jlib.new_size_tp();
         String term = yaz4jlib.ZOOM_scanset_term(scanSet, (long) index, occ, length);
-        int occurences = yaz4jlib.intp_value(occ);
-        yaz4jlib.delete_intp(occ);
-        yaz4jlib.delete_intp(length);
+        long occurences = yaz4jlib.size_tp_value(occ);
+        yaz4jlib.delete_size_tp(occ);
+        yaz4jlib.delete_size_tp(length);
         return new ScanTerm(term, occurences);
     }
 
