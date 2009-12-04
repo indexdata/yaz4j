@@ -8,6 +8,7 @@
 	%include "arrays_java.i"
 	%include "cpointer.i"
 	%pointer_functions(int, intp);
+	%pointer_functions(size_t, size_tp);
 	%typemap(jni) CharStarByteArray "jbyteArray"
 	%typemap(jtype) CharStarByteArray "byte[]"
 	%typemap(jstype) CharStarByteArray "byte[]"
