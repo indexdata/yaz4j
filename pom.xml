@@ -1,233 +1,91 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.yaz4j</groupId>
+  <artifactId>yaz4j</artifactId>
+  <name>yaz4j</name>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-    <!-- POM Relationships -->
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.yaz4j</groupId>
-    <artifactId>yaz4j</artifactId>
-    <version>1.1-snapshot</version>
-    <packaging>jar</packaging>
+  <modules>
+    <module>any</module>
+  </modules>
 
-    <!-- Project Information -->
-    <name>yaz4j</name>
-    <url>http://www.indexdata.com/yaz4j/</url>
-    <inceptionYear>2008</inceptionYear>
-    <licenses>
-        <license>
-            <name>BSD</name>
-            <url>http://www.opensource.org/licenses/bsd-license.php</url>
-        </license>
-    </licenses>
-    <description>Java wrapper for the ZOOM API of YAZ</description>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.3.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-    <developers>
-        <developer>
-            <name>Rob Styles</name>
-            <id>rob</id>
-            <email>Rob.Styles@talis.com</email>
-            <organization>Talis</organization>
-            <organizationUrl>http://www.talis.com/</organizationUrl>
-            <roles />
-            <timezone />
-        </developer>
-        <developer>
-            <name>Adam Dickmeiss</name>
-            <id>adam</id>
-            <email>adam@indexdata.dk</email>
-            <organization>Index Data</organization>
-            <organizationUrl>http://www.indexdata.com/</organizationUrl>
-            <roles />
-            <timezone />
-        </developer>
-        <developer>
-            <name>Juan Cayetano</name>
-            <id>cayetano</id>
-            <email>juancayetano.delgado@gmail.com</email>
-            <organization />
-            <organizationUrl />
-            <roles />
-            <timezone />
-        </developer>
-    </developers>
-    <!-- ///////////////// -->
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-sources</id>
+            <phase>generate-sources</phase>
+            <inherited>false</inherited>
+            <configuration>
+              <tasks>
+                <exec executable="yaz-config" outputproperty="yaz.prefix">
+                  <arg value="--prefix" />              
+                </exec>
+                <echo message="Using yaz prefix: ${yaz.prefix}"/>
+                <mkdir dir="target/generated-sources/java/org/yaz4j/jni"/>
+                <mkdir dir="target/generated-sources/native" />
+                <exec executable="swig">
+                  <arg value="-Isrc/main/native" />
+                  <arg value="-I${yaz.prefix}/include"/>
+                  <arg value="-outdir"/>
+                  <arg value="${basedir}/target/generated-sources/java/org/yaz4j/jni"/>
+                  <arg value="-package"/>
+                  <arg value="org.yaz4j.jni"/>
+                  <arg value="-o"/>
+                  <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp"/>
+                  <arg value="-c++"/>
+                  <arg value="-java"/>
+                  <arg value="src/main/swig/libyaz4j.i"/>
+                </exec>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+   </plugins>
+  </build>
 
-    <!-- Project Dependencies -->
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.3.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-    <!-- ///////////////// -->
+  <profiles>
+    <profile>
+      <id>win32</id>
+      <activation>
+        <property>
+          <name>platform</name>
+          <value>win32</value>
+        </property>
+      </activation>
+      <modules>
+        <module>win32</module>
+      </modules>
+    </profile>
 
-    <!-- Build Settings -->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                    <showDeprecation>true</showDeprecation>
-                    <showWarnings>true</showWarnings>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <forkMode>once</forkMode>
-                    <workingDirectory>target</workingDirectory>
-                    <argLine>-Djava.library.path=${basedir}/libyaz4j/lib</argLine>
-                </configuration>
-            </plugin>
-
-	    <plugin>
-	      <artifactId>maven-antrun-plugin</artifactId>
-	      <executions>
-		<execution>
-		  <id>native-sources</id>
-		  <phase>generate-sources</phase>
-		  <goals>
-		    <goal>run</goal>
-		  </goals>
-		  <configuration>
-		    <tasks>
-		      <exec dir="libyaz4j" executable="make" failonerror="true">
-			<arg value="generate-sources"/>
-		      </exec>
-		    </tasks>
-		  </configuration>
-		</execution>
-
-		<execution>
-		  <id>build-native</id>
-		  <phase>compile</phase>
-		  <goals>
-		    <goal>run</goal>
-		  </goals>
-		  <configuration>
-		    <tasks>
-		      <exec dir="libyaz4j" executable="make" failonerror="true">
-			<arg value="all"/>
-		      </exec>
-		    </tasks>
-		  </configuration>
-		</execution>
-		
-		<execution>
-		  <id>clean-native</id>
-		  <phase>clean</phase>
-		  <goals>
-		    <goal>run</goal>
-		  </goals>
-		  <configuration>
-		    <tasks>
-		      <exec dir="libyaz4j" executable="make" failonerror="true">
-			<arg value="clean"/>
-		      </exec>
-		    </tasks>
-		  </configuration>
-		</execution>
-	      </executions>
-	    </plugin>
-
-        </plugins>
-    </build>
-
-    <!-- Reporting -->
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <configuration>
-                    <enableRSS>false</enableRSS>
-                    <include>**/*.java</include>
-                    <sourceDirectory>src/main/java</sourceDirectory>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>
-                maven-project-info-reports-plugin
-                </artifactId>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>dependencies</report>
-                            <report>project-team</report>
-                            <report>mailing-list</report>
-                            <report>issue-tracking</report>
-                            <report>summary</report>
-                            <report>scm</report>
-                            <report>index</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <chartset>UTF-8</chartset>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
-    <!-- ////////////// -->
-
-    <!-- Build Environment -->
-    <!-- Environment Information -->
-    <mailingLists>
-        <mailingList>
-            <name>Yazlist</name>
-            <subscribe />
-            <unsubscribe />
-            <post>yazlist@lists.indexdata.dk</post>
-            <archive>http://lists.indexdata.dk/pipermail/yazlist/</archive>
-        </mailingList>
-    </mailingLists>
-
-    <scm>
-        <connection>scm:git:git://git.indexdata.com/yaz4j</connection>
-        <url>http://git.indexdata.com/?p=yaz4j.git</url>
-    </scm>
-
-    <issueManagement>
-        <system>Bugzilla</system>
-        <url>http://bugzilla.indexdata.dk</url>
-    </issueManagement>
-
-    <ciManagement>
-        <system />
-        <url />
-    </ciManagement>
-    <!-- /////////////////////// -->
-
-    <!-- Maven Environment -->
-    <repositories />
-    <pluginRepositories />
-    <!-- ///////////////// -->
-
-    <!-- Maven Common Properties -->
-    <properties />
-    <!-- /////////////////// -->
+    <profile>
+      <id>linux</id>
+      <activation>
+        <property>
+          <name>platform</name>
+          <value>linux</value>
+        </property>
+      </activation>
+      <modules>
+        <module>linux</module>
+      </modules>
+    </profile>
+ </profiles>
 </project>
-
 

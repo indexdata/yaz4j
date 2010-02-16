@@ -1,0 +1,175 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.yaz4j</groupId>
+    <artifactId>yaz4j</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>org.yaz4j</groupId>
+  <artifactId>libyaz4j</artifactId>
+  <name>libyaz4j</name>
+  <packaging>so</packaging>
+
+  <build>
+    <finalName>${artifactId}</finalName>
+    <testSourceDirectory>../src/test</testSourceDirectory>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>write-yaz-config</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <exec executable="yaz-config" outputproperty="yaz.cflags">
+                  <arg value="--cflags" />
+                </exec>
+                <echo message="YAZ CFLAGS: ${yaz.cflags}"/>
+                <exec executable="yaz-config" outputproperty="yaz.libs">
+                  <arg value="--libs" />
+                </exec>
+                <echo message="YAZ LIBS: ${yaz.libs}"/>
+                <!-- this does not work on debian/ubuntu
+                <propertyfile file="${basedir}/target/yaz-config.properties"
+                  comment="YAZ COMPILER/LINKER FLAGS">
+                  <entry key="yaz.cflags" value="${yaz.cflags}"/>
+                  <entry key="yaz.libs" value="${yaz.libs}"/>
+                </propertyfile>
+                -->
+                <echo file="${basedir}/target/yaz-config.properties"
+                  message="yaz.cflags=${yaz.cflags}${line.separator}yaz.libs=${yaz.libs}"/>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0-alpha-1</version>
+        <executions>
+          <execution>
+            <id>read-yaz-config</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <files>
+                <file>${basedir}/target/yaz-config.properties</file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>native-maven-plugin</artifactId>
+        <extensions>true</extensions>       
+        <configuration>         
+          <javahOS>linux</javahOS>
+          <compilerProvider>generic</compilerProvider>
+          <compilerExecutable>g++</compilerExecutable>
+          <compilerStartOptions>
+            <compilerStartOption>-fPIC</compilerStartOption>
+          </compilerStartOptions>
+          <compilerEndOptions>
+            <compilerEndOption>${yaz.cflags}</compilerEndOption>
+          </compilerEndOptions>
+          <sources>
+            <source>
+              <includes>
+                <include>**/*.cpp</include>
+              </includes>
+              <directory>../src/main/native</directory>
+            </source>
+            <source>
+              <includes>
+                <include>**/*.cpp</include>
+              </includes>
+              <directory>../target/generated-sources/native</directory>
+            </source>
+          </sources>
+          <linkerExecutable>g++</linkerExecutable>
+          <linkerStartOptions>
+            <linkerStartOption>-shared</linkerStartOption>
+          </linkerStartOptions>
+          <linkerEndOptions>
+            <linkerEndOption>${yaz.libs}</linkerEndOption>
+          </linkerEndOptions>
+        </configuration>
+      </plugin>
+
+      <!-- this is to compile and execute tests, that are arch-dependent
+       because they need to load so/dll -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <source>1.6</source>
+          <target>1.6</target>
+          <showDeprecation>true</showDeprecation>
+          <showWarnings>true</showWarnings>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>include-generated-test-sources</id>
+            <phase>generate-test-sources</phase>
+            <goals><goal>add-test-source</goal></goals>
+            <configuration>
+              <sources>
+                <source>../src/main/java</source>
+                <source>../target/generated-sources/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkMode>once</forkMode>
+          <workingDirectory>target</workingDirectory>
+          <argLine>-Djava.library.path=${project.build.directory}</argLine>
+        </configuration>
+      </plugin>
+    </plugins>    
+  </build>
+
+  <repositories>
+    <repository>
+      <id>Codehaus Snapshots</id>
+      <url>http://snapshots.repository.codehaus.org/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>Codehaus Snapshots</id>
+      <url>http://snapshots.repository.codehaus.org/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>  <!-- Workaround for MNG-2974, see note below -->
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+</project>
