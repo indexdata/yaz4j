@@ -1,10 +1,10 @@
-package org.yaz4j;
+package org.yaz4j.exception;
 
 import java.util.Hashtable;
 
-class Bib1Diagnostic {
+public class Bib1Diagnostic {
 
-    private static Hashtable<Integer, String> errorCodes = new Hashtable<Integer, String>();
+    private final static Hashtable<Integer, String> errorCodes = new Hashtable<Integer, String>();
 
     static {
         errorCodes.put(1, "PermanentSystemError");

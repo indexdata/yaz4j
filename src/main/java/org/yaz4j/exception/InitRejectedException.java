@@ -1,8 +1,7 @@
-package org.yaz4j;
+package org.yaz4j.exception;
 
-public class InitRejectedException extends RuntimeException {
+public class InitRejectedException extends ZoomException {
 
-    private static final long serialVersionUID = 1L;
 
     public InitRejectedException() {
         super();

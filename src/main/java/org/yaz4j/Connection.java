@@ -1,21 +1,33 @@
 package org.yaz4j;
 
+import org.yaz4j.exception.ZoomImplementationException;
+import org.yaz4j.exception.ConnectionTimeoutException;
+import org.yaz4j.exception.InitRejectedException;
+import org.yaz4j.exception.Bib1Exception;
+import org.yaz4j.exception.InvalidQueryException;
+import org.yaz4j.exception.Bib1Diagnostic;
+import org.yaz4j.exception.ConnectionUnavailableException;
+import org.yaz4j.exception.ZoomException;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_connection_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_query_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_resultset_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_scanset_p;
-import org.yaz4j.jni.SWIGTYPE_p_p_char;
+import org.yaz4j.jni.SWIGTYPE_p_ZOOM_options_p;
 import org.yaz4j.jni.yaz4jlib;
 import org.yaz4j.jni.yaz4jlibConstants;
 
 public class Connection {
-
     private String host;
     private int port;
-    private ConnectionOptionsCollection options = null;
-    protected SWIGTYPE_p_ZOOM_connection_p zoomConnection = null;
-    private boolean connected = false;
+    final private SWIGTYPE_p_ZOOM_options_p options;
+    protected SWIGTYPE_p_ZOOM_connection_p zoomConnection;
+    //connection is initially closed
+    protected boolean closed = true;
     private boolean disposed = false;
+
+    public enum QueryType {
+        CQLQuery, PrefixQuery
+    };
 
     static {
         // on Linux   'yaz4j' maps to 'libyaz4j.so' (i.e. 'lib' prefix & '.so'  extension)
@@ -24,7 +36,7 @@ public class Connection {
         try {
             // System.err.println( "Loading library '"+ System.mapLibraryName( libName ) + "'" );
             System.loadLibrary(libName);
-        } catch (Throwable e) {
+        } catch (AbstractMethodError e) {
             System.err.println("Fatal Error: Failed to load library '" + System.mapLibraryName(libName) + "'");
             e.printStackTrace();
         }
@@ -33,63 +45,15 @@ public class Connection {
     public Connection(String host, int port) {
         this.host = host;
         this.port = port;
-
-        options = new ConnectionOptionsCollection();
-        zoomConnection = yaz4jlib.ZOOM_connection_create(options.zoomOptions);
-
-        //remove
-        SWIGTYPE_p_p_char cp = null;
-        SWIGTYPE_p_p_char addinfo = null;
-        int errorCode = yaz4jlib.ZOOM_connection_error(zoomConnection, cp, addinfo);
-        checkErrorCodeAndThrow(errorCode);
+        options = yaz4jlib.ZOOM_options_create();
     }
 
     public void finalize() {
-        dispose();
+        _dispose();
     }
 
-    private void checkErrorCodeAndThrow(int errorCode) {
-        String message;
-
-        if (errorCode == yaz4jlibConstants.ZOOM_ERROR_NONE) {
-            return;
-        } else if (errorCode == yaz4jlib.ZOOM_ERROR_CONNECT) {
-            message = String.format("Connection could not be made to %s:%d", host, port);
-            throw new ConnectionUnavailableException(message);
-        } else if (errorCode == yaz4jlib.ZOOM_ERROR_INVALID_QUERY) {
-            message = String.format("The query requested is not valid or not supported");
-            throw new InvalidQueryException(message);
-        } else if (errorCode == yaz4jlib.ZOOM_ERROR_INIT) {
-            message = String.format("Server %s:%d rejected our init request", host, port);
-            throw new InitRejectedException(message);
-        } else if (errorCode == yaz4jlib.ZOOM_ERROR_TIMEOUT) {
-            message = String.format("Server %s:%d timed out handling our request", host, port);
-            throw new ConnectionTimeoutException(message);
-        } else if ((errorCode == yaz4jlib.ZOOM_ERROR_MEMORY) || (errorCode == yaz4jlib.ZOOM_ERROR_ENCODE) || (errorCode == yaz4jlib.ZOOM_ERROR_DECODE) || (errorCode == yaz4jlib.ZOOM_ERROR_CONNECTION_LOST) || (errorCode == yaz4jlib.ZOOM_ERROR_INTERNAL) || (errorCode == yaz4jlib.ZOOM_ERROR_UNSUPPORTED_PROTOCOL) || (errorCode == yaz4jlib.ZOOM_ERROR_UNSUPPORTED_QUERY)) {
-            message = yaz4jlib.ZOOM_connection_errmsg(zoomConnection);
-            throw new ZoomImplementationException("A fatal error occurred in Yaz: " + errorCode + " - " + message);
-        } else {
-            String errMsgBib1 = "Bib1Exception: Error Code = " + errorCode + " (" + Bib1Diagnostic.getError(errorCode) + ")";
-            throw new Bib1Exception(errMsgBib1);
-        }
-    }
-
-    private enum QueryType {
-
-        CQLQuery, PrefixQuery
-    };
-
-    public ResultSet search(PrefixQuery query) {
-        return search(query.getQueryString(), QueryType.PrefixQuery);
-    }
-
-    public ResultSet search(CQLQuery query) {
-        return search(query.getQueryString(), QueryType.CQLQuery);
-    }
-
-    private ResultSet search(String query, QueryType queryType) {
-        ensureConnected();
-
+    public ResultSet search(String query, QueryType queryType) throws ZoomException {
+      if (closed) throw new IllegalStateException("Connection is closed.");
         SWIGTYPE_p_ZOOM_query_p yazQuery = yaz4jlib.ZOOM_query_create();
         ResultSet resultSet = null;
 
@@ -118,8 +82,8 @@ public class Connection {
         return resultSet;
     }
 
-    public ScanSet scan(String query) {
-        ensureConnected();
+    public ScanSet scan(String query) throws ZoomException {
+      if (closed) throw new IllegalStateException("Connection is closed.");
         SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan(zoomConnection, query);
 
         int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
@@ -132,60 +96,116 @@ public class Connection {
         return scanSet;
     }
 
-    public ConnectionOptionsCollection getOptions() {
-        return options;
+    /**
+     * Initiates the connection
+     */
+    public void connect() throws ZoomException {
+      //this is temporary before ZOOM-C has proper close method, right now
+      // simply recreate connection
+      if (closed)
+        zoomConnection = yaz4jlib.ZOOM_connection_create(options);
+      yaz4jlib.ZOOM_connection_connect(zoomConnection, host, port);
+      int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
+      checkErrorCodeAndThrow(errorCode);
+      closed = false;
     }
 
-    protected void ensureConnected() {
-        if (!connected) {
-            connect();
+    /**
+     * Closes the connection.
+     */
+    public void close() {
+      if (!closed) {
+        yaz4jlib.ZOOM_connection_destroy(zoomConnection);
+        zoomConnection = null;
+        closed = true;
+      }
+    }
+
+    private void checkErrorCodeAndThrow(int errorCode) throws ZoomException {
+        String message;
+
+        if (errorCode == yaz4jlibConstants.ZOOM_ERROR_NONE) {
+            return;
+        } else if (errorCode == yaz4jlib.ZOOM_ERROR_CONNECT) {
+            message = String.format("Connection could not be made to %s:%d", host, port);
+            throw new ConnectionUnavailableException(message);
+        } else if (errorCode == yaz4jlib.ZOOM_ERROR_INVALID_QUERY) {
+            message = String.format("The query requested is not valid or not supported");
+            throw new InvalidQueryException(message);
+        } else if (errorCode == yaz4jlib.ZOOM_ERROR_INIT) {
+            message = String.format("Server %s:%d rejected our init request", host, port);
+            throw new InitRejectedException(message);
+        } else if (errorCode == yaz4jlib.ZOOM_ERROR_TIMEOUT) {
+            message = String.format("Server %s:%d timed out handling our request", host, port);
+            throw new ConnectionTimeoutException(message);
+        } else if ((errorCode == yaz4jlib.ZOOM_ERROR_MEMORY) || (errorCode == yaz4jlib.ZOOM_ERROR_ENCODE) || (errorCode == yaz4jlib.ZOOM_ERROR_DECODE) || (errorCode == yaz4jlib.ZOOM_ERROR_CONNECTION_LOST) || (errorCode == yaz4jlib.ZOOM_ERROR_INTERNAL) || (errorCode == yaz4jlib.ZOOM_ERROR_UNSUPPORTED_PROTOCOL) || (errorCode == yaz4jlib.ZOOM_ERROR_UNSUPPORTED_QUERY)) {
+            message = yaz4jlib.ZOOM_connection_errmsg(zoomConnection);
+            throw new ZoomImplementationException("A fatal error occurred in Yaz: " + errorCode + " - " + message);
+        } else {
+            String errMsgBib1 = "Bib1Exception: Error Code = " + errorCode + " (" + Bib1Diagnostic.getError(errorCode) + ")";
+            throw new Bib1Exception(errMsgBib1);
         }
     }
 
-    public void connect() {
-        yaz4jlib.ZOOM_connection_connect(zoomConnection, host, port);
-        int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
-        checkErrorCodeAndThrow(errorCode);
-        connected = true;
+    /**
+     * Write option with a given name.
+     * @param name option name
+     * @param value option value
+     * @return connection (self) for chainability
+     */
+    public Connection option(String name, String value) {
+      yaz4jlib.ZOOM_options_set(options, name, value);
+      return this;
     }
 
-    public void dispose() {
-        if (!disposed) {
-            yaz4jlib.ZOOM_connection_destroy(zoomConnection);
-            zoomConnection = null;
-            disposed = true;
-        }
+    /**
+     * Read option with a given name
+     * @param name option name
+     * @return option value
+     */
+    public String option(String name) {
+      return yaz4jlib.ZOOM_options_get(options, name);
     }
 
     public String getSyntax() {
-        return options.get("preferredRecordSyntax");
+        return option("preferredRecordSyntax");
     }
 
     public void setSyntax(String value) {
-        options.set("preferredRecordSyntax", value);
+        option("preferredRecordSyntax", value);
     }
 
     public String getDatabaseName() {
-        return options.get("databaseName");
+        return option("databaseName");
     }
 
     public void setDatabaseName(String value) {
-        options.set("databaseName", value);
+        option("databaseName", value);
     }
 
     public String getUsername() {
-        return options.get("user");
+        return option("user");
     }
 
     public void setUsername(String value) {
-        options.set("user", value);
+        option("user", value);
     }
 
     public String getPassword() {
-        return options.get("password");
+        return option("password");
     }
 
     public void setPassword(String value) {
-        options.set("password", value);
+        option("password", value);
+    }
+
+    /**
+     * INTERNAL, GC-ONLY
+     */
+    void _dispose() {
+        if (!disposed) {
+          close();
+          disposed = true;
+        }
     }
 }

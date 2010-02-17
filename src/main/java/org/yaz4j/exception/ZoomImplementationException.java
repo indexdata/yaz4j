@@ -1,6 +1,6 @@
-package org.yaz4j;
+package org.yaz4j.exception;
 
-public class ZoomImplementationException extends RuntimeException {
+public class ZoomImplementationException extends ZoomException {
 
     private static final long serialVersionUID = 1L;
 

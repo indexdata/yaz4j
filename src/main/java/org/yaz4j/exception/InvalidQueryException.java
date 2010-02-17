@@ -1,6 +1,6 @@
-package org.yaz4j;
+package org.yaz4j.exception;
 
-public class InvalidQueryException extends RuntimeException {
+public class InvalidQueryException extends ZoomException {
 
     private static final long serialVersionUID = 1L;
 

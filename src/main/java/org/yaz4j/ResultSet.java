@@ -23,8 +23,24 @@ public class ResultSet {
         this._dispose();
     }
 
-    ResultSetOptionsCollection getResultSetOptions() {
-        return new ResultSetOptionsCollection(resultSet);
+    /**
+     * Read option by name.
+     * @param name option name
+     * @return option value
+     */
+    public String option(String name) {
+      return yaz4jlib.ZOOM_resultset_option_get(resultSet, name);
+    }
+
+    /**
+     * Write option with a given name.
+     * @param name option name
+     * @param value option value
+     * @return result set (self) for chainability
+     */
+    public ResultSet option(String name, String value) {
+      yaz4jlib.ZOOM_resultset_option_set(resultSet, name, value);
+      return this;
     }
 
     public Record getRecord(int index) {

@@ -1,6 +1,6 @@
-package org.yaz4j;
+package org.yaz4j.exception;
 
-public class Bib1Exception extends RuntimeException {
+public class Bib1Exception extends ZoomException {
 
     private static final long serialVersionUID = 1L;
 

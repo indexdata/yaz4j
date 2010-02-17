@@ -1,6 +1,6 @@
-package org.yaz4j;
+package org.yaz4j.exception;
 
-public class ConnectionUnavailableException extends RuntimeException {
+public class ConnectionUnavailableException extends ZoomException {
 
     private static final long serialVersionUID = 1L;
 

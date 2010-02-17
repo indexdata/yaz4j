@@ -16,7 +16,7 @@ public class Record {
     }
 
     public void finalize() {
-        dispose();
+        _dispose();
     }
 
     public byte[] get(String type) {
@@ -40,7 +40,7 @@ public class Record {
         return new String(get("database"));
     }
 
-    public void dispose() {
+    void _dispose() {
         if (!disposed) {
             resultSet = null;
             record = null;

@@ -1,6 +1,6 @@
-package org.yaz4j;
+package org.yaz4j.exception;
 
-public class ConnectionTimeoutException extends RuntimeException {
+public class ConnectionTimeoutException extends ZoomException {
 
     private static final long serialVersionUID = 1L;
 
