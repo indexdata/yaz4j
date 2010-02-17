@@ -16,7 +16,7 @@ public class DinosaurTest {
         con.setSyntax("usmarc");
         PrefixQuery pqf = new PrefixQuery("@attr 1=7 0253333490");
         assertNotNull(pqf);
-        ResultSet set = con.Search(pqf);
+        ResultSet set = con.search(pqf);
         assertNotNull(set);
         Record rec = set.getRecord(0);
         assertNotNull(rec);

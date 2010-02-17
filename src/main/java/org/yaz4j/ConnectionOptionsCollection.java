@@ -13,15 +13,15 @@ public class ConnectionOptionsCollection {
     }
 
     public void finalize() {
-        Dispose();
+        dispose();
     }
 
-    public void Dispose() {
+    public void dispose() {
         yaz4jlib.ZOOM_options_destroy(zoomOptions);
         zoomOptions = null;
     }
 
-    SWIGTYPE_p_ZOOM_connection_p CreateConnection() {
+    SWIGTYPE_p_ZOOM_connection_p createConnection() {
         return yaz4jlib.ZOOM_connection_create(zoomOptions);
     }
 

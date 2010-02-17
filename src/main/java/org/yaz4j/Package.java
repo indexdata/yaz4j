@@ -16,18 +16,18 @@ public class Package {
     }
 
     public void finalize() {
-        Dispose();
+        dispose();
     }
 
     public PackageOptionsCollection getPackageOptions() {
         return new PackageOptionsCollection(pack);
     }
 
-    public void Send() {
+    public void send() {
         yaz4jlib.ZOOM_package_send(pack, type);
     }
 
-    public void Dispose() {
+    public void dispose() {
         if (pack != null) {
             yaz4jlib.ZOOM_package_destroy(pack);
             connection = null;

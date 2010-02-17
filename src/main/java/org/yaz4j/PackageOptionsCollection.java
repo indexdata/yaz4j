@@ -11,7 +11,7 @@ public class PackageOptionsCollection {
         this.pack = pack;
     }
 
-    public void Dispose() {
+    public void dispose() {
         pack = null;
     }
 

@@ -10,8 +10,8 @@ public class ConnectionExtended extends Connection {
         super(host, port);
     }
 
-    public Package Package(String type) {
-        EnsureConnected();
+    public Package getPackage(String type) {
+        ensureConnected();
         Package pack = null;
 
         SWIGTYPE_p_ZOOM_options_p options = yaz4jlib.ZOOM_options_create();

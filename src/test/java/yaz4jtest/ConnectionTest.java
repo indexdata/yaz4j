@@ -13,7 +13,7 @@ public class ConnectionTest {
         con.setSyntax("sutrs");
         org.yaz4j.PrefixQuery pqf = new org.yaz4j.PrefixQuery("@attr 1=4 utah");
         assertNotNull(pqf);
-        org.yaz4j.ResultSet s = con.Search(pqf);
+        org.yaz4j.ResultSet s = con.search(pqf);
         assertNotNull(s);
         assertEquals(s.getSize(), 9);
         org.yaz4j.Record rec = s.getRecord(0);

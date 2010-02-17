@@ -1,7 +1,5 @@
 package org.yaz4j;
 
-import java.io.UnsupportedEncodingException;
-
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_record_p;
 import org.yaz4j.jni.SWIGTYPE_p_int;
 import org.yaz4j.jni.yaz4jlib;
@@ -18,7 +16,7 @@ public class Record {
     }
 
     public void finalize() {
-        Dispose();
+        dispose();
     }
 
     public byte[] get(String type) {
@@ -42,7 +40,7 @@ public class Record {
         return new String(get("database"));
     }
 
-    public void Dispose() {
+    public void dispose() {
         if (!disposed) {
             resultSet = null;
             record = null;

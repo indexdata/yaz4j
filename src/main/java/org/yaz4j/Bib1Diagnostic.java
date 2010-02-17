@@ -121,7 +121,7 @@ class Bib1Diagnostic {
         errorCodes.put(247, "Type1QueryAttributesetAsPartOfAttributeelementNotSupported");
     }
 
-    public static String GetError(int errorCode) {
+    public static String getError(int errorCode) {
         String errorText = "Unknown Error";
 
         if (errorCodes.containsKey(errorCode)) {

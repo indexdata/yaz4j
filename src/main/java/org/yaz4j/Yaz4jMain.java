@@ -14,7 +14,7 @@ public class Yaz4jMain {
         conn.setSyntax("USMarc"); // USMarc, Sutrs, XML, opac, UKMarc
 
         PrefixQuery query = new PrefixQuery("@attr 1=4 \"pottering\"");
-        ResultSet results = conn.Search(query);
+        ResultSet results = conn.search(query);
 
         int resultsSize = results.getSize();
         System.out.println("Found " + resultsSize + " records");
@@ -23,6 +23,6 @@ public class Yaz4jMain {
             Record record = results.getRecord(i);
             System.out.write(record.getContent());
         }
-        conn.Dispose();
+        conn.dispose();
     }
 }

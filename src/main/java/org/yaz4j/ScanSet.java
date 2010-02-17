@@ -17,7 +17,7 @@ public class ScanSet {
     }
 
     public void finalize() {
-        Dispose();
+        dispose();
     }
 
     public ScanTerm get(long index) {
@@ -34,7 +34,7 @@ public class ScanSet {
         return yaz4jlib.ZOOM_scanset_size(scanSet);
     }
 
-    public void Dispose() {
+    public void dispose() {
         if (!disposed) {
             yaz4jlib.ZOOM_scanset_destroy(scanSet);
             connection = null;

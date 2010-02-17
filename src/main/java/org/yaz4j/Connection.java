@@ -40,14 +40,14 @@ public class Connection {
         SWIGTYPE_p_p_char cp = null;
         SWIGTYPE_p_p_char addinfo = null;
         int errorCode = yaz4jlib.ZOOM_connection_error(zoomConnection, cp, addinfo);
-        CheckErrorCodeAndThrow(errorCode);
+        checkErrorCodeAndThrow(errorCode);
     }
 
     public void finalize() {
-        Dispose();
+        dispose();
     }
 
-    private void CheckErrorCodeAndThrow(int errorCode) {
+    private void checkErrorCodeAndThrow(int errorCode) {
         String message;
 
         if (errorCode == yaz4jlibConstants.ZOOM_ERROR_NONE) {
@@ -68,7 +68,7 @@ public class Connection {
             message = yaz4jlib.ZOOM_connection_errmsg(zoomConnection);
             throw new ZoomImplementationException("A fatal error occurred in Yaz: " + errorCode + " - " + message);
         } else {
-            String errMsgBib1 = "Bib1Exception: Error Code = " + errorCode + " (" + Bib1Diagnostic.GetError(errorCode) + ")";
+            String errMsgBib1 = "Bib1Exception: Error Code = " + errorCode + " (" + Bib1Diagnostic.getError(errorCode) + ")";
             throw new Bib1Exception(errMsgBib1);
         }
     }
@@ -78,16 +78,16 @@ public class Connection {
         CQLQuery, PrefixQuery
     };
 
-    public ResultSet Search(PrefixQuery query) {
-        return Search(query.getQueryString(), QueryType.PrefixQuery);
+    public ResultSet search(PrefixQuery query) {
+        return search(query.getQueryString(), QueryType.PrefixQuery);
     }
 
-    public ResultSet Search(CQLQuery query) {
-        return Search(query.getQueryString(), QueryType.CQLQuery);
+    public ResultSet search(CQLQuery query) {
+        return search(query.getQueryString(), QueryType.CQLQuery);
     }
 
-    private ResultSet Search(String query, QueryType queryType) {
-        EnsureConnected();
+    private ResultSet search(String query, QueryType queryType) {
+        ensureConnected();
 
         SWIGTYPE_p_ZOOM_query_p yazQuery = yaz4jlib.ZOOM_query_create();
         ResultSet resultSet = null;
@@ -107,7 +107,7 @@ public class Connection {
             if (errorCode != yaz4jlib.ZOOM_ERROR_NONE) {
                 yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
             }
-            CheckErrorCodeAndThrow(errorCode);
+            checkErrorCodeAndThrow(errorCode);
 
             resultSet = new ResultSet(yazResultSet, zoomConnection);
         } finally {
@@ -117,15 +117,15 @@ public class Connection {
         return resultSet;
     }
 
-    public ScanSet Scan(String query) {
-        EnsureConnected();
+    public ScanSet scan(String query) {
+        ensureConnected();
         SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan(zoomConnection, query);
 
         int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
         if (errorCode != yaz4jlib.ZOOM_ERROR_NONE) {
             yaz4jlib.ZOOM_scanset_destroy(yazScanSet);
         }
-        CheckErrorCodeAndThrow(errorCode);
+        checkErrorCodeAndThrow(errorCode);
 
         ScanSet scanSet = new ScanSet(yazScanSet, this);
         return scanSet;
@@ -135,20 +135,20 @@ public class Connection {
         return options;
     }
 
-    protected void EnsureConnected() {
+    protected void ensureConnected() {
         if (!connected) {
-            Connect();
+            connect();
         }
     }
 
-    public void Connect() {
+    public void connect() {
         yaz4jlib.ZOOM_connection_connect(zoomConnection, host, port);
         int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
-        CheckErrorCodeAndThrow(errorCode);
+        checkErrorCodeAndThrow(errorCode);
         connected = true;
     }
 
-    public void Dispose() {
+    public void dispose() {
         if (!disposed) {
             yaz4jlib.ZOOM_connection_destroy(zoomConnection);
             zoomConnection = null;

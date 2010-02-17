@@ -21,7 +21,7 @@ public class ResultSet {
     }
 
     public void finalize() {
-        this.Dispose();
+        this.dispose();
     }
 
     ResultSetOptionsCollection getResultSetOptions() {
@@ -41,14 +41,13 @@ public class ResultSet {
         return (int) size;
     }
 
-    public void Dispose() {
+    public void dispose() {
         if (!disposed) {
             for (int i = 0; i < records.length; i++) {
                 if (records[i] != null) {
-                    records[i].Dispose();
+                    records[i].dispose();
                 }
             }
-
             yaz4jlib.ZOOM_resultset_destroy(resultSet);
             connection = null;
             resultSet = null;
