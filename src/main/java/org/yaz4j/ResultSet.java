@@ -10,18 +10,17 @@ public class ResultSet {
     private SWIGTYPE_p_ZOOM_resultset_p resultSet;
     private SWIGTYPE_p_ZOOM_connection_p connection;
     private long size = 0;
-    private Record[] records = null;
     private boolean disposed = false;
 
     ResultSet(SWIGTYPE_p_ZOOM_resultset_p resultSet, SWIGTYPE_p_ZOOM_connection_p connection) {
         this.resultSet = resultSet;
         this.connection = connection;
         size = yaz4jlib.ZOOM_resultset_size(this.resultSet);
-        records = new Record[(int) size];
     }
 
+    @Override
     public void finalize() {
-        this.dispose();
+        this._dispose();
     }
 
     ResultSetOptionsCollection getResultSetOptions() {
@@ -29,25 +28,16 @@ public class ResultSet {
     }
 
     public Record getRecord(int index) {
-        if (records[index] == null) {
-            SWIGTYPE_p_ZOOM_record_p recordTemp = yaz4jlib.ZOOM_resultset_record(resultSet, index);
-            records[index] = new Record(recordTemp, this);
-        }
-
-        return this.records[index];
+      SWIGTYPE_p_ZOOM_record_p recordTemp = yaz4jlib.ZOOM_resultset_record(resultSet, index);
+      return new Record(recordTemp, this);
     }
 
-    public int getSize() {
-        return (int) size;
+    public long getSize() {
+        return size;
     }
 
-    public void dispose() {
+    void _dispose() {
         if (!disposed) {
-            for (int i = 0; i < records.length; i++) {
-                if (records[i] != null) {
-                    records[i].dispose();
-                }
-            }
             yaz4jlib.ZOOM_resultset_destroy(resultSet);
             connection = null;
             resultSet = null;

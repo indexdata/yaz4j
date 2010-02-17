@@ -16,7 +16,7 @@ public class Yaz4jMain {
         PrefixQuery query = new PrefixQuery("@attr 1=4 \"pottering\"");
         ResultSet results = conn.search(query);
 
-        int resultsSize = results.getSize();
+        long resultsSize = results.getSize();
         System.out.println("Found " + resultsSize + " records");
 
         for (int i = 0; i < resultsSize; i++) {

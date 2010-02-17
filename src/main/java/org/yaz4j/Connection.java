@@ -37,6 +37,7 @@ public class Connection {
         options = new ConnectionOptionsCollection();
         zoomConnection = yaz4jlib.ZOOM_connection_create(options.zoomOptions);
 
+        //remove
         SWIGTYPE_p_p_char cp = null;
         SWIGTYPE_p_p_char addinfo = null;
         int errorCode = yaz4jlib.ZOOM_connection_error(zoomConnection, cp, addinfo);
