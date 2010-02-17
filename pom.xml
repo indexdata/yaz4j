@@ -2,9 +2,59 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.yaz4j</groupId>
   <artifactId>yaz4j</artifactId>
-  <name>yaz4j</name>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
+
+  <!-- Project Information -->
+  <name>yaz4j</name>
+  <url>http://www.indexdata.com/yaz4j/</url>
+  <inceptionYear>2008</inceptionYear>
+  <licenses>
+    <license>
+      <name>BSD</name>
+      <url>http://www.opensource.org/licenses/bsd-license.php</url>
+    </license>
+  </licenses>
+  <description>Java wrapper for the ZOOM API of YAZ</description>
+
+  <developers>
+    <developer>
+      <name>Rob Styles</name>
+      <id>rob</id>
+      <email>Rob.Styles@talis.com</email>
+      <organization>Talis</organization>
+      <organizationUrl>http://www.talis.com/</organizationUrl>
+      <roles />
+      <timezone />
+    </developer>
+    <developer>
+      <name>Adam Dickmeiss</name>
+      <id>adam</id>
+      <email>adam@indexdata.dk</email>
+      <organization>Index Data</organization>
+      <organizationUrl>http://www.indexdata.com/</organizationUrl>
+      <roles />
+      <timezone />
+    </developer>
+    <developer>
+      <name>Jakub Skoczen</name>
+      <id>jakub</id>
+      <email>jakub@indexdata.dk</email>
+      <organization>Index Data</organization>
+      <organizationUrl>http://www.indexdata.com/</organizationUrl>
+      <roles />
+      <timezone />
+    </developer>
+    <developer>
+      <name>Juan Cayetano</name>
+      <id>cayetano</id>
+      <email>juancayetano.delgado@gmail.com</email>
+      <organization />
+      <organizationUrl />
+      <roles />
+      <timezone />
+    </developer>
+  </developers>
 
   <modules>
     <module>any</module>
@@ -57,8 +107,72 @@
           </execution>
         </executions>
       </plugin>
-   </plugins>
+    </plugins>
   </build>
+
+  <!-- Reporting -->
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <enableRSS>false</enableRSS>
+          <include>**/*.java</include>
+          <sourceDirectory>src/main/java</sourceDirectory>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>
+          maven-project-info-reports-plugin
+        </artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>dependencies</report>
+              <report>project-team</report>
+              <report>mailing-list</report>
+              <report>issue-tracking</report>
+              <report>summary</report>
+              <report>scm</report>
+              <report>index</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <chartset>UTF-8</chartset>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+  <!-- ////////////// -->
+
+  <!-- Environment Information -->
+  <mailingLists>
+    <mailingList>
+      <name>Yazlist</name>
+      <subscribe />
+      <unsubscribe />
+      <post>yazlist@lists.indexdata.dk</post>
+      <archive>http://lists.indexdata.dk/pipermail/yazlist/</archive>
+    </mailingList>
+  </mailingLists>
+
+  <scm>
+    <connection>scm:git:git://git.indexdata.com/yaz4j</connection>
+    <url>http://git.indexdata.com/?p=yaz4j.git</url>
+  </scm>
+
+  <issueManagement>
+    <system>Bugzilla</system>
+    <url>http://bugzilla.indexdata.dk</url>
+  </issueManagement>
 
   <profiles>
     <profile>
