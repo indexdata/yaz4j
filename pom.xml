@@ -178,11 +178,13 @@
     <profile>
       <id>win32</id>
       <activation>
-        <property>
-          <name>platform</name>
-          <value>win32</value>
-        </property>
+        <os>
+          <family>windows</family>
+        </os>
       </activation>
+      <properties>
+        <platform>win32</platform>
+      </properties>
       <modules>
         <module>win32</module>
       </modules>
@@ -191,11 +193,13 @@
     <profile>
       <id>linux</id>
       <activation>
-        <property>
-          <name>platform</name>
-          <value>linux</value>
-        </property>
+        <os>
+          <family>unix</family>
+        </os>
       </activation>
+      <properties>
+        <platform>linux</platform>
+      </properties>
       <modules>
         <module>linux</module>
       </modules>
