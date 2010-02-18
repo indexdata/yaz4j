@@ -3,7 +3,9 @@ BUILDING A SIMPLE HTTP-TO-Z3950 GATEWAY USING YAZ4J AND TOMCAT
 
 [Yaz4J](http://www.indexdata.com/yaz4j) is a wrapper library over the 
 client-specific parts of YAZ, a C-based Z39.50 toolkit, and allows you to use 
-the ZOOM API directly from Java. 
+the ZOOM API directly from Java. Initial version of Yaz4j has been written
+by Rob Styles from [Talis][http://www.talis.com] and the project is now 
+developed and maintained at IndexData.
 [ZOOM](http://zoom.z3950.org/api/zoom-1.4.html) is a relatively straightforward 
 API and with a few lines of code you can write a basic application that can 
 establish connection to a Z39.50 server. 
