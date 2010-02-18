@@ -209,7 +209,5 @@ the follwoing request with your browser or curl
   
 That's it! You just build yourself a HTTP-to-Z3950 gateway! Just be careful
 with exposing it to the outside world - it's not very secure and could be easily
-exploited. The source code for the gateway's Maven project is attached. Also, 
-IndexData is working on a Debian/Ubuntu package (and maybe even a Windows 
-installer :)) and the installation of yaz4j and Tomcat configuration will be 
-greatly simplified - so stay tuned!
+exploited. The source code and the gateway's Maven project is available in the
+yaz4j repository under examples/zgate. In the meantime, IndexData is working on a Debian/Ubuntu package (and maybe even a Windows installer :)) so installation of yaz4j and Tomcat configuration will be greatly simplified - so stay tuned!
