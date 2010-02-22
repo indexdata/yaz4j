@@ -240,5 +240,6 @@ with exposing it to the outside world - it's not very secure and could be
 easily exploited. The source code and the gateway's Maven project is available 
 in the Yaz4j's Git repository under examples/zgate. In the meantime, IndexData 
 is working on a Debian/Ubuntu package to make the installation of Yaz4j and 
-Tomcat configuration greatly simplified - so stay tuned!. If you are interested in Windows support - e.g. Visual Studio based build or an installer - please 
+Tomcat configuration greatly simplified - so stay tuned!. If you are interested 
+in Windows support - e.g. Visual Studio based build or an installer - please 
 let us know. 
