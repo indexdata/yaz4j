@@ -12,7 +12,7 @@ establish connection to a Z39.50 server.
 Here we will try to build a very simple HTTP-to-Z3950 gateway using yaz4j and 
 the Java Servlet technology.
 
-## COMPILING AND INSTALLING YAZ4J
+### COMPILING AND INSTALLING YAZ4J
 
 Yaz4j is still an experimental piece of software and as such is not distributed
 via Index Data's public Debian Apt repository and there is no Windows build (yet)
@@ -54,7 +54,7 @@ application is executed:
 
     java -cp /path/to/yaz4j-*.jar -Djava.library.path=/path/to/libyaz4j.so MyApp
 
-## SETTING UP THE DEVELOPMENT ENVIRONMENT
+### SETTING UP THE DEVELOPMENT ENVIRONMENT
 
 Setting up a development/runtime environment for a web (servlet) application is 
 a bit more complicated. First, you are not invoking the JVM directly, but the 
@@ -86,7 +86,7 @@ native library into the JVM you cannot simply package it along with your web
 application (inside the .war file) - it would try to load the library each time
 you deploy the webapp and all consecutive deployments would fail.
 
-## WRITING A SERVLET-BASED GATEWAY
+### WRITING A SERVLET-BASED GATEWAY
 
 With your servlet environment set up all that is left is to write the actual 
 application (peanuts :)). At IndexData we use Maven for managing builds of our 
@@ -146,16 +146,26 @@ solely by HTTP parameters, the servlet doGet method is shown below:
 protected void doGet(HttpServletRequest request, HttpServletResponse response)
   throws ServletException, IOException {
     String zurl = request.getParameter("zurl");
-    if (zurl == null || zurl.isEmpty()) { response.sendError(400, "Missing parameter 'zurl'"); return; }
+    if (zurl == null || zurl.isEmpty()) { 
+      response.sendError(400, "Missing parameter 'zurl'"); 
+      return; 
+    }
 
     String query = request.getParameter("query");
-    if (query == null || query.isEmpty()) { response.sendError(400, "Missing parameter 'query'"); return; }
+    if (query == null || query.isEmpty()) { 
+      response.sendError(400, "Missing parameter 'query'"); 
+      return; 
+    }
 
     String syntax = request.getParameter("syntax");
-    if (syntax == null || syntax.isEmpty()) { response.sendError(400, "Missing parameter 'syntax'"); return; }
+    if (syntax == null || syntax.isEmpty()) { 
+      response.sendError(400, "Missing parameter 'syntax'"); 
+      return; 
+    }
 
     int maxrecs=10;
-    if (request.getParameter("maxrecs") != null && !request.getParameter("maxrecs").isEmpty()) {
+    if (request.getParameter("maxrecs") != null 
+      && !request.getParameter("maxrecs").isEmpty()) {
       try {
         maxrecs = Integer.parseInt(request.getParameter("maxrecs"));
       } catch (NumberFormatException nfe) {
@@ -176,7 +186,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response)
     try {
       con.connect();
       ResultSet set = con.search(query, Connection.QueryType.PrefixQuery);
-      response.getWriter().println("Showing " + maxrecs + " of " +set.getSize());
+      response.getWriter().println("Showing " + maxrecs + " of "+set.getSize());
       response.getWriter().println();
       for(int i=0; i<set.getSize() && i<maxrecs; i++) {
         Record rec = set.getRecord(i);
@@ -228,8 +238,8 @@ Now we are ready to build our webapp:
     mvn package
 
 The resulting .war archive is located under `target/zgate.war`, we can deploy
-it on tomcat (e.g by using the /admin Tomcat admin  console) and test by issuing
-the follwoing request with your browser or curl 
+it on tomcat (e.g by using the `/admin` Tomcat admin  console) and test by 
+issuing the following request with your browser or curl 
 (assuming Tomcat is running on localhost:8080):
 
     http://localhost:8080/zgate/?zurl=z3950.loc.gov:7090/voyager&query=@attr%201=7%200253333490&syntax=usmarc
@@ -238,7 +248,7 @@ the follwoing request with your browser or curl
 That's it! You just build yourself a HTTP-to-Z3950 gateway! Just be careful
 with exposing it to the outside world - it's not very secure and could be 
 easily exploited. The source code and the gateway's Maven project is available 
-in the Yaz4j's Git repository under examples/zgate. In the meantime, IndexData 
+in the Yaz4j's Git repo under `examples/zgate`. In the meantime, IndexData 
 is working on a Debian/Ubuntu package to make the installation of Yaz4j and 
 Tomcat configuration greatly simplified - so stay tuned!. If you are interested 
 in Windows support - e.g. Visual Studio based build or an installer - please 
