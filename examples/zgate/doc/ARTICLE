@@ -4,7 +4,7 @@ BUILDING A SIMPLE HTTP-TO-Z3950 GATEWAY USING YAZ4J AND TOMCAT
 [Yaz4J](http://www.indexdata.com/yaz4j) is a wrapper library over the 
 client-specific parts of YAZ, a C-based Z39.50 toolkit, and allows you to use 
 the ZOOM API directly from Java. Initial version of Yaz4j has been written
-by Rob Styles from [Talis][http://www.talis.com] and the project is now 
+by Rob Styles from [Talis](http://www.talis.com) and the project is now 
 developed and maintained at IndexData.
 [ZOOM](http://zoom.z3950.org/api/zoom-1.4.html) is a relatively straightforward 
 API and with a few lines of code you can write a basic application that can 
@@ -93,7 +93,10 @@ application (peanuts :)). At IndexData we use Maven for managing builds of our
 Java software components but Maven is also a great tool for quickly starting up 
 a project. To generate a skeleton for our webapp use the Maven archetype plugin:
 
-    mvn -DarchetypeVersion=1.0.1 -Darchetype.interactive=false -DarchetypeArtifactId=webapp-jee5 -DarchetypeGroupId=org.codehaus.mojo.archetypes -Dpackage=com.indexdata.zgate -DgroupId=com.indexdata -DartifactId=zgate archetype:generate --batch-mode
+    mvn -DarchetypeVersion=1.0.1 -Darchetype.interactive=false \
+    -DarchetypeArtifactId=webapp-jee5 -DarchetypeGroupId=org.codehaus.mojo.archetypes \ 
+    -Dpackage=com.indexdata.zgate -DgroupId=com.indexdata -DartifactId=zgate \ 
+    archetype:generate --batch-mode
 
 This will generate a basic webapp project structure:
 
