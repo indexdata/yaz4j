@@ -39,6 +39,7 @@ public class Record {
 
     void _dispose() {
         if (!disposed) {
+            yaz4jlib.ZOOM_record_destroy(record);
             record = null;
             disposed = true;
         }
