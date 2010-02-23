@@ -19,7 +19,6 @@ import org.yaz4j.jni.yaz4jlibConstants;
 public class Connection {
     private String host;
     private int port;
-    final private SWIGTYPE_p_ZOOM_options_p options;
     protected SWIGTYPE_p_ZOOM_connection_p zoomConnection;
     //connection is initially closed
     protected boolean closed = true;
@@ -45,7 +44,7 @@ public class Connection {
     public Connection(String host, int port) {
         this.host = host;
         this.port = port;
-        options = yaz4jlib.ZOOM_options_create();
+        zoomConnection = yaz4jlib.ZOOM_connection_create(null);
     }
 
     public void finalize() {
@@ -100,10 +99,6 @@ public class Connection {
      * Initiates the connection
      */
     public void connect() throws ZoomException {
-      //this is temporary before ZOOM-C has proper close method, right now
-      // simply recreate connection
-      if (closed)
-        zoomConnection = yaz4jlib.ZOOM_connection_create(options);
       yaz4jlib.ZOOM_connection_connect(zoomConnection, host, port);
       int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
       checkErrorCodeAndThrow(errorCode);
@@ -114,11 +109,8 @@ public class Connection {
      * Closes the connection.
      */
     public void close() {
-      if (!closed) {
-        yaz4jlib.ZOOM_connection_destroy(zoomConnection);
-        zoomConnection = null;
-        closed = true;
-      }
+      yaz4jlib.ZOOM_connection_close(zoomConnection);
+      closed = true;
     }
 
     private void checkErrorCodeAndThrow(int errorCode) throws ZoomException {
@@ -154,7 +146,7 @@ public class Connection {
      * @return connection (self) for chainability
      */
     public Connection option(String name, String value) {
-      yaz4jlib.ZOOM_options_set(options, name, value);
+      yaz4jlib.ZOOM_connection_option_set(zoomConnection, name, value);
       return this;
     }
 
@@ -164,7 +156,7 @@ public class Connection {
      * @return option value
      */
     public String option(String name) {
-      return yaz4jlib.ZOOM_options_get(options, name);
+      return yaz4jlib.ZOOM_connection_option_get(zoomConnection, name);
     }
 
     public String getSyntax() {
@@ -204,7 +196,8 @@ public class Connection {
      */
     void _dispose() {
         if (!disposed) {
-          close();
+          yaz4jlib.ZOOM_connection_destroy(zoomConnection);
+          zoomConnection = null;
           disposed = true;
         }
     }
