@@ -5,13 +5,10 @@ import org.yaz4j.jni.SWIGTYPE_p_int;
 import org.yaz4j.jni.yaz4jlib;
 
 public class Record {
-
     private SWIGTYPE_p_ZOOM_record_p record = null;
-    private ResultSet resultSet = null;
     private boolean disposed = false;
 
-    Record(SWIGTYPE_p_ZOOM_record_p record, ResultSet resultSet) {
-        this.resultSet = resultSet;
+    Record(SWIGTYPE_p_ZOOM_record_p record) {
         this.record = record;
     }
 
@@ -42,7 +39,6 @@ public class Record {
 
     void _dispose() {
         if (!disposed) {
-            resultSet = null;
             record = null;
             disposed = true;
         }

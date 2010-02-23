@@ -74,7 +74,7 @@ public class Connection {
             }
             checkErrorCodeAndThrow(errorCode);
 
-            resultSet = new ResultSet(yazResultSet, zoomConnection);
+            resultSet = new ResultSet(yazResultSet, this);
         } finally {
             yaz4jlib.ZOOM_query_destroy(yazQuery); // deallocate yazQuery also when exceptions
             yazQuery = null;

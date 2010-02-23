@@ -1,21 +1,20 @@
 package org.yaz4j;
 
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_connection_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_record_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_resultset_p;
 import org.yaz4j.jni.yaz4jlib;
 
 public class ResultSet {
-
+    //for GC refcount
+    private Connection conn;
     private SWIGTYPE_p_ZOOM_resultset_p resultSet;
-    private SWIGTYPE_p_ZOOM_connection_p connection;
     private long size = 0;
     private boolean disposed = false;
 
-    ResultSet(SWIGTYPE_p_ZOOM_resultset_p resultSet, SWIGTYPE_p_ZOOM_connection_p connection) {
+    ResultSet(SWIGTYPE_p_ZOOM_resultset_p resultSet, Connection conn) {
         this.resultSet = resultSet;
-        this.connection = connection;
         size = yaz4jlib.ZOOM_resultset_size(this.resultSet);
+        this.conn = conn;
     }
 
     @Override
@@ -45,7 +44,7 @@ public class ResultSet {
 
     public Record getRecord(int index) {
       SWIGTYPE_p_ZOOM_record_p recordTemp = yaz4jlib.ZOOM_resultset_record(resultSet, index);
-      return new Record(recordTemp, this);
+      return new Record(recordTemp);
     }
 
     public long getSize() {
@@ -55,8 +54,8 @@ public class ResultSet {
     void _dispose() {
         if (!disposed) {
             yaz4jlib.ZOOM_resultset_destroy(resultSet);
-            connection = null;
             resultSet = null;
+            conn = null;
             disposed = true;
         }
     }

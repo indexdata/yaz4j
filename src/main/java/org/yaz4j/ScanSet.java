@@ -1,19 +1,18 @@
 package org.yaz4j;
 
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_scanset_p;
-import org.yaz4j.jni.SWIGTYPE_p_int;
 import org.yaz4j.jni.SWIGTYPE_p_size_t;
 import org.yaz4j.jni.yaz4jlib;
 
 public class ScanSet {
-
-    private SWIGTYPE_p_ZOOM_scanset_p scanSet = null;
-    private Connection connection;
+    //for GC ref-count
+    private Connection conn;
+    private SWIGTYPE_p_ZOOM_scanset_p scanSet;
     private boolean disposed = false;
 
-    ScanSet(SWIGTYPE_p_ZOOM_scanset_p scanSet, Connection connection) {
-        this.connection = connection;
+    ScanSet(SWIGTYPE_p_ZOOM_scanset_p scanSet, Connection conn) {
         this.scanSet = scanSet;
+        this.conn = conn;
     }
 
     public void finalize() {
@@ -37,8 +36,8 @@ public class ScanSet {
     void _dispose() {
         if (!disposed) {
             yaz4jlib.ZOOM_scanset_destroy(scanSet);
-            connection = null;
             scanSet = null;
+            conn = null;
             disposed = true;
         }
     }
