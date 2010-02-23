@@ -12,7 +12,6 @@ import org.yaz4j.jni.SWIGTYPE_p_ZOOM_connection_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_query_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_resultset_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_scanset_p;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_options_p;
 import org.yaz4j.jni.yaz4jlib;
 import org.yaz4j.jni.yaz4jlibConstants;
 
