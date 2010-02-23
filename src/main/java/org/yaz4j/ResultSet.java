@@ -43,8 +43,9 @@ public class ResultSet {
     }
 
     public Record getRecord(int index) {
-      SWIGTYPE_p_ZOOM_record_p recordTemp = yaz4jlib.ZOOM_resultset_record(resultSet, index);
-      return new Record(recordTemp);
+      SWIGTYPE_p_ZOOM_record_p record = 
+        yaz4jlib.ZOOM_resultset_record(resultSet, index);
+      return new Record(record, this);
     }
 
     public long getSize() {

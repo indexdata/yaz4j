@@ -4,11 +4,17 @@ import org.yaz4j.jni.SWIGTYPE_p_ZOOM_record_p;
 import org.yaz4j.jni.SWIGTYPE_p_int;
 import org.yaz4j.jni.yaz4jlib;
 
-public class Record {
-    private SWIGTYPE_p_ZOOM_record_p record = null;
+public class Record implements Cloneable {
+    private SWIGTYPE_p_ZOOM_record_p record;
+    private ResultSet rset;
     private boolean disposed = false;
 
-    Record(SWIGTYPE_p_ZOOM_record_p record) {
+    Record(SWIGTYPE_p_ZOOM_record_p record, ResultSet rset) {
+        this.record = record;
+        this.rset = rset;
+    }
+
+    protected Record(SWIGTYPE_p_ZOOM_record_p record) {
         this.record = record;
     }
 
@@ -37,9 +43,17 @@ public class Record {
         return new String(get("database"));
     }
 
+    public Object clone() {
+        SWIGTYPE_p_ZOOM_record_p clone = yaz4jlib.ZOOM_record_clone(record);
+        return new Record(clone);
+    }
+
     void _dispose() {
         if (!disposed) {
-            yaz4jlib.ZOOM_record_destroy(record);
+            //was cloned, need to dealloc?
+            if (rset == null)
+                yaz4jlib.ZOOM_record_destroy(record);
+            rset = null;
             record = null;
             disposed = true;
         }
