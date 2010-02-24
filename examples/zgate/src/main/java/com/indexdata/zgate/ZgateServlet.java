@@ -40,10 +40,19 @@ public class ZgateServlet extends HttpServlet {
     public static ConnKey fromZurl(String zurl) {
       int colPos = zurl.lastIndexOf(":");
       int slashPos = zurl.lastIndexOf("/");
-      String host = zurl.substring(0, colPos);
-      int port = Integer.parseInt(zurl.substring(colPos+1, slashPos));
-      String dbname = zurl.substring(slashPos+1);
-      return new ConnKey(host, port, dbname);
+      if (colPos == -1 && slashPos == -1) {
+        return new ConnKey(zurl, 0, "");
+      } else if (colPos == -1 && slashPos != -1) {
+        return new ConnKey(zurl.substring(0,slashPos), 0,
+          zurl.substring(slashPos+1));
+      } else if (colPos != -1 && slashPos == -1) {
+        return new ConnKey(zurl.substring(0,colPos),
+          Integer.parseInt(zurl.substring(colPos+1)), "");
+      } else {
+        return new ConnKey(zurl.substring(0, colPos),
+          Integer.parseInt(zurl.substring(colPos+1,slashPos)),
+          zurl.substring(slashPos+1));
+      }
     }
 
     public String getHost() {
