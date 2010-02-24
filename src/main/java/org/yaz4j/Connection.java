@@ -1,19 +1,11 @@
 package org.yaz4j;
 
-import org.yaz4j.exception.ZoomImplementationException;
-import org.yaz4j.exception.ConnectionTimeoutException;
-import org.yaz4j.exception.InitRejectedException;
-import org.yaz4j.exception.Bib1Exception;
-import org.yaz4j.exception.InvalidQueryException;
-import org.yaz4j.exception.Bib1Diagnostic;
-import org.yaz4j.exception.ConnectionUnavailableException;
 import org.yaz4j.exception.ZoomException;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_connection_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_query_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_resultset_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_scanset_p;
 import org.yaz4j.jni.yaz4jlib;
-import org.yaz4j.jni.yaz4jlibConstants;
 
 public class Connection {
     private String host;
@@ -31,13 +23,7 @@ public class Connection {
         // on Linux   'yaz4j' maps to 'libyaz4j.so' (i.e. 'lib' prefix & '.so'  extension)
         // on Windows 'yaz4j' maps to 'yaz4j.dll'   (i.e.                '.dll' extension)
         String libName = "yaz4j";
-        try {
-            // System.err.println( "Loading library '"+ System.mapLibraryName( libName ) + "'" );
-            System.loadLibrary(libName);
-        } catch (AbstractMethodError e) {
-            System.err.println("Fatal Error: Failed to load library '" + System.mapLibraryName(libName) + "'");
-            e.printStackTrace();
-        }
+        System.loadLibrary(libName);
     }
 
     public Connection(String host, int port) {
@@ -52,44 +38,33 @@ public class Connection {
 
     public ResultSet search(String query, QueryType queryType) throws ZoomException {
       if (closed) throw new IllegalStateException("Connection is closed.");
-        SWIGTYPE_p_ZOOM_query_p yazQuery = yaz4jlib.ZOOM_query_create();
-        ResultSet resultSet = null;
-
-        try {
-            if (queryType == QueryType.CQLQuery) {
-                yaz4jlib.ZOOM_query_cql(yazQuery, query);
-            } else if (queryType == QueryType.PrefixQuery) {
-                yaz4jlib.ZOOM_query_prefix(yazQuery, query);
-            } else {
-                throw new InvalidQueryException("queryType");
-            }
-
-            SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(zoomConnection, yazQuery);
-
-            int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
-            if (errorCode != yaz4jlib.ZOOM_ERROR_NONE) {
-                yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
-            }
-            checkErrorCodeAndThrow(errorCode);
-
-            resultSet = new ResultSet(yazResultSet, this);
-        } finally {
-            yaz4jlib.ZOOM_query_destroy(yazQuery); // deallocate yazQuery also when exceptions
-            yazQuery = null;
-        }
-        return resultSet;
+      SWIGTYPE_p_ZOOM_query_p yazQuery = null;
+      if (queryType == QueryType.CQLQuery) {
+          yazQuery = yaz4jlib.ZOOM_query_create();
+          yaz4jlib.ZOOM_query_cql(yazQuery, query);
+      } else if (queryType == QueryType.PrefixQuery) {
+          yazQuery = yaz4jlib.ZOOM_query_create();
+          yaz4jlib.ZOOM_query_prefix(yazQuery, query);
+      }
+      SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(zoomConnection, yazQuery);
+      ZoomException err = ExceptionUtil.getError(zoomConnection, host,
+        port);
+      if (err != null) {
+          yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
+          yaz4jlib.ZOOM_query_destroy(yazQuery);
+          throw err;
+      }
+      return new ResultSet(yazResultSet, this);
     }
 
     public ScanSet scan(String query) throws ZoomException {
       if (closed) throw new IllegalStateException("Connection is closed.");
         SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan(zoomConnection, query);
-
-        int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
-        if (errorCode != yaz4jlib.ZOOM_ERROR_NONE) {
+        ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
+        if (err != null) {
             yaz4jlib.ZOOM_scanset_destroy(yazScanSet);
+            throw err;
         }
-        checkErrorCodeAndThrow(errorCode);
-
         ScanSet scanSet = new ScanSet(yazScanSet, this);
         return scanSet;
     }
@@ -99,8 +74,8 @@ public class Connection {
      */
     public void connect() throws ZoomException {
       yaz4jlib.ZOOM_connection_connect(zoomConnection, host, port);
-      int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
-      checkErrorCodeAndThrow(errorCode);
+      ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
+      if (err != null) throw err;
       closed = false;
     }
 
@@ -110,32 +85,6 @@ public class Connection {
     public void close() {
       yaz4jlib.ZOOM_connection_close(zoomConnection);
       closed = true;
-    }
-
-    private void checkErrorCodeAndThrow(int errorCode) throws ZoomException {
-        String message;
-
-        if (errorCode == yaz4jlibConstants.ZOOM_ERROR_NONE) {
-            return;
-        } else if (errorCode == yaz4jlib.ZOOM_ERROR_CONNECT) {
-            message = String.format("Connection could not be made to %s:%d", host, port);
-            throw new ConnectionUnavailableException(message);
-        } else if (errorCode == yaz4jlib.ZOOM_ERROR_INVALID_QUERY) {
-            message = String.format("The query requested is not valid or not supported");
-            throw new InvalidQueryException(message);
-        } else if (errorCode == yaz4jlib.ZOOM_ERROR_INIT) {
-            message = String.format("Server %s:%d rejected our init request", host, port);
-            throw new InitRejectedException(message);
-        } else if (errorCode == yaz4jlib.ZOOM_ERROR_TIMEOUT) {
-            message = String.format("Server %s:%d timed out handling our request", host, port);
-            throw new ConnectionTimeoutException(message);
-        } else if ((errorCode == yaz4jlib.ZOOM_ERROR_MEMORY) || (errorCode == yaz4jlib.ZOOM_ERROR_ENCODE) || (errorCode == yaz4jlib.ZOOM_ERROR_DECODE) || (errorCode == yaz4jlib.ZOOM_ERROR_CONNECTION_LOST) || (errorCode == yaz4jlib.ZOOM_ERROR_INTERNAL) || (errorCode == yaz4jlib.ZOOM_ERROR_UNSUPPORTED_PROTOCOL) || (errorCode == yaz4jlib.ZOOM_ERROR_UNSUPPORTED_QUERY)) {
-            message = yaz4jlib.ZOOM_connection_errmsg(zoomConnection);
-            throw new ZoomImplementationException("A fatal error occurred in Yaz: " + errorCode + " - " + message);
-        } else {
-            String errMsgBib1 = "Bib1Exception: Error Code = " + errorCode + " (" + Bib1Diagnostic.getError(errorCode) + ")";
-            throw new Bib1Exception(errMsgBib1);
-        }
     }
 
     /**
