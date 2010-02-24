@@ -6,7 +6,6 @@
 package com.indexdata.zgate;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,13 +14,94 @@ import javax.servlet.http.HttpServletResponse;
 import org.yaz4j.Connection;
 import org.yaz4j.Record;
 import org.yaz4j.ResultSet;
-import org.yaz4j.exception.ZoomException;
+
+import org.apache.commons.pool.KeyedObjectPool;
+import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+
 
 /**
  *
  * @author jakub
  */
 public class ZgateServlet extends HttpServlet {
+
+  private static class ConnKey {
+    private String host;
+    private int port;
+    private String dbname;
+    
+    public ConnKey(String host, int port, String dbname) {
+      this.host = host;
+      this.port = port;
+      this.dbname = dbname;
+    }
+
+    public static ConnKey fromZurl(String zurl) {
+      int colPos = zurl.lastIndexOf(":");
+      int slashPos = zurl.lastIndexOf("/");
+      String host = zurl.substring(0, colPos);
+      int port = Integer.parseInt(zurl.substring(colPos+1, slashPos));
+      String dbname = zurl.substring(slashPos+1);
+      return new ConnKey(host, port, dbname);
+    }
+
+    public String getHost() {
+      return host;
+    }
+
+    public int getPort() {
+      return port;
+    }
+
+    public String getDbname() {
+      return dbname;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof ConnKey)) return false;
+      ConnKey other = (ConnKey) obj;
+      return (host.equals(other.host) && port == other.port
+        && dbname.equals(other.dbname));
+    }
+
+    @Override
+    public int hashCode() {
+      int hash = 7;
+      hash = 59 * hash + (this.host != null ? this.host.hashCode() : 0);
+      hash = 59 * hash + this.port;
+      hash = 59 * hash + (this.dbname != null ? this.dbname.hashCode() : 0);
+      return hash;
+    }
+
+    @Override
+    public String toString() {
+      return host + ":" + port + "/" + dbname;
+    }    
+  }
+
+  private class ConnectionMaker extends BaseKeyedPoolableObjectFactory {
+    @Override
+    public Object makeObject(Object key) throws Exception {
+      ConnKey ck = (ConnKey) key;
+      return new Connection(ck.toString(), 0);
+    }
+
+    @Override
+    public void activateObject(Object key, Object obj) throws Exception {
+      ((Connection) obj).connect();
+    }
+
+
+    @Override
+    public void destroyObject(Object key, Object obj) throws Exception {
+      ((Connection) obj).close();
+    }
+  }
+
+  private KeyedObjectPool pool = new GenericKeyedObjectPool(new ConnectionMaker());
+
 
   @Override
   public void init() throws ServletException {
@@ -61,10 +141,13 @@ public class ZgateServlet extends HttpServlet {
     response.getWriter().println("maxrecs: " + maxrecs);
     response.getWriter().println();
 
-    Connection con = new Connection(zurl, 0);
-    con.setSyntax(syntax);
+    ConnKey ckey = null;
+    Connection con = null;
     try {
-      con.connect();
+      ckey = ConnKey.fromZurl(zurl);
+      System.out.println("Connection key is" + ckey);
+      con = (Connection) pool.borrowObject(ckey);
+      con.setSyntax(syntax);
       ResultSet set = con.search(query, Connection.QueryType.PrefixQuery);
       response.getWriter().println("Showing " + maxrecs + " of " +set.getSize());
       response.getWriter().println();
@@ -72,10 +155,15 @@ public class ZgateServlet extends HttpServlet {
         Record rec = set.getRecord(i);
         response.getWriter().print(rec.render());
       }
-    } catch (ZoomException ze) {
-      throw new ServletException(ze);
+    } catch (Exception e) {
+      throw new ServletException(e);
     } finally {
-      con.close();
+      try {
+        if (ckey != null && con != null)
+          pool.returnObject(ckey, con);
+      } catch (Exception e) {
+        throw new ServletException(e);
+      }
     }
   }
 

@@ -36,7 +36,13 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-    
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>1.5.4</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -53,3 +59,5 @@
     <finalName>zgate</finalName>
   </build>
 </project>
+
+
