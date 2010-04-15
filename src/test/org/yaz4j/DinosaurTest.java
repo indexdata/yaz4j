@@ -1,8 +1,7 @@
-package yaz4jtest;
+package org.yaz4j;
 
 import org.junit.*;
 import static org.junit.Assert.*;
-import org.yaz4j.*;
 import org.yaz4j.exception.ZoomException;
 
 /**
