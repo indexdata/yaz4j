@@ -57,4 +57,28 @@ public class ConnectionTest {
         con.close();
       }
     }
+
+    @Test
+    /**
+     * This only works with local ztest
+     */
+    public void recordError() {
+        Connection con = new Connection("localhost:9999", 0);
+        assertNotNull(con);
+        try {
+          con.setSyntax("postscript");
+          System.out.println("Open connection to localhost:9999...");
+          con.connect();
+          ResultSet s = con.search("100", Connection.QueryType.PrefixQuery);
+          assertNotNull(s);
+          assertEquals(s.getSize(), 100);
+          Record rec = s.getRecord(0);
+          fail("We should never get here and get ZoomeException instead");
+        } catch (ZoomException ze) {
+          // we need more specific exceptions here
+          System.out.println(ze.getMessage());
+        } finally {
+          con.close();
+        }
+    }
 }
