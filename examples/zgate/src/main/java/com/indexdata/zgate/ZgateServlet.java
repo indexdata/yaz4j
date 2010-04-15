@@ -66,10 +66,11 @@ public class ZgateServlet extends HttpServlet {
     try {
       con.connect();
       ResultSet set = con.search(query, Connection.QueryType.PrefixQuery);
-      response.getWriter().println("Showing " + maxrecs + " of " +set.getSize());
+      response.getWriter().println("Showing " + maxrecs + " of " +set.getHitCount());
       response.getWriter().println();
-      for(int i=0; i<set.getSize() && i<maxrecs; i++) {
+      for(int i=0; i<set.getHitCount() && i<maxrecs; i++) {
         Record rec = set.getRecord(i);
+        if (rec == null) continue;
         response.getWriter().print(rec.render());
       }
     } catch (ZoomException ze) {

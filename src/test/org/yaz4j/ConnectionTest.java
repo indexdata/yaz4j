@@ -17,7 +17,7 @@ public class ConnectionTest {
           ResultSet s = con.search("@attr 1=4 utah", Connection.QueryType.PrefixQuery);
           System.out.println("Search for 'utah'...");
           assertNotNull(s);
-          assertEquals(s.getSize(), 9);
+          assertEquals(s.getHitCount(), 9);
           Record rec = s.getRecord(0);
           assertNotNull(rec);
           byte[] content = rec.getContent();
@@ -43,7 +43,7 @@ public class ConnectionTest {
         con.connect();
         System.out.println("Search for something that exists...");
         ResultSet set = con.search("@attr 1=7 0253333490", Connection.QueryType.PrefixQuery);
-        System.out.println("Result set size: " + set.getSize());
+        System.out.println("Result set size: " + set.getHitCount());
         System.out.println("Get the first record...");
         Record rec = set.getRecord(0);
         if (rec == null) {
@@ -71,7 +71,7 @@ public class ConnectionTest {
           con.connect();
           ResultSet s = con.search("100", Connection.QueryType.PrefixQuery);
           assertNotNull(s);
-          assertEquals(s.getSize(), 100);
+          assertEquals(s.getHitCount(), 100);
           Record rec = s.getRecord(0);
           fail("We should never get here and get ZoomeException instead");
         } catch (ZoomException ze) {

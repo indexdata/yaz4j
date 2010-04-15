@@ -55,7 +55,7 @@ public class ResultSet {
       return new Record(record, this);
     }
 
-    public long getSize() {
+    public long getHitCount() {
         return size;
     }
 
