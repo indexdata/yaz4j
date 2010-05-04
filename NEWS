@@ -1,0 +1,36 @@
+--- 1.2 2010/04/22
+
+Changes to the API:
+
+* add Connection close that shutdowns socket without destroying the object
+* rename ResultSet getSize to getHitCount
+
+Bug fixes:
+
+* #3115 - fix JVM crash when fetching records in unsupported syntax caused
+  by null ptr dereference, handle record errors during search and in-record 
+  errors
+* properly deallocate records not managed by a result set
+
+
+--- 1.1 2010/02/22
+
+Major changes to the API:
+
+* using Java naming conventions
+* simplified/removed less used classes
+* using standard Java container types instead of of binded natives
+* use checked exceptions for all app/protocol layer errors
+
+Major changes to the code layout, using Maven to manage build.
+
+Bug fixes:
+
+* #3122 - out of memory bug caused by ResultSet using memory proportional 
+  to the number of hits
+
+--- 1.0 2009/09/22
+
+Initial version after receiving the code from Talis.
+
+Added JUnit test cases. 
