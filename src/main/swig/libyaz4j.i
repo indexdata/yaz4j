@@ -14,7 +14,6 @@
 	%typemap(jstype) CharStarByteArray "byte[]"
 	%typemap(out) CharStarByteArray {
 		$result = SWIG_JavaArrayOutSchar(jenv, (signed char*) $1.data, $1.length);
-		free((void*)$1.data);
 	}
 	%typemap(javaout) CharStarByteArray { return $jnicall; }
 	%define YAZ_BEGIN_CDECL %enddef

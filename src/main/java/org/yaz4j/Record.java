@@ -23,8 +23,7 @@ public class Record implements Cloneable {
     }
 
     public byte[] get(String type) {
-        SWIGTYPE_p_int length = null;
-        return yaz4jlib.ZOOM_record_get_bytes(record, type, length);
+        return yaz4jlib.ZOOM_record_get_bytes(record, type);
     }
 
     public String render() {
