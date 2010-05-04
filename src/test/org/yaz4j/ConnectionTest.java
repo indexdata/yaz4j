@@ -81,4 +81,24 @@ public class ConnectionTest {
           con.close();
         }
     }
+
+    @Test
+    public void testScan() {
+      System.out.println("Open connection to z3950cat.bl.uk:9909/BLAC");
+      Connection con = new Connection("z3950cat.bl.uk:9909/BLAC", 0);
+      try {
+          con.connect();
+          con.option("number", "20");
+          ScanSet set = con.scan("@attr 1=21 \"development\"");
+          System.out.println("getSize(): " + set.getSize());
+          assertEquals(20, set.getSize());
+        
+      } catch (ZoomException ex) {
+        fail(ex.getMessage());
+      } finally {
+        con.close();
+      }
+    }
+
+
 }
