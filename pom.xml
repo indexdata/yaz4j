@@ -147,6 +147,7 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <chartset>UTF-8</chartset>
+          <excludePackageNames>org.yaz4j.jni</excludePackageNames>
         </configuration>
       </plugin>
     </plugins>
