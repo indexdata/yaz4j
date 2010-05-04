@@ -7,6 +7,34 @@ import org.yaz4j.jni.SWIGTYPE_p_ZOOM_resultset_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_scanset_p;
 import org.yaz4j.jni.yaz4jlib;
 
+
+/**
+ * Class representing an on-going communication with an IR server.
+ *
+ * Creating an instance of this class does not automatically connect (e.g open
+ * a socket) to the remote server as the programmer may want to specify options
+ * on the object before establishing the actual connection.
+ *
+ * The worflow for synchronous (the only addressed) operation when using this
+ * class should be as follows (in pseudocode):
+ *
+ * <blockquote><pre>
+ *
+ * try {
+ *  c = new Connection(...)
+ *  //possibly set some options
+ *  c.connect //establishes connection
+ *  c.search //or other operation
+ *  //possibly retrieve records
+ * catch (ZoomException e) {
+ *  //handle any protocol- or network-level errors
+ * } finally {
+ *  c.close //close the socket
+ * }
+ *
+ * </pre></blockquote>
+ * @author jakub
+ */
 public class Connection {
     private String host;
     private int port;
@@ -26,6 +54,12 @@ public class Connection {
         System.loadLibrary(libName);
     }
 
+    /**
+     * Create new connection object without physically opening a connection to the
+     * remote server.
+     * @param host host name of the server
+     * @param port port of the server
+     */
     public Connection(String host, int port) {
         this.host = host;
         this.port = port;
@@ -36,6 +70,15 @@ public class Connection {
         _dispose();
     }
 
+    /**
+     * Performs a search operation (submits the query to the server, waits for
+     * response and creates a new result set that allows to retrieve particular
+     * results)
+     * @param query search query
+     * @param queryType type of the query (e.g RPN. CQL)
+     * @return result set containing records (hits)
+     * @throws ZoomException protocol or network-level error
+     */
     public ResultSet search(String query, QueryType queryType) throws ZoomException {
       if (closed) throw new IllegalStateException("Connection is closed.");
       SWIGTYPE_p_ZOOM_query_p yazQuery = null;
@@ -57,6 +100,14 @@ public class Connection {
       return new ResultSet(yazResultSet, this);
     }
 
+    /**
+     * Performs a scan operation (obtains a list of candidate search terms against
+     * a particular access point)
+     * @see <a href="http://zoom.z3950.org/api/zoom-1.4.html#3.2.7">ZOOM-API Scan</a>
+     * @param query query for scanning
+     * @return a scan set with the terms
+     * @throws ZoomException a protocol or network-level error
+     */
     public ScanSet scan(String query) throws ZoomException {
       if (closed) throw new IllegalStateException("Connection is closed.");
         SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan(zoomConnection, query);
@@ -70,7 +121,8 @@ public class Connection {
     }
 
     /**
-     * Initiates the connection
+     * Establishes a connection to the remote server.
+     * @throws ZoomException any (possibly network-level) errors that may occurr
      */
     public void connect() throws ZoomException {
       yaz4jlib.ZOOM_connection_connect(zoomConnection, host, port);
@@ -107,34 +159,66 @@ public class Connection {
       return yaz4jlib.ZOOM_connection_option_get(zoomConnection, name);
     }
 
+    /**
+     * Same as option("preferredRecordSyntax")
+     * @return value of preferred record syntax
+     */
     public String getSyntax() {
         return option("preferredRecordSyntax");
     }
 
+    /**
+     * Same as option("preferredRecordSyntax", value)
+     * @param value value of preferred record syntax
+     */
     public void setSyntax(String value) {
         option("preferredRecordSyntax", value);
     }
 
+    /**
+     * Same as option("databaseName")
+     * @return value of databaseName
+     */
     public String getDatabaseName() {
         return option("databaseName");
     }
 
+    /**
+     * Same as option("databaseName", value)
+     * @param value value of databaseName
+     */
     public void setDatabaseName(String value) {
         option("databaseName", value);
     }
 
+    /**
+     * Same as option("user")
+     * @return value of user
+     */
     public String getUsername() {
         return option("user");
     }
 
+    /**
+     * Same as option("user", value)
+     * @param value value of user
+     */
     public void setUsername(String value) {
         option("user", value);
     }
 
+    /**
+     * Same as option("password")
+     * @return value of password
+     */
     public String getPassword() {
         return option("password");
     }
 
+    /**
+     * Same as option("password", value)
+     * @param value
+     */
     public void setPassword(String value) {
         option("password", value);
     }

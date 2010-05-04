@@ -1,7 +1,6 @@
 package org.yaz4j;
 
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_record_p;
-import org.yaz4j.jni.SWIGTYPE_p_int;
 import org.yaz4j.jni.yaz4jlib;
 
 public class Record implements Cloneable {
