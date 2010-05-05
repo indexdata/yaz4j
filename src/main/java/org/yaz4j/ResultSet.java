@@ -1,11 +1,32 @@
 package org.yaz4j;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import org.yaz4j.exception.ZoomException;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_record_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_resultset_p;
 import org.yaz4j.jni.yaz4jlib;
 
-public class ResultSet {
+/**
+ * This class represents a "buffered handle" to the result set created on the
+ * server and thus retrieving records may invlove a request to the server if
+ * those records are not locally cached. Details on how to configure the retrieval
+ * (present) process are available in the YAZ manual
+ *
+ * @see <a href="http://www.indexdata.com/yaz/doc/zoom.resultsets.html">YAZ ZOOM result sets</a>
+ *
+ * Becacuse of the server misbehaviour or errors during retrieval the
+ * "getRecord" method may either return null or throw exceptions, even when the
+ * index of retrieved records lies within the bounds of the set. Client
+ * code should be prepared for such situations.
+ *
+ * This class implements the iterable interface and as such can be used within
+ * foreach loops, it's important to note however that in this case the errors
+ * during retrieval will be masked with standard NoSuchElementExceptions
+ *
+ * @author jakub
+ */
+public class ResultSet implements Iterable<Record> {
   //for GC refcount
 
   private Connection conn;
@@ -44,7 +65,7 @@ public class ResultSet {
     return this;
   }
 
-  public Record getRecord(int index) throws ZoomException {
+  public Record getRecord(long index) throws ZoomException {
     SWIGTYPE_p_ZOOM_record_p record =
       yaz4jlib.ZOOM_resultset_record(resultSet, index);
     //may be out of range or unsupported syntax
@@ -56,6 +77,31 @@ public class ResultSet {
       throw new ZoomException("Record excpetion, code " + errorCode);
     }
     return new Record(record, this);
+  }
+
+  @Override
+  public Iterator<Record> iterator() {
+    return new Iterator<Record>() {
+      private long cur;
+      @Override
+      public boolean hasNext() {
+        return cur < size;
+      }
+
+      @Override
+      public Record next() {
+        try {
+          return getRecord(cur++);
+        } catch (ZoomException ze) {
+          throw new NoSuchElementException(ze.getMessage());
+        }
+      }
+
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException("remove operation not supported");
+      }
+    };
   }
 
   public long getHitCount() {

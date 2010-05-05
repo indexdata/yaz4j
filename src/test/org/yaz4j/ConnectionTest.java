@@ -27,12 +27,21 @@ public class ConnectionTest {
       assertEquals(content[0], 103);
       assertEquals(rec.getSyntax(), "SUTRS");
       assertEquals(rec.getDatabase(), "gils");
+      System.out.println("Read all records..");
+      // read all records
+      int i = 0;
+      for (Record r : s) {
+        assertNotNull(r);
+        System.out.println("Got "+i+" record of type "+r.getSyntax());
+        i++;
+      }
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } finally {
       con.close();
     }
   }
+
 
   @Test
   public void unsupportedSyntax() {
