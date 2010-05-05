@@ -4,56 +4,58 @@ import org.yaz4j.jni.SWIGTYPE_p_ZOOM_record_p;
 import org.yaz4j.jni.yaz4jlib;
 
 public class Record implements Cloneable {
-    private SWIGTYPE_p_ZOOM_record_p record;
-    private ResultSet rset;
-    private boolean disposed = false;
 
-    Record(SWIGTYPE_p_ZOOM_record_p record, ResultSet rset) {
-        this.record = record;
-        this.rset = rset;
-    }
+  private SWIGTYPE_p_ZOOM_record_p record;
+  private ResultSet rset;
+  private boolean disposed = false;
 
-    protected Record(SWIGTYPE_p_ZOOM_record_p record) {
-        this.record = record;
-    }
+  Record(SWIGTYPE_p_ZOOM_record_p record, ResultSet rset) {
+    this.record = record;
+    this.rset = rset;
+  }
 
-    public void finalize() {
-        _dispose();
-    }
+  protected Record(SWIGTYPE_p_ZOOM_record_p record) {
+    this.record = record;
+  }
 
-    public byte[] get(String type) {
-        return yaz4jlib.ZOOM_record_get_bytes(record, type);
-    }
+  public void finalize() {
+    _dispose();
+  }
 
-    public String render() {
-        return new String(get("render"));
-    }
+  public byte[] get(String type) {
+    return yaz4jlib.ZOOM_record_get_bytes(record, type);
+  }
 
-    public byte[] getContent() {
-        return get("raw");
-    }
+  public String render() {
+    return new String(get("render"));
+  }
 
-    public String getSyntax() {
-        return new String(get("syntax"));
-    }
+  public byte[] getContent() {
+    return get("raw");
+  }
 
-    public String getDatabase() {
-        return new String(get("database"));
-    }
+  public String getSyntax() {
+    return new String(get("syntax"));
+  }
 
-    public Object clone() {
-        SWIGTYPE_p_ZOOM_record_p clone = yaz4jlib.ZOOM_record_clone(record);
-        return new Record(clone);
-    }
+  public String getDatabase() {
+    return new String(get("database"));
+  }
 
-    void _dispose() {
-        if (!disposed) {
-            //was cloned, need to dealloc?
-            if (rset == null)
-                yaz4jlib.ZOOM_record_destroy(record);
-            rset = null;
-            record = null;
-            disposed = true;
-        }
+  public Object clone() {
+    SWIGTYPE_p_ZOOM_record_p clone = yaz4jlib.ZOOM_record_clone(record);
+    return new Record(clone);
+  }
+
+  void _dispose() {
+    if (!disposed) {
+      //was cloned, need to dealloc?
+      if (rset == null) {
+        yaz4jlib.ZOOM_record_destroy(record);
+      }
+      rset = null;
+      record = null;
+      disposed = true;
     }
+  }
 }

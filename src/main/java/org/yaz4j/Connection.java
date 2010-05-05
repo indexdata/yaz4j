@@ -7,7 +7,6 @@ import org.yaz4j.jni.SWIGTYPE_p_ZOOM_resultset_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_scanset_p;
 import org.yaz4j.jni.yaz4jlib;
 
-
 /**
  * Class representing an on-going communication with an IR server.
  *
@@ -36,201 +35,212 @@ import org.yaz4j.jni.yaz4jlib;
  * @author jakub
  */
 public class Connection {
-    private String host;
-    private int port;
-    protected SWIGTYPE_p_ZOOM_connection_p zoomConnection;
-    //connection is initially closed
-    protected boolean closed = true;
-    private boolean disposed = false;
 
-    public enum QueryType {
-        CQLQuery, PrefixQuery
-    };
+  private String host;
+  private int port;
+  protected SWIGTYPE_p_ZOOM_connection_p zoomConnection;
+  //connection is initially closed
+  protected boolean closed = true;
+  private boolean disposed = false;
 
-    static {
-        // on Linux   'yaz4j' maps to 'libyaz4j.so' (i.e. 'lib' prefix & '.so'  extension)
-        // on Windows 'yaz4j' maps to 'yaz4j.dll'   (i.e.                '.dll' extension)
-        String libName = "yaz4j";
-        System.loadLibrary(libName);
+  public enum QueryType {
+
+    CQLQuery, PrefixQuery
+  };
+
+  static {
+    // on Linux   'yaz4j' maps to 'libyaz4j.so' (i.e. 'lib' prefix & '.so'  extension)
+    // on Windows 'yaz4j' maps to 'yaz4j.dll'   (i.e.                '.dll' extension)
+    String libName = "yaz4j";
+    System.loadLibrary(libName);
+  }
+
+  /**
+   * Create new connection object without physically opening a connection to the
+   * remote server.
+   * @param host host name of the server
+   * @param port port of the server
+   */
+  public Connection(String host, int port) {
+    this.host = host;
+    this.port = port;
+    zoomConnection = yaz4jlib.ZOOM_connection_create(null);
+  }
+
+  public void finalize() {
+    _dispose();
+  }
+
+  /**
+   * Performs a search operation (submits the query to the server, waits for
+   * response and creates a new result set that allows to retrieve particular
+   * results)
+   * @param query search query
+   * @param queryType type of the query (e.g RPN. CQL)
+   * @return result set containing records (hits)
+   * @throws ZoomException protocol or network-level error
+   */
+  public ResultSet search(String query, QueryType queryType) throws
+    ZoomException {
+    if (closed) {
+      throw new IllegalStateException("Connection is closed.");
     }
-
-    /**
-     * Create new connection object without physically opening a connection to the
-     * remote server.
-     * @param host host name of the server
-     * @param port port of the server
-     */
-    public Connection(String host, int port) {
-        this.host = host;
-        this.port = port;
-        zoomConnection = yaz4jlib.ZOOM_connection_create(null);
+    SWIGTYPE_p_ZOOM_query_p yazQuery = null;
+    if (queryType == QueryType.CQLQuery) {
+      yazQuery = yaz4jlib.ZOOM_query_create();
+      yaz4jlib.ZOOM_query_cql(yazQuery, query);
+    } else if (queryType == QueryType.PrefixQuery) {
+      yazQuery = yaz4jlib.ZOOM_query_create();
+      yaz4jlib.ZOOM_query_prefix(yazQuery, query);
     }
-
-    public void finalize() {
-        _dispose();
+    SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(
+      zoomConnection, yazQuery);
+    ZoomException err = ExceptionUtil.getError(zoomConnection, host,
+      port);
+    if (err != null) {
+      yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
+      yaz4jlib.ZOOM_query_destroy(yazQuery);
+      throw err;
     }
+    return new ResultSet(yazResultSet, this);
+  }
 
-    /**
-     * Performs a search operation (submits the query to the server, waits for
-     * response and creates a new result set that allows to retrieve particular
-     * results)
-     * @param query search query
-     * @param queryType type of the query (e.g RPN. CQL)
-     * @return result set containing records (hits)
-     * @throws ZoomException protocol or network-level error
-     */
-    public ResultSet search(String query, QueryType queryType) throws ZoomException {
-      if (closed) throw new IllegalStateException("Connection is closed.");
-      SWIGTYPE_p_ZOOM_query_p yazQuery = null;
-      if (queryType == QueryType.CQLQuery) {
-          yazQuery = yaz4jlib.ZOOM_query_create();
-          yaz4jlib.ZOOM_query_cql(yazQuery, query);
-      } else if (queryType == QueryType.PrefixQuery) {
-          yazQuery = yaz4jlib.ZOOM_query_create();
-          yaz4jlib.ZOOM_query_prefix(yazQuery, query);
-      }
-      SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(zoomConnection, yazQuery);
-      ZoomException err = ExceptionUtil.getError(zoomConnection, host,
-        port);
-      if (err != null) {
-          yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
-          yaz4jlib.ZOOM_query_destroy(yazQuery);
-          throw err;
-      }
-      return new ResultSet(yazResultSet, this);
+  /**
+   * Performs a scan operation (obtains a list of candidate search terms against
+   * a particular access point)
+   * @see <a href="http://zoom.z3950.org/api/zoom-1.4.html#3.2.7">ZOOM-API Scan</a>
+   * @param query query for scanning
+   * @return a scan set with the terms
+   * @throws ZoomException a protocol or network-level error
+   */
+  public ScanSet scan(String query) throws ZoomException {
+    if (closed) {
+      throw new IllegalStateException("Connection is closed.");
     }
+    SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan(
+      zoomConnection, query);
+    ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
+    if (err != null) {
+      yaz4jlib.ZOOM_scanset_destroy(yazScanSet);
+      throw err;
+    }
+    ScanSet scanSet = new ScanSet(yazScanSet, this);
+    return scanSet;
+  }
 
-    /**
-     * Performs a scan operation (obtains a list of candidate search terms against
-     * a particular access point)
-     * @see <a href="http://zoom.z3950.org/api/zoom-1.4.html#3.2.7">ZOOM-API Scan</a>
-     * @param query query for scanning
-     * @return a scan set with the terms
-     * @throws ZoomException a protocol or network-level error
-     */
-    public ScanSet scan(String query) throws ZoomException {
-      if (closed) throw new IllegalStateException("Connection is closed.");
-        SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan(zoomConnection, query);
-        ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
-        if (err != null) {
-            yaz4jlib.ZOOM_scanset_destroy(yazScanSet);
-            throw err;
-        }
-        ScanSet scanSet = new ScanSet(yazScanSet, this);
-        return scanSet;
+  /**
+   * Establishes a connection to the remote server.
+   * @throws ZoomException any (possibly network-level) errors that may occurr
+   */
+  public void connect() throws ZoomException {
+    yaz4jlib.ZOOM_connection_connect(zoomConnection, host, port);
+    ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
+    if (err != null) {
+      throw err;
     }
+    closed = false;
+  }
 
-    /**
-     * Establishes a connection to the remote server.
-     * @throws ZoomException any (possibly network-level) errors that may occurr
-     */
-    public void connect() throws ZoomException {
-      yaz4jlib.ZOOM_connection_connect(zoomConnection, host, port);
-      ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
-      if (err != null) throw err;
-      closed = false;
-    }
+  /**
+   * Closes the connection.
+   */
+  public void close() {
+    yaz4jlib.ZOOM_connection_close(zoomConnection);
+    closed = true;
+  }
 
-    /**
-     * Closes the connection.
-     */
-    public void close() {
-      yaz4jlib.ZOOM_connection_close(zoomConnection);
-      closed = true;
-    }
+  /**
+   * Write option with a given name.
+   * @param name option name
+   * @param value option value
+   * @return connection (self) for chainability
+   */
+  public Connection option(String name, String value) {
+    yaz4jlib.ZOOM_connection_option_set(zoomConnection, name, value);
+    return this;
+  }
 
-    /**
-     * Write option with a given name.
-     * @param name option name
-     * @param value option value
-     * @return connection (self) for chainability
-     */
-    public Connection option(String name, String value) {
-      yaz4jlib.ZOOM_connection_option_set(zoomConnection, name, value);
-      return this;
-    }
+  /**
+   * Read option with a given name
+   * @param name option name
+   * @return option value
+   */
+  public String option(String name) {
+    return yaz4jlib.ZOOM_connection_option_get(zoomConnection, name);
+  }
 
-    /**
-     * Read option with a given name
-     * @param name option name
-     * @return option value
-     */
-    public String option(String name) {
-      return yaz4jlib.ZOOM_connection_option_get(zoomConnection, name);
-    }
+  /**
+   * Same as option("preferredRecordSyntax")
+   * @return value of preferred record syntax
+   */
+  public String getSyntax() {
+    return option("preferredRecordSyntax");
+  }
 
-    /**
-     * Same as option("preferredRecordSyntax")
-     * @return value of preferred record syntax
-     */
-    public String getSyntax() {
-        return option("preferredRecordSyntax");
-    }
+  /**
+   * Same as option("preferredRecordSyntax", value)
+   * @param value value of preferred record syntax
+   */
+  public void setSyntax(String value) {
+    option("preferredRecordSyntax", value);
+  }
 
-    /**
-     * Same as option("preferredRecordSyntax", value)
-     * @param value value of preferred record syntax
-     */
-    public void setSyntax(String value) {
-        option("preferredRecordSyntax", value);
-    }
+  /**
+   * Same as option("databaseName")
+   * @return value of databaseName
+   */
+  public String getDatabaseName() {
+    return option("databaseName");
+  }
 
-    /**
-     * Same as option("databaseName")
-     * @return value of databaseName
-     */
-    public String getDatabaseName() {
-        return option("databaseName");
-    }
+  /**
+   * Same as option("databaseName", value)
+   * @param value value of databaseName
+   */
+  public void setDatabaseName(String value) {
+    option("databaseName", value);
+  }
 
-    /**
-     * Same as option("databaseName", value)
-     * @param value value of databaseName
-     */
-    public void setDatabaseName(String value) {
-        option("databaseName", value);
-    }
+  /**
+   * Same as option("user")
+   * @return value of user
+   */
+  public String getUsername() {
+    return option("user");
+  }
 
-    /**
-     * Same as option("user")
-     * @return value of user
-     */
-    public String getUsername() {
-        return option("user");
-    }
+  /**
+   * Same as option("user", value)
+   * @param value value of user
+   */
+  public void setUsername(String value) {
+    option("user", value);
+  }
 
-    /**
-     * Same as option("user", value)
-     * @param value value of user
-     */
-    public void setUsername(String value) {
-        option("user", value);
-    }
+  /**
+   * Same as option("password")
+   * @return value of password
+   */
+  public String getPassword() {
+    return option("password");
+  }
 
-    /**
-     * Same as option("password")
-     * @return value of password
-     */
-    public String getPassword() {
-        return option("password");
-    }
+  /**
+   * Same as option("password", value)
+   * @param value
+   */
+  public void setPassword(String value) {
+    option("password", value);
+  }
 
-    /**
-     * Same as option("password", value)
-     * @param value
-     */
-    public void setPassword(String value) {
-        option("password", value);
+  /**
+   * INTERNAL, GC-ONLY
+   */
+  void _dispose() {
+    if (!disposed) {
+      yaz4jlib.ZOOM_connection_destroy(zoomConnection);
+      zoomConnection = null;
+      disposed = true;
     }
-
-    /**
-     * INTERNAL, GC-ONLY
-     */
-    void _dispose() {
-        if (!disposed) {
-          yaz4jlib.ZOOM_connection_destroy(zoomConnection);
-          zoomConnection = null;
-          disposed = true;
-        }
-    }
+  }
 }

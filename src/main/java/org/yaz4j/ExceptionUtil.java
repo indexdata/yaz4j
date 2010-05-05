@@ -16,7 +16,8 @@ import org.yaz4j.jni.yaz4jlibConstants;
  */
 class ExceptionUtil {
 
-  static ZoomException getError(SWIGTYPE_p_ZOOM_connection_p zoomConnection, String host, int port) {
+  static ZoomException getError(SWIGTYPE_p_ZOOM_connection_p zoomConnection,
+    String host, int port) {
     int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
     String message;
     switch (errorCode) {
@@ -24,19 +25,19 @@ class ExceptionUtil {
         return null;
       case yaz4jlib.ZOOM_ERROR_CONNECT:
         message = String.format("Connection could not be made to %s:%d", host,
-        port);
+          port);
         return new ConnectionUnavailableException(message);
       case yaz4jlib.ZOOM_ERROR_INVALID_QUERY:
         message = String.format(
-        "The query requested is not valid or not supported");
+          "The query requested is not valid or not supported");
         return new InvalidQueryException(message);
       case yaz4jlib.ZOOM_ERROR_INIT:
         message = String.format("Server %s:%d rejected our init request", host,
-        port);
+          port);
         return new InitRejectedException(message);
       case yaz4jlib.ZOOM_ERROR_TIMEOUT:
         message = String.format("Server %s:%d timed out handling our request",
-        host, port);
+          host, port);
         return new ConnectionTimeoutException(message);
       case yaz4jlib.ZOOM_ERROR_MEMORY:
       case yaz4jlib.ZOOM_ERROR_ENCODE:
@@ -46,13 +47,12 @@ class ExceptionUtil {
       case yaz4jlib.ZOOM_ERROR_UNSUPPORTED_PROTOCOL:
       case yaz4jlib.ZOOM_ERROR_UNSUPPORTED_QUERY:
         message = yaz4jlib.ZOOM_connection_errmsg(zoomConnection);
-        return new ZoomImplementationException("A fatal error occurred in Yaz: " +
-          errorCode + " - " + message);
+        return new ZoomImplementationException("A fatal error occurred in Yaz: "
+          + errorCode + " - " + message);
       default:
-        String errMsgBib1 = "Bib1Exception: Error Code = " + errorCode + " (" +
-          Bib1Diagnostic.getError(errorCode) + ")";
+        String errMsgBib1 = "Bib1Exception: Error Code = " + errorCode + " (" + Bib1Diagnostic.
+          getError(errorCode) + ")";
         return new Bib1Exception(errMsgBib1);
     }
   }
-
 }

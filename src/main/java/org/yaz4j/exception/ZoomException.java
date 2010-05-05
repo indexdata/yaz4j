@@ -3,7 +3,6 @@
  * All rights reserved.
  * See the file LICENSE for details.
  */
-
 package org.yaz4j.exception;
 
 /**
@@ -19,5 +18,4 @@ public class ZoomException extends Exception {
   public ZoomException(String msg) {
     super(msg);
   }
-
 }
