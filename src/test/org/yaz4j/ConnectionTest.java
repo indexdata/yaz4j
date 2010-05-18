@@ -35,6 +35,8 @@ public class ConnectionTest {
         System.out.println("Got "+i+" record of type "+r.getSyntax());
         i++;
       }
+      System.out.println("Try sorting them...");
+      s.sort("yaz", "1=4 >i 1=21 >s");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } finally {
