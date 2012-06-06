@@ -80,15 +80,12 @@
             <inherited>false</inherited>
             <configuration>
               <tasks>
-                <exec executable="yaz-config" outputproperty="yaz.prefix">
-                  <arg value="--prefix" />              
-                </exec>
-                <echo message="Using yaz prefix: ${yaz.prefix}"/>
+                <echo message="Using include: ${yaz.include}"/>
                 <mkdir dir="target/generated-sources/java/org/yaz4j/jni"/>
                 <mkdir dir="target/generated-sources/native" />
                 <exec executable="swig">
                   <arg value="-Isrc/main/native" />
-                  <arg value="-I${yaz.prefix}/include"/>
+                  <arg value="${yaz.include}"/>
                   <arg value="-outdir"/>
                   <arg value="${basedir}/target/generated-sources/java/org/yaz4j/jni"/>
                   <arg value="-package"/>
@@ -185,6 +182,8 @@
       </activation>
       <properties>
         <platform>win32</platform>
+        <yaz.include>C:\Program Files\YAZ\include</yaz.include>
+        <yaz.path>C:\Program Files\YAZ\</yaz.path>
       </properties>
       <modules>
         <module>win32</module>
@@ -200,11 +199,80 @@
       </activation>
       <properties>
         <platform>linux</platform>
+        <!-- must include trailing slash if specified-->
+        <yaz.path></yaz.path>
+        <javahOS>linux</javahOS>
+        <jdkIncludePath>${java.home}/../include</jdkIncludePath>
+      </properties>
+      <modules>
+        <module>linux</module>
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>write-swig-include</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <exec executable="${yaz.path}yaz-config" 
+                      outputproperty="yaz.include">
+                      <arg value="--include" />
+                    </exec>
+                    <echo message="YAZ INCLUDE=${yaz.include}"/>
+                    <mkdir dir="${basedir}/target"/>
+                    <echo file="${basedir}/target/swig.properties"
+                      message="yaz.include=${yaz.include}"/>
+                  </tasks>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin> 
+            <groupId>org.codehaus.mojo</groupId> 
+            <artifactId>properties-maven-plugin</artifactId> 
+            <version>1.0-alpha-1</version> 
+            <executions> 
+              <execution> 
+                <id>read-swig-config</id> 
+                <phase>initialize</phase> 
+                <goals> 
+                  <goal>read-project-properties</goal> 
+                </goals> 
+                <configuration> 
+                  <files> 
+                    <file>${basedir}/target/swig.properties</file> 
+                  </files> 
+                </configuration> 
+              </execution> 
+            </executions> 
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <!-- osx is both 'unix' and 'mac' -->
+      <id>osx</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <properties>
+        <platform>osx</platform>
+        <javahOS>mac</javahOS>
+        <jdkIncludePath>${java.home}/../Headers</jdkIncludePath>
       </properties>
       <modules>
         <module>linux</module>
       </modules>
     </profile>
- </profiles>
+  </profiles>
 </project>
 

@@ -26,11 +26,11 @@
             </goals>
             <configuration>
               <tasks>
-                <exec executable="yaz-config" outputproperty="yaz.cflags">
+                <exec executable="${yaz.path}yaz-config" outputproperty="yaz.cflags">
                   <arg value="--cflags" />
                 </exec>
                 <echo message="YAZ CFLAGS: ${yaz.cflags}"/>
-                <exec executable="yaz-config" outputproperty="yaz.libs">
+                <exec executable="${yaz.path}yaz-config" outputproperty="yaz.libs">
                   <arg value="--libs" />
                 </exec>
                 <echo message="YAZ LIBS: ${yaz.libs}"/>
@@ -72,7 +72,8 @@
         <artifactId>native-maven-plugin</artifactId>
         <extensions>true</extensions>       
         <configuration>         
-          <javahOS>linux</javahOS>
+          <javahOS>${javahOS}</javahOS>
+          <jdkIncludePath>${jdkIncludePath}</jdkIncludePath>
           <compilerProvider>generic</compilerProvider>
           <compilerExecutable>g++</compilerExecutable>
           <compilerStartOptions>
