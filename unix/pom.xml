@@ -8,7 +8,7 @@
   <groupId>org.yaz4j</groupId>
   <artifactId>libyaz4j</artifactId>
   <name>libyaz4j</name>
-  <packaging>so</packaging>
+  <packaging>${packaging}</packaging>
 
   <build>
     <finalName>${artifactId}</finalName>

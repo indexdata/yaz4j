@@ -200,6 +200,7 @@
       </activation>
       <properties>
         <platform>linux</platform>
+        <packaging>so</packaging>
         <!-- yaz-config executable -->
         <yaz.config>yaz-config</yaz.config>
         <javahOS>linux</javahOS>
@@ -267,6 +268,7 @@
       </activation>
       <properties>
         <platform>osx</platform>
+        <packaging>dylib</packaging>
         <javahOS>mac</javahOS>
         <jdkIncludePath>${java.home}/../Headers</jdkIncludePath>
       </properties>
