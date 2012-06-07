@@ -6,7 +6,7 @@ Unix
 You will need the JDK, maven, swig and yaz development packages.
 Consult your package manager on how to install those.
 
-'yaz-config' is assumed to be on the Path, if it isn't or if local yaz
+'yaz-config' is assumed to be on the PATH, if it isn't or if local yaz
 installation is to be used it's location can be forced with:
 
 mvn -Dyaz.config=/path/to/yaz-config install
@@ -23,4 +23,5 @@ can be overriden through:
 
 mvn -Dyaz.path=/path/to/yaz/installation -Dswig=/path/to/swig/binary install
 
-Use the command prompt provided with the Windows SDK.
+Use the command prompt provided with the Windows SDK. Yaz/bin directory must
+be on the Path.
