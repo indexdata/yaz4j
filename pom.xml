@@ -83,7 +83,7 @@
                 <echo message="Using include: ${yaz.include}"/>
                 <mkdir dir="target/generated-sources/java/org/yaz4j/jni"/>
                 <mkdir dir="target/generated-sources/native" />
-                <exec executable="swig">
+                <exec executable="${swig}">
                   <arg value="-Isrc/main/native" />
                   <arg value="${yaz.include}"/>
                   <arg value="-outdir"/>
@@ -182,9 +182,11 @@
       </activation>
       <properties>
         <platform>win32</platform>
-        <yaz.path>C:\Program Files\YAZ\</yaz.path>
+        <yaz.path>C:\Program Files\YAZ</yaz.path>
+        <swig>C:\Program Files\swigwin-2.0.7\swig</swig>
         <!-- needed by swig -->
-        <yaz.include>-I${yaz.path}\include</yaz.include>
+        <yaz.include>"-I${yaz.path}\include"</yaz.include>
+        <yaz.libs>"${yaz.path}\lib\yaz4.lib"</yaz.libs>
       </properties>
       <modules>
         <module>win32</module>
@@ -203,6 +205,7 @@
         <packaging>so</packaging>
         <!-- yaz-config executable -->
         <yaz.config>yaz-config</yaz.config>
+	<swig>swig</swig>
         <javahOS>linux</javahOS>
         <jdkIncludePath>${java.home}/../include</jdkIncludePath>
       </properties>
