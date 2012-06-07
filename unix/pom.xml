@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.yaz4j</groupId>
-    <artifactId>yaz4j</artifactId>
+    <artifactId>yaz4j-lib</artifactId>
     <version>1.2-SNAPSHOT</version>
   </parent>
   <groupId>org.yaz4j</groupId>
