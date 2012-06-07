@@ -1,0 +1,20 @@
+Unix
+----
+
+'yaz-config' is assumed to be on the Path, if it isn't or if local yaz
+installation is to be used it's location can be forced with:
+
+mvn -Dyaz.config=/path/to/yaz-config install
+
+
+Windows
+-------
+
+Sensible defaults are assumed for 'yaz.path' and 'swig' binary. Both
+can be overriden though
+
+mvn -Dyaz.path=/path/to/yaz/installation -Dswig=/path/to/swig/binary install
+
+
+Visual Studio binaries must be available on the path, see 
+http://msdn.microsoft.com/en-us/library/f2ccy3wt%28v=VS.90%29.aspx
