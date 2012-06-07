@@ -192,7 +192,7 @@
     </profile>
 
     <profile>
-      <id>linux</id>
+      <id>unix</id>
       <activation>
         <os>
           <family>unix</family>
@@ -206,7 +206,7 @@
         <jdkIncludePath>${java.home}/../include</jdkIncludePath>
       </properties>
       <modules>
-        <module>linux</module>
+        <module>unix</module>
       </modules>
       <build>
         <plugins>
@@ -271,7 +271,7 @@
         <jdkIncludePath>${java.home}/../Headers</jdkIncludePath>
       </properties>
       <modules>
-        <module>linux</module>
+        <module>unix</module>
       </modules>
     </profile>
   </profiles>
