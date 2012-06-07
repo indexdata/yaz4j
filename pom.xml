@@ -182,8 +182,9 @@
       </activation>
       <properties>
         <platform>win32</platform>
-        <yaz.include>C:\Program Files\YAZ\include</yaz.include>
         <yaz.path>C:\Program Files\YAZ\</yaz.path>
+        <!-- needed by swig -->
+        <yaz.include>-I${yaz.path}\include</yaz.include>
       </properties>
       <modules>
         <module>win32</module>
@@ -199,8 +200,8 @@
       </activation>
       <properties>
         <platform>linux</platform>
-        <!-- must include trailing slash if specified-->
-        <yaz.path></yaz.path>
+        <!-- yaz-config executable -->
+        <yaz.config>yaz-config</yaz.config>
         <javahOS>linux</javahOS>
         <jdkIncludePath>${java.home}/../include</jdkIncludePath>
       </properties>
@@ -220,7 +221,7 @@
                 </goals>
                 <configuration>
                   <tasks>
-                    <exec executable="${yaz.path}yaz-config" 
+                    <exec executable="${yaz.config}" 
                       outputproperty="yaz.include">
                       <arg value="--include" />
                     </exec>
