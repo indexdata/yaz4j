@@ -1,0 +1,97 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.yaz4j</groupId>
+    <artifactId>yaz4j-lib</artifactId>
+    <version>1.2-SNAPSHOT</version>
+  </parent>
+  <groupId>org.yaz4j</groupId>
+  <artifactId>yaz4j</artifactId>
+  <name>yaz4j</name>
+
+   <packaging>dll</packaging>
+
+   <build>
+     <testSourceDirectory>../src/test</testSourceDirectory>
+     <plugins>
+       <plugin>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>native-maven-plugin</artifactId>
+         <extensions>true</extensions>
+         <configuration>
+           <javahOS>win32</javahOS>
+           <!--<envFactoryName>org.codehaus.mojo.natives.msvc.MSVC6EnvFactory</envFactoryName>-->
+         
+           <compilerProvider>msvc</compilerProvider>
+           
+           <compilerStartOptions>
+             <compilerStartOption>${yaz.include}</compilerStartOption>
+             <compilerStartOption>/D WIN32</compilerStartOption>
+           </compilerStartOptions>
+           <sources>
+            <source>
+              <includes>
+                <include>**/*.cpp</include>
+              </includes>
+              <directory>../src/main/native</directory>
+            </source>
+            <source>
+              <includes>
+                <include>**/*.cpp</include>
+              </includes>
+              <directory>../target/generated-sources/native</directory>
+            </source>
+          </sources>
+	  <linkerStartOptions>
+            <linkerStartOption>/dll</linkerStartOption>
+          </linkerStartOptions>
+          <linkerEndOptions>
+            <linkerEndOption>${yaz.libs}</linkerEndOption>
+          </linkerEndOptions>
+        </configuration>
+       </plugin>
+
+      <!-- this is to compile and execute tests, that are arch-dependent
+       because they need to load so/dll -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <source>1.6</source>
+          <target>1.6</target>
+          <showDeprecation>true</showDeprecation>
+          <showWarnings>true</showWarnings>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>include-generated-test-sources</id>
+            <phase>generate-test-sources</phase>
+            <goals><goal>add-test-source</goal></goals>
+            <configuration>
+              <sources>
+                <source>../src/main/java</source>
+                <source>../target/generated-sources/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <forkMode>once</forkMode>
+          <workingDirectory>target</workingDirectory>
+          <argLine>-Djava.library.path="${project.build.directory}"</argLine>
+        </configuration>
+      </plugin>
+
+    </plugins>    
+  </build>
+</project>
