@@ -9,6 +9,8 @@
 	%include "cpointer.i"
 	%pointer_functions(int, intp);
 	%pointer_functions(size_t, size_tp);
+	%include "carrays.i"
+	%array_functions(ZOOM_record, zoomRecordArray);
 	%typemap(jni) CharStarByteArray "jbyteArray"
 	%typemap(jtype) CharStarByteArray "byte[]"
 	%typemap(jstype) CharStarByteArray "byte[]"
