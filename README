@@ -3,11 +3,11 @@ COMPILATION
 Unix
 ----
 
-You will need the JDK, maven, swig and yaz development packages.
+You will need the JDK, Maven, Swig and YAZ development packages.
 Consult your package manager on how to install those.
 
 'yaz-config' is assumed to be on the PATH, if it isn't or if local yaz
-installation is to be used it's location can be forced with:
+installation is to be used, its location can be forced with:
 
 mvn -Dyaz.config=/path/to/yaz-config install
 
@@ -15,13 +15,35 @@ mvn -Dyaz.config=/path/to/yaz-config install
 Windows
 -------
 
-Besides the exact same requirement as in the unix case, you will need
+Besides the exact same requirements as in the Unix case, you will need
 the Windows SDK installed (which in turn requires .NET Framework 4).
 
-Sensible defaults are assumed for 'yaz.path' and the 'swig' binary. Both
-can be overriden through:
+Sensible default is assumed for 'yaz.path' but the 'swig' binary path has
+hard-coded version number (see yaz4j/pom.xml) which most likely will need to
+be updated to match your Swig version. Both can be overriden through:
 
 mvn -Dyaz.path=/path/to/yaz/installation -Dswig=/path/to/swig/binary install
 
 Use the command prompt provided with the Windows SDK. Yaz/bin directory must
-be on the Path.
+be on the PATH.
+
+
+Links
+-----
+
+The following is most probably already outdated, consult Google.
+
+* JDK 
+  http://www.oracle.com/technetwork/java/javase/downloads/index.html
+
+* Maven
+  http://maven.apache.org/download.cgi
+
+* Swig
+  http://www.swig.org/download.html
+
+* YAZ
+  http://www.indexdata.com/yaz
+
+* Windows SDK
+  http://www.microsoft.com/en-us/download/details.aspx?id=8279
