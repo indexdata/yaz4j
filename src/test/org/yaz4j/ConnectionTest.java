@@ -3,6 +3,7 @@ package org.yaz4j;
 import org.junit.*;
 import static org.junit.Assert.*;
 import org.yaz4j.exception.*;
+import java.util.List;
 
 public class ConnectionTest {
 
@@ -37,6 +38,13 @@ public class ConnectionTest {
       }
       System.out.println("Try sorting them...");
       s.sort("yaz", "1=4 >i 1=21 >s");
+      System.out.println("Try fetching them all at once...");
+      i = 0;
+      List<Record> all = s.getRecords(0, (int) s.getHitCount());
+      for (Record r : all) {
+        System.out.println("getRecords, rec '"+i+"'"+r.getSyntax());
+        i++;
+      }
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } finally {
