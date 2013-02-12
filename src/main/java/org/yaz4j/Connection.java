@@ -14,7 +14,7 @@ import org.yaz4j.jni.yaz4jlib;
  * a socket) to the remote server as the programmer may want to specify options
  * on the object before establishing the actual connection.
  *
- * The worflow for synchronous (the only addressed) operation when using this
+ * The work-flow for synchronous (the only addressed) operation when using this
  * class should be as follows (in pseudocode):
  *
  * <blockquote><pre>

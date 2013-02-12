@@ -12,20 +12,20 @@ import org.yaz4j.jni.yaz4jlib;
 
 /**
  * This class represents a "buffered handle" to the result set created on the
- * server and thus retrieving records may invlove a request to the server if
+ * server and thus retrieving records may involve a request to the server if
  * those records are not locally cached. Details on how to configure the retrieval
  * (present) process are available in the YAZ manual
  *
  * @see <a href="http://www.indexdata.com/yaz/doc/zoom.resultsets.html">YAZ ZOOM result sets</a>
  *
- * Becacuse of the server misbehaviour or errors during retrieval the
+ * Because of server misbehavior or errors during retrieval the
  * "getRecord" method may either return null or throw exceptions, even when the
  * index of retrieved records lies within the bounds of the set. Client
  * code should be prepared for such situations.
  *
  * This class implements the iterable interface and as such can be used within
- * foreach loops, it's important to note however that in this case the errors
- * during retrieval will be masked with standard NoSuchElementExceptions
+ * foreach loops, it's important to note, however, that in this case the errors
+ * during retrieval will be masked with standard NoSuchElementExceptions.
  *
  * @author jakub
  */
@@ -82,6 +82,14 @@ public class ResultSet implements Iterable<Record> {
     return new Record(record, this);
   }
   
+  /**
+   * Retrieve a collection of records at once. If a record cannot be retrieved,
+   * it is omitted from the list (thus the list size may be smaller than 'count').
+   * @param start start index within the result set
+   * @param count number of records to retrieve
+   * @return
+   * @throws ZoomException raised in case of protocol errors
+   */
   public List<Record> getRecords(long start, int count) throws ZoomException {
     List<Record> out = new ArrayList<Record>(count);
     SWIGTYPE_p_p_ZOOM_record_p recs = yaz4jlib.new_zoomRecordArray(count);

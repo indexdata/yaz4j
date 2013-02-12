@@ -3,6 +3,16 @@ package org.yaz4j;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_package_p;
 import org.yaz4j.jni.yaz4jlib;
 
+/**
+ * Allows to perform an extended-service operation.
+ * 
+ * Once created, a package is configured by means of options, then the package 
+ * is send and the result is inspected (again, by means of options).
+ * 
+ * @see org.yaz4j.ConnectionExtended#getPackage(java.lang.String) 
+ * 
+ * @author jakub
+ */
 public class Package {
 
   private SWIGTYPE_p_ZOOM_package_p pack;
