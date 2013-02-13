@@ -95,11 +95,11 @@ public class Connection {
     }
     SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(
       zoomConnection, yazQuery);
+    yaz4jlib.ZOOM_query_destroy(yazQuery);
     ZoomException err = ExceptionUtil.getError(zoomConnection, host,
       port);
     if (err != null) {
       yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
-      yaz4jlib.ZOOM_query_destroy(yazQuery);
       throw err;
     }
     return new ResultSet(yazResultSet, this);
