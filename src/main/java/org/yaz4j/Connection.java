@@ -32,6 +32,7 @@ import org.yaz4j.jni.yaz4jlib;
  * }
  *
  * </pre></blockquote>
+ * @see <a href="http://www.indexdata.com/yaz/doc/zoom.html#zoom-connections">YAZ ZOOM Connection</a>
  * @author jakub
  */
 public class Connection {
@@ -75,11 +76,14 @@ public class Connection {
    * Performs a search operation (submits the query to the server, waits for
    * response and creates a new result set that allows to retrieve particular
    * results)
+   * @deprecated Does not allow specifying sort criteria prior to search
+   * use {@link #search(org.yaz4j.Query) search(Query)} instead.
    * @param query search query
    * @param queryType type of the query (e.g RPN. CQL)
    * @return result set containing records (hits)
    * @throws ZoomException protocol or network-level error
    */
+  @Deprecated
   public ResultSet search(String query, QueryType queryType) throws
     ZoomException {
     if (closed) {
@@ -104,21 +108,69 @@ public class Connection {
     }
     return new ResultSet(yazResultSet, this);
   }
+  
+    /**
+   * Performs a search operation (submits the query to the server, waits for
+   * response and creates a new result set that allows to retrieve particular
+   * results). Sort criteria may be specified prior to the search, directly
+   * on the query object.
+   * @param query search query of any type supported by YAZ.
+   * @return result set containing records (hits)
+   * @throws ZoomException protocol or network-level error
+   */
+  public ResultSet search(Query query) throws ZoomException {
+    if (closed) {
+      throw new IllegalStateException("Connection is closed.");
+    }
+    SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(
+      zoomConnection, query.query);
+    ZoomException err = ExceptionUtil.getError(zoomConnection, host,
+      port);
+    if (err != null) {
+      yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
+      throw err;
+    }
+    return new ResultSet(yazResultSet, this);
+  }
 
   /**
    * Performs a scan operation (obtains a list of candidate search terms against
-   * a particular access point)
-   * @see <a href="http://zoom.z3950.org/api/zoom-1.4.html#3.2.7">ZOOM-API Scan</a>
+   * a particular access point). 
+   * @deprecated Only allows PQF scan queries, use {@link #scan(org.yaz4j.Query) scan(Query)} instead
    * @param query query for scanning
    * @return a scan set with the terms
    * @throws ZoomException a protocol or network-level error
    */
+  @Deprecated
   public ScanSet scan(String query) throws ZoomException {
     if (closed) {
       throw new IllegalStateException("Connection is closed.");
     }
     SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan(
       zoomConnection, query);
+    ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
+    if (err != null) {
+      yaz4jlib.ZOOM_scanset_destroy(yazScanSet);
+      throw err;
+    }
+    ScanSet scanSet = new ScanSet(yazScanSet, this);
+    return scanSet;
+  }
+  
+    /**
+   * Performs a scan operation (obtains a list of candidate search terms against
+   * a particular access point). Allows to use both CQL and PQF for Scan.
+   * @see <a href="http://www.indexdata.com/yaz/doc/zoom.scan.html">ZOOM-API Scan</a>
+   * @param query scan query of type supported by YAZ
+   * @return a scan set with the terms
+   * @throws ZoomException a protocol or network-level error
+   */
+  public ScanSet scan(Query query) throws ZoomException {
+    if (closed) {
+      throw new IllegalStateException("Connection is closed.");
+    }
+    SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan1(
+      zoomConnection, query.query);
     ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
     if (err != null) {
       yaz4jlib.ZOOM_scanset_destroy(yazScanSet);

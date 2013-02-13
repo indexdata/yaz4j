@@ -134,6 +134,13 @@ public class ResultSet implements Iterable<Record> {
     };
   }
 
+  /**
+   * 
+   * @param type
+   * @param spec
+   * @return
+   * @throws ZoomException 
+   */
   public ResultSet sort(String type, String spec) throws ZoomException {
     int ret = yaz4jlib.ZOOM_resultset_sort1(resultSet, type, spec);
     if (ret != 0) throw new ZoomException("Sorting resultset failed");

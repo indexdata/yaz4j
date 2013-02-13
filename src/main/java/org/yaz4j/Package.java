@@ -9,7 +9,7 @@ import org.yaz4j.jni.yaz4jlib;
  * Once created, a package is configured by means of options, then the package 
  * is send and the result is inspected (again, by means of options).
  * 
- * @see org.yaz4j.ConnectionExtended#getPackage(java.lang.String) 
+ * @see org.yaz4j.ConnectionExtended#getPackage(java.lang.String)
  * 
  * @author jakub
  */
