@@ -200,6 +200,16 @@ public class Connection {
     yaz4jlib.ZOOM_connection_close(zoomConnection);
     closed = true;
   }
+  
+  /**
+   * Return exception type from current connection
+   *
+   * @return null if no error
+   */
+  ZoomException getZoomException() {
+    ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
+    return err;
+  }
 
   /**
    * Write option with a given name.

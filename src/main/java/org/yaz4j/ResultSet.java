@@ -94,6 +94,10 @@ public class ResultSet implements Iterable<Record> {
     List<Record> out = new ArrayList<Record>(count);
     SWIGTYPE_p_p_ZOOM_record_p recs = yaz4jlib.new_zoomRecordArray(count);
     yaz4jlib.ZOOM_resultset_records(resultSet, recs, start, count);
+    ZoomException err = this.conn.getZoomException();
+    if (err != null) { 
+      throw err;
+    }
     for (int i = 0; i < count; i++) {
       SWIGTYPE_p_ZOOM_record_p record =
         yaz4jlib.zoomRecordArray_getitem(recs, i);
