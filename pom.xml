@@ -17,6 +17,10 @@
   </licenses>
   <description>Java wrapper for the ZOOM API of YAZ</description>
 
+  <organization>
+    <name>Index Data</name>
+  </organization>
+
   <developers>
     <developer>
       <name>Rob Styles</name>
