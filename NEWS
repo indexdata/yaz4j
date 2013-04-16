@@ -1,13 +1,20 @@
---- 1.3
+--- 1.3 2013/04/16
 
-* new API method: ResultSet#sort
-* new API method: ResultSet#getRecords
-* API: result set is now iterable
-* win32/64 build files (requires Windows SDK)
+* new API class: Query (CQLQuery, PrefixQuery) allows sorting prior to search,
+  adds CQL scan queries
+* new API method: ResultSet#sort allows sort after search
+* new API method: ResultSet#getRecords allows fething records in bundles
+* API sugar: ResultSet is now iterable
+* API deprecation: string arg versions of Connection#search and Connection#scan
+  are now deprecated
+* win32/64 build files included in the source (requires Windows SDK)
+* improved API docs
 
 Bug fixes:
 
 * avoid redundant buffer copies in Record#get
+* memory leak in Connection#search
+
 
 --- 1.2 2010/04/22
 
