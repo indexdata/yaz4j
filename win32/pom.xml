@@ -89,7 +89,7 @@
           <forkMode>once</forkMode>
 	  <workingDirectory>target</workingDirectory>
 	  <environmentVariables>
-	    <PATH>${yaz.path}\bin</PATH>
+	    <PATH>${project.build.directory};${yaz.path}\bin</PATH>
           </environmentVariables>
         </configuration>
       </plugin>
