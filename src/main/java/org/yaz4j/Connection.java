@@ -1,5 +1,6 @@
 package org.yaz4j;
 
+import java.io.Closeable;
 import org.yaz4j.exception.ZoomException;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_connection_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_query_p;
@@ -35,7 +36,7 @@ import org.yaz4j.jni.yaz4jlib;
  * @see <a href="http://www.indexdata.com/yaz/doc/zoom.html#zoom-connections">YAZ ZOOM Connection</a>
  * @author jakub
  */
-public class Connection {
+public class Connection implements Closeable {
 
   private String host;
   private int port;
