@@ -276,9 +276,14 @@
                 <configuration>
                   <tasks>
                     <exec executable="${yaz.config}" 
-                      outputproperty="yaz.include">
+                      outputproperty="yaz-config.include">
                       <arg value="--include" />
                     </exec>
+                    <condition property="yaz.include" 
+                      value="-I/usr/include"
+                      else="${yaz-config.include}">
+                      <equals arg1="${yaz-config.include}" arg2=""/>
+                    </condition>
                     <echo message="YAZ INCLUDE=${yaz.include}"/>
                     <mkdir dir="${basedir}/target"/>
                     <echo file="${basedir}/target/swig.properties"
