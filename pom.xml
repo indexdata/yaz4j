@@ -251,7 +251,7 @@
         </os>
       </activation>
       <properties>
-        <platform>linux</platform>
+        <platform>linux</platform> <!-- no solaris etc -->
         <packaging>so</packaging>
         <!-- yaz-config executable -->
         <yaz.config>yaz-config</yaz.config>
@@ -317,30 +317,9 @@
     </profile>
 
     <profile>
-      <!-- osx is both 'unix' and 'mac' -->
+      <!-- osx family is both 'unix' and 'mac' -->
       <id>osx</id>
       <activation>
-        <jdk>1.6</jdk>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
-      <properties>
-        <platform>osx</platform>
-        <packaging>dylib</packaging>
-        <javahOS>mac</javahOS>
-        <jdkIncludePath>${java.home}/../Headers</jdkIncludePath>
-      </properties>
-      <modules>
-        <module>unix</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <!-- osx is both 'unix' and 'mac', oracle JDK has different layout -->
-      <id>osx-oracle</id>
-      <activation>
-        <jdk>[1.7,)</jdk>
         <os>
           <family>mac</family>
         </os>
@@ -350,6 +329,23 @@
         <packaging>dylib</packaging>
         <javahOS>darwin</javahOS>
         <jdkIncludePath>${java.home}/../include</jdkIncludePath>
+      </properties>
+      <modules>
+        <module>unix</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Apple JDK has a different include layout -->
+      <id>apple-jdk</id>
+      <activation>
+        <property>
+          <name>java.vendor</name>
+          <value>Apple Inc.</value>
+        </property>
+      </activation>
+      <properties>
+        <jdkIncludePath>${java.home}/../Headers</jdkIncludePath>
       </properties>
       <modules>
         <module>unix</module>
