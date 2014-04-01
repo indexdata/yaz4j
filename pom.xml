@@ -276,9 +276,12 @@
                 <configuration>
                   <tasks>
                     <exec executable="${yaz.config}" 
-                      outputproperty="yaz-config.include">
+                      outputproperty="yaz-config.include"
+                      errorproperty="yaz-config.error">
                       <arg value="--include" />
                     </exec>
+                    <echo 
+                      message="yaz-config error (if any): ${yaz-config.error}"/>
                     <condition property="yaz.include" 
                       value="-I/usr/include"
                       else="${yaz-config.include}">
