@@ -51,6 +51,39 @@ public class ConnectionTest {
       con.close();
     }
   }
+  
+   @Test
+  public void testConnectionScan() {
+    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
+    assertNotNull(con);
+    try {
+      con.setSyntax("sutrs");
+      System.out.println("Open connection to z3950.indexdata.dk:210/gils...");
+      con.connect();
+      ScanSet s = con.scan(new PrefixQuery("@attr 1=4 utah"));
+      System.out.println("Scan for 'utah'...");
+      assertNotNull(s);
+      assertEquals(s.getSize(), 9);
+      ScanTerm rec = s.get(0);
+      assertNotNull(rec);
+      String term = rec.getTerm();
+      long occur = rec.getOccurences();
+      assertEquals("utah", term);
+      assertEquals(9, occur);
+      System.out.println("Read all scan terms..");
+      // read all records
+      int i = 0;
+      for (ScanTerm r : s) {
+        assertNotNull(r);
+        System.out.println("Got term "+r.getTerm());
+        i++;
+      }
+    } catch (ZoomException ze) {
+      fail(ze.getMessage());
+    } finally {
+      con.close();
+    }
+  }
 
   @Test
   public void testConnectionDeprecated() {
