@@ -18,7 +18,9 @@ public abstract class Query {
   SWIGTYPE_p_ZOOM_query_p query;
   private boolean disposed = false;
   
-  protected Query() {
+  protected Query(String queryString) {
+    if (queryString == null)
+      throw new NullPointerException("query string cannot be null");
     query = yaz4jlib.ZOOM_query_create();
   }
   

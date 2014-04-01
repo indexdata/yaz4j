@@ -14,7 +14,7 @@ import org.yaz4j.jni.yaz4jlib;
 public class CQLQuery extends Query {
 
   public CQLQuery(String cqlQuery) {
-    super();
+    super(cqlQuery);
     yaz4jlib.ZOOM_query_cql(query, cqlQuery);
   }
   

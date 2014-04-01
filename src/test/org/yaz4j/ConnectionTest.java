@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.yaz4j.exception.*;
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 public class ConnectionTest {
   
   @Test
@@ -42,7 +43,6 @@ public class ConnectionTest {
       List<Record> all = s.getRecords(0, (int) s.getHitCount());
       for (Record r : all) {
         System.out.println("getRecords, rec '"+i+"'"+r.getSyntax());
-        System.out.println(r.render());
         i++;
       }
     } catch (ZoomException ze) {
@@ -147,22 +147,5 @@ public class ConnectionTest {
       con.close();
     }
   }
-
-  @Test
-  public void testScan() {
-    System.out.println("Open connection to z3950cat.bl.uk:9909/BLAC");
-    Connection con = new Connection("z3950cat.bl.uk:9909/BLAC", 0);
-    try {
-      con.connect();
-      con.option("number", "20");
-      ScanSet set = con.scan("@attr 1=21 \"development\"");
-      System.out.println("getSize(): " + set.getSize());
-      assertEquals(20, set.getSize());
-
-    } catch (ZoomException ex) {
-      fail(ex.getMessage());
-    } finally {
-      con.close();
-    }
-  }
+  
 }

@@ -14,7 +14,7 @@ import org.yaz4j.jni.yaz4jlib;
 public class PrefixQuery extends Query {
 
   public PrefixQuery(String prefixQuery) {
-    super();
+    super(prefixQuery);
     yaz4jlib.ZOOM_query_prefix(query, prefixQuery);
   }
   

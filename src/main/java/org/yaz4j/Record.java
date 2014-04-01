@@ -18,11 +18,14 @@ public class Record implements Cloneable {
     this.record = record;
   }
 
+  @Override
   public void finalize() {
     _dispose();
   }
 
   public byte[] get(String type) {
+    if (type == null)
+      throw new NullPointerException("type cannot be null");
     return yaz4jlib.ZOOM_record_get_bytes(record, type);
   }
 
@@ -42,6 +45,7 @@ public class Record implements Cloneable {
     return new String(get("database"));
   }
 
+  @Override
   public Object clone() {
     SWIGTYPE_p_ZOOM_record_p clone = yaz4jlib.ZOOM_record_clone(record);
     return new Record(clone);

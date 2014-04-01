@@ -64,6 +64,8 @@ public class ResultSet implements Iterable<Record> {
    * @return result set (self) for chainability
    */
   public ResultSet option(String name, String value) {
+    if (name == null)
+      throw new NullPointerException("option name cannot be null");
     yaz4jlib.ZOOM_resultset_option_set(resultSet, name, value);
     return this;
   }
@@ -77,7 +79,7 @@ public class ResultSet implements Iterable<Record> {
     }
     int errorCode = yaz4jlib.ZOOM_record_error(record, null, null, null);
     if (errorCode != 0) {
-      throw new ZoomException("Record excpetion, code " + errorCode);
+      throw new ZoomException("Record exception, code " + errorCode);
     }
     return new Record(record, this);
   }
@@ -106,7 +108,7 @@ public class ResultSet implements Iterable<Record> {
       }
       int errorCode = yaz4jlib.ZOOM_record_error(record, null, null, null);
       if (errorCode != 0) {
-        throw new ZoomException("Record excpetion, code " + errorCode);
+        throw new ZoomException("Record exception, code " + errorCode);
       }
       out.add(new Record(record, this));
     }
@@ -146,6 +148,10 @@ public class ResultSet implements Iterable<Record> {
    * @throws ZoomException 
    */
   public ResultSet sort(String type, String spec) throws ZoomException {
+    if (type == null)
+      throw new NullPointerException("sort type cannot be null");
+    if (spec == null)
+      throw new NullPointerException("sort spec cannot be null");
     int ret = yaz4jlib.ZOOM_resultset_sort1(resultSet, type, spec);
     if (ret != 0) throw new ZoomException("Sorting resultset failed");
     return this;

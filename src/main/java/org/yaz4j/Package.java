@@ -1,5 +1,6 @@
 package org.yaz4j;
 
+import org.yaz4j.exception.ZoomException;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_package_p;
 import org.yaz4j.jni.yaz4jlib;
 
@@ -14,16 +15,17 @@ import org.yaz4j.jni.yaz4jlib;
  * @author jakub
  */
 public class Package {
-
+  //for GC ref count
+  private ConnectionExtended conn;
   private SWIGTYPE_p_ZOOM_package_p pack;
-  private ConnectionExtended connection;
-  private String type;
+  private final String type;
 
-  Package(SWIGTYPE_p_ZOOM_package_p pack, ConnectionExtended connection,
-    String type) {
+  Package(SWIGTYPE_p_ZOOM_package_p pack, ConnectionExtended conn, String type) {
+    if (type == null)
+      throw new NullPointerException("type cannot be null");
     this.type = type;
-    this.connection = connection;
     this.pack = pack;
+    this.conn = conn;
   }
 
   public void finalize() {
@@ -37,6 +39,8 @@ public class Package {
    * @return package (self) for chainability
    */
   public Package option(String key, String value) {
+    if (key == null)
+      throw new NullPointerException("option name cannot be null");
     yaz4jlib.ZOOM_package_option_set(pack, key, value);
     return this;
   }
@@ -47,6 +51,8 @@ public class Package {
    * @return option value
    */
   public String option(String key) {
+    if (key == null)
+      throw new NullPointerException("option name cannot be null");
     return yaz4jlib.ZOOM_package_option_get(pack, key);
   }
 
@@ -60,8 +66,8 @@ public class Package {
   void _dispose() {
     if (pack != null) {
       yaz4jlib.ZOOM_package_destroy(pack);
-      connection = null;
       pack = null;
+      conn = null;
     }
   }
 }

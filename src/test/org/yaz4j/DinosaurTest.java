@@ -7,6 +7,7 @@ import org.yaz4j.exception.ZoomException;
 /**
  * @author adam
  */
+@SuppressWarnings("deprecation")
 public class DinosaurTest {
 
   @Test
