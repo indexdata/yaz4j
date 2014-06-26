@@ -214,7 +214,7 @@
       <uniqueVersion>false</uniqueVersion>
       <id>id-maven-repo</id>
       <name>Index Data Maven Repository</name>
-      <url>scp://maven.indexdata.com:222/var/www/maven/repository</url>
+      <url>scp://maven.indexdata.com:22/var/www/maven/repository</url>
     </repository>
     <site>
       <id>id-website</id>
