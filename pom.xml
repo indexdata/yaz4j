@@ -233,7 +233,7 @@
       <properties>
         <platform>win32</platform>
         <yaz.path>C:\Program Files\YAZ</yaz.path>
-        <swig>C:\Program Files\swigwin-2.0.9\swig</swig>
+        <swig>swig</swig>
         <!-- needed by swig -->
         <yaz.include>"-I${yaz.path}\include"</yaz.include>
         <yaz.libs>"${yaz.path}\lib\yaz5.lib"</yaz.libs>
