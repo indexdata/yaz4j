@@ -18,9 +18,9 @@ Windows
 Besides the exact same requirements as in the Unix case, you will need
 the Windows SDK installed (which in turn requires .NET Framework 4).
 
-Sensible default is assumed for 'yaz.path' but the 'swig' binary path has
-hard-coded version number (see yaz4j/pom.xml) which most likely will need to
-be updated to match your Swig version. Both can be overriden through:
+Sensible default is assumed for 'yaz.path'. 'swig' is set without path
+so either specify absolute path or update the PATH environment to include
+directory holding swig.exe. Both can be overriden through:
 
 mvn -Dyaz.path=/path/to/yaz/installation -Dswig=/path/to/swig/binary install
 
