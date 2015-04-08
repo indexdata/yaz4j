@@ -59,8 +59,12 @@ public class Package {
   /**
    * Send the package.
    */
-  public void send() {
+  public void send() throws ZoomException {
     yaz4jlib.ZOOM_package_send(pack, type);
+    ZoomException e = conn.getZoomException();
+    if (e != null) {
+      throw e;
+    }
   }
 
   void _dispose() {
