@@ -1,3 +1,8 @@
+--- 1.5
+
+* breaking API change: Package#send throws ZoomException
+* add ConnectionExtended tests
+
 --- 1.4 2014/06/26
 
 * bugfix: fix multiple JVM segv on null pointers
