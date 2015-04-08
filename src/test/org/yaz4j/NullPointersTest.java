@@ -12,6 +12,7 @@ public class NullPointersTest {
     try {
       Connection conn = new Connection(null, 0);
       conn.connect();
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -26,6 +27,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(null);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -41,6 +43,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(null, null);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -56,6 +59,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(new CQLQuery(null));
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -71,6 +75,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(new PrefixQuery(null));
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -86,6 +91,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(null, Connection.QueryType.CQLQuery);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -101,6 +107,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(null, Connection.QueryType.PrefixQuery);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -116,6 +123,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       ScanSet s = conn.scan((String) null);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -131,6 +139,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       ScanSet s = conn.scan((Query) null);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -146,6 +155,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       ScanSet s = conn.scan(new PrefixQuery(null));
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -161,6 +171,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       ScanSet s = conn.scan(new CQLQuery(null));
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -176,6 +187,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       conn.option(null, null);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -191,6 +203,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       String opt = conn.option(null);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -209,8 +222,7 @@ public class NullPointersTest {
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
-      System.out.println("Caught expected NPE: " +npe.getMessage());
-      
+      fail("NPE even though option name can be null");
     }
   }
   
@@ -222,6 +234,7 @@ public class NullPointersTest {
       conn.connect();
       ResultSet s = conn.search(new PrefixQuery("@attr 1=4 water"));
       s.sort(null, null);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -238,6 +251,7 @@ public class NullPointersTest {
       conn.connect();
       ResultSet s = conn.search(new PrefixQuery("@attr 1=4 water"));
       s.sort("some", null);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -255,6 +269,7 @@ public class NullPointersTest {
       ResultSet s = conn.search(new PrefixQuery("@attr 1=4 water"));
       Record r = s.getRecord(0);
       r.get(null);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -273,11 +288,11 @@ public class NullPointersTest {
       Record r = s.getRecord(0);
       byte[] b = r.get("unknownType");
       String str = new String(b);
+      assertEquals("", str);
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
-      System.out.println("Caught expected NPE: " +npe.getMessage());
-      
+      fail("NPE even though record type is not null");      
     }
   }
   
@@ -288,6 +303,7 @@ public class NullPointersTest {
       conn.setSyntax("sutrs");
       conn.connect();
       Package p = conn.getPackage(null);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -307,8 +323,7 @@ public class NullPointersTest {
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
-      System.out.println("Caught expected NPE: " +npe.getMessage());
-      
+      fail("NPE even though option name can be null");
     }
   }
   
@@ -320,6 +335,7 @@ public class NullPointersTest {
       conn.connect();
       Package p = conn.getPackage("some");
       p.option(null);
+      fail("NPE not raised");
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } catch (NullPointerException npe) {
@@ -340,9 +356,10 @@ public class NullPointersTest {
       Package drop = conn.getPackage("drop");
       drop.send();
     } catch (ZoomException ze) {
-      fail(ze.getMessage());
+      assertEquals("Bib1Exception: Error Code = 223 (EsPermissionDeniedOnEsCannotModifyOrDelete)", 
+        ze.getMessage());
     } catch (NullPointerException npe) {
-      System.out.println("Caught expected NPE: " +npe.getMessage());  
+      fail(npe.getMessage()); 
     }
   }
   
