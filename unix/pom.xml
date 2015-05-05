@@ -11,7 +11,7 @@
   <packaging>${packaging}</packaging>
 
   <build>
-    <finalName>${artifactId}</finalName>
+    <finalName>${project.artifactId}</finalName>
     <testSourceDirectory>../src/test</testSourceDirectory>
 
     <plugins>
