@@ -79,7 +79,7 @@
           <compilerProvider>generic</compilerProvider>
           <compilerExecutable>g++</compilerExecutable>
           <compilerStartOptions>
-            <compilerStartOption>-fPIC</compilerStartOption>
+            <compilerStartOption>-fPIC -Wno-deprecated-declarations</compilerStartOption>
           </compilerStartOptions>
           <compilerEndOptions>
             <compilerEndOption>${yaz.cflags}</compilerEndOption>
