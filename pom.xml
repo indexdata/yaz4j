@@ -5,6 +5,10 @@
   <version>1.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <prerequisites>
+    <maven>3.0.4</maven>
+  </prerequisites>
+
   <!-- Project Information -->
   <name>yaz4j</name>
   <url>http://www.indexdata.com/yaz4j/</url>
