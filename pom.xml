@@ -113,6 +113,7 @@
 
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
         <executions>
           <execution>
             <id>generate-sources</id>
@@ -154,6 +155,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.15</version>
         <configuration>
           <enableRSS>false</enableRSS>
           <include>**/*.java</include>
@@ -166,6 +168,7 @@
         <artifactId>
           maven-project-info-reports-plugin
         </artifactId>
+        <version>2.8</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -183,6 +186,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.3</version>
         <configuration>
           <chartset>UTF-8</chartset>
           <excludePackageNames>org.yaz4j.jni</excludePackageNames>
