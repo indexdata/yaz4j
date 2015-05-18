@@ -120,7 +120,7 @@
             <phase>generate-sources</phase>
             <inherited>false</inherited>
             <configuration>
-              <tasks>
+              <target>
                 <echo message="Using include: ${yaz.include}"/>
                 <mkdir dir="target/generated-sources/java/org/yaz4j/jni"/>
                 <mkdir dir="target/generated-sources/native" />
@@ -137,7 +137,7 @@
                   <arg value="-java"/>
                   <arg value="src/main/swig/libyaz4j.i"/>
                 </exec>
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
@@ -282,7 +282,7 @@
                   <goal>run</goal>
                 </goals>
                 <configuration>
-                  <tasks>
+                  <target>
                     <exec executable="${yaz.config}" 
                       outputproperty="yaz-config.include"
                       errorproperty="yaz-config.error">
@@ -299,7 +299,7 @@
                     <mkdir dir="${basedir}/target"/>
                     <echo file="${basedir}/target/swig.properties"
                       message="yaz.include=${yaz.include}"/>
-                  </tasks>
+                  </target>
                 </configuration>
               </execution>
             </executions>
