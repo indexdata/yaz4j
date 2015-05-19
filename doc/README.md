@@ -47,14 +47,16 @@ executes a search against a public Index Data z3950 test server:
 YAZ Installer (Windows)
 -----------------------
 
-YAZ Windows installer can be downloaded from [here][2]. Yaz4j is bundled with
+YAZ Windows installer can be downloaded from [here][4]. Yaz4j is bundled with
 the installer: just make sure during the installation yaz4j box is checked. 
 It is also recommended to check the box for updating updating PATH environment
 variable with a path to yaz binaries. After installation yaz4j can be tested
 with (Java runtime environment required):
 
-  java -jar C:\Program Files\YAZ\java\yaz4j.jar
+    java -jar C:\Program Files\YAZ\java\yaz4j.jar
 
+All native libraries and binaries are located in `C:\Program Files\YAZ\bin\`
+after installation.
 
 COMPILATION FROM SOURCE
 =======================
@@ -136,9 +138,114 @@ Both can be specified with:
 YAZ4J AND A SERVLET CONTAINER
 =============================
 
+If you are coding a web application that uses yaz4j there's a couple of things 
+to keep in mind. First, you are not invoking the JVM directly, but the servlet 
+container (e.g Tomcat) run/init script is doing that for you and that's the place
+to configure any environment settings (e.g the PATH). Second, yaz4j includes
+static initializers to load the native part and can't be packaged along with the
+webapp as that would break on consecutive redeployments. It must be deployed to
+the servlet container common classloader similar to JDBC drivers.
+
+For convenience, `yaz4j-tomcat6` RPM is provided in the ID's YUM repo which will
+set up the default RPM-provided Tomcat 6 with yaz4j automatically:
+
+    sudo yum install yaz4j-tomcat6
+
+Linux (CentOS)
+--------------
+
+In case when yaz4j is installed through the RPM (Index Data's YUM repo) the 
+native libraries are placed in the standard system locations (/usr/lib/.. etc) 
+and are readily available to all applications, including Tomcat. The only other
+thing to configure is to add yaz4j.jar (the pure Java component) to Tomcat's
+common class loader (further down).
+
+In case when yaz4j is built from source or for some other reason the native
+pars are not present in the standard system library locations, they need to be 
+placed on the servlet  container's shared libraries load path. One way 
+to do this in Tomcat (assuming Tomcat is run from a tarball rather than RPM) is 
+by editing  (create it if it does not exist) the CATALINA_HOME/bin/setenv.sh`
+script and putting the following lines in there:
+
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/libyaz4j.so
+    export LD_LIBRARY_PATH
+
+Notice, that this has to be done for all native libraries that `yaz4j.so` 
+dependson, e.g `libyaz5.so` and so on, unless they are already on the default s
+ystem library paths (e.g when installed from RPMs).
+
+If Tomcat is started by a custom init scripts similar operation needs to be
+performed there.
+
+The pure Java yaz4j.jar must be added to Tomcat's common classloader so that
+it becomes available to all deployed webapps and is loaded only once. There
+are a couple ways to do that.
+
+One (employed by `yaz4j-tomcat6` RPM) is to place (or symlink) `yaz4j.jar` to
+to `$CATALINA_BASE/lib` (CATALINA_BASE is `/usr/share/tomcat6` when Tomcat was 
+installed from RPMs on CentOS):
+
+    ln -s /path/to/yaz4j.jar /usr/share/tomcat6/lib
+
+and restart Tomcat.
+
+Another option is to edit the file `catalina.properties` shipped with Tomcat 
+(and located in `CATALINA_BASE/conf/` e.g `/etc/tomcat6/`on RPM-packaged Tomcat)
+and extend the `common.loader=` property with the following:
+
+    common.loader=${catalina.base}/lib,${catalina.base}/lib/*.jar,${catalina.home}/lib,${catalina.home}/lib/*.jar,/path/to/yaz4j.jar
+
+again restarting Tomcat afterwards.
+
+Please consult Tomcat documentation for more information on [classloading][6].
+
+Windows
+-------
+
+On Windows Tomcat will most likely be run from the binary distribution which
+includes `CATALINA_BASE/bin/setenv.sh` for the purpose of setting up the 
+environment. Unless, you have installed yaz4j.dll with the YAZ Installer and 
+checked the option to update the global PATH and include all native YAZ and y
+az4j components, edit setenv.sh with the following:
+
+     set PATH=%PATH;X:\path\to\yaz\bin;X:\path\to\yaz4j.dll
+
+The `X:\path\to\yaz\bin` is `C:\Program Files\YAZ\bin` when the installer was
+used and includes also yaz4j.dll.
+
+In case Tomcat is start up does not execute `setenv.sh`, e.g when custom startup
+script is used, please include similar steps there.
+
+To deploy `yaz4j.jar` you must follow steps identical to those from the Linux 
+section. Again, when installer is used `yaz4j.jar` is located at `C:\Program Files\YAZ\java\yaz4j.jar`.
+
 
 PREPARING A DEVELOPMENT ENVIRONMENT
 ===================================
+
+Maven
+-----
+
+If you are using maven to build your application you can include Index Data's
+Maven repo location and include yaz4j dependency in your project:
+
+
+    <dependency>
+      <groupId>org.yaz4j</groupId>
+      <artifactId>yaz4j-any</artifactId>
+      <version>VERSION</version>
+      <scope>provided</scope>
+    </dependency>
+
+
+It's crucial that the scope of this dependency is set to `provided` for web
+application type projecets, otherwise the library would end up packaged in 
+the .war archive and we wouldn't want that.
+
+Yaz4j includes a trivial HTTP to z3590 gateway under `examples/zgate` that shows
+best how to use yaz4j in a servlet. There's also a blog entry on building the
+gateway [here][7]
+
 
 LINKS
 =====
@@ -154,3 +261,7 @@ The following is most probably already outdated, consult Google.
 [4]: http://www.indexdata.com/yaz "YAZ"
 
 [5]: http://www.microsoft.com/en-us/download/details.aspx?id=8279 "Windows SDK"
+
+[6]: https://tomcat.apache.org/tomcat-6.0-doc/class-loader-howto.html "Tomcat 6 class loading"
+
+[7]: http://www.indexdata.com/blog/2010/02/building-simple-http-z3950-gateway-using-yaz4j-and-tomcat "Building a simple HTTP-to-Z39.50 gateway using Yaz4j and Tomcat"
