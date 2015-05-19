@@ -12,7 +12,7 @@
     <dependency>
       <groupId>org.yaz4j</groupId>
       <artifactId>yaz4j-any</artifactId>
-      <version>1.1-SNAPSHOT</version>
+      <version>1.5-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 
