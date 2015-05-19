@@ -1,2 +1,3 @@
+NAME=yaz4j
 CENTOS_DIST="centos5 centos6"
 VERSION=1.5
