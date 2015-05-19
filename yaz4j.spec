@@ -12,7 +12,10 @@ Source0:	yaz4j-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires:	libyaz5-devel
-BuildRequires:	maven3-indexdata unzip redhat-rpm-config
+BuildRequires:	redhat-rpm-config 
+BuildRequires:	maven3-indexdata
+BuildRequires:	swig
+
 Requires:	libyaz5
 
 %description
