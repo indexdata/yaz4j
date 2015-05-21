@@ -6,6 +6,8 @@ toolkit known as the ZOOM API. With Yaz4j you can program clients for YAZ-
 supported protocols like Z39.50, SRU/W and Solr. Yaz4j includes a native
 component and supports Windows, Linux and OSX.
 
+Yaz4j is covered by the [Revised BSD](http://www.indexdata.com/licences/revised-bsd) license. That should be same as the the [BSD 3 Clause License](http://opensource.org/licenses/BSD-3-Clause).
+
 INSTALLATION
 ============
 
