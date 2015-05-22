@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.yaz4j</groupId>
     <artifactId>yaz4j-lib</artifactId>
-    <version>1.5</version>
+    <version>1.6-SNAPSHOT</version>
   </parent>
   <artifactId>yaz4j-any</artifactId>
   <name>yaz4j-any</name>
