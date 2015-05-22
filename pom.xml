@@ -1,8 +1,8 @@
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.yaz4j</groupId>
   <artifactId>yaz4j-lib</artifactId>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.5</version>
   <packaging>pom</packaging>
 
   <prerequisites>
@@ -121,21 +121,21 @@
             <inherited>false</inherited>
             <configuration>
               <target>
-                <echo message="Using include: ${yaz.include}"/>
-                <mkdir dir="target/generated-sources/java/org/yaz4j/jni"/>
+                <echo message="Using include: ${yaz.include}" />
+                <mkdir dir="target/generated-sources/java/org/yaz4j/jni" />
                 <mkdir dir="target/generated-sources/native" />
                 <exec executable="${swig}">
                   <arg value="-Isrc/main/native" />
-                  <arg value="${yaz.include}"/>
-                  <arg value="-outdir"/>
-                  <arg value="${basedir}/target/generated-sources/java/org/yaz4j/jni"/>
-                  <arg value="-package"/>
-                  <arg value="org.yaz4j.jni"/>
-                  <arg value="-o"/>
-                  <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp"/>
-                  <arg value="-c++"/>
-                  <arg value="-java"/>
-                  <arg value="src/main/swig/libyaz4j.i"/>
+                  <arg value="${yaz.include}" />
+                  <arg value="-outdir" />
+                  <arg value="${basedir}/target/generated-sources/java/org/yaz4j/jni" />
+                  <arg value="-package" />
+                  <arg value="org.yaz4j.jni" />
+                  <arg value="-o" />
+                  <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
+                  <arg value="-c++" />
+                  <arg value="-java" />
+                  <arg value="src/main/swig/libyaz4j.i" />
                 </exec>
               </target>
             </configuration>
@@ -283,22 +283,16 @@
                 </goals>
                 <configuration>
                   <target>
-                    <exec executable="${yaz.config}" 
-                      outputproperty="yaz-config.include"
-                      errorproperty="yaz-config.error">
+                    <exec executable="${yaz.config}" outputproperty="yaz-config.include" errorproperty="yaz-config.error">
                       <arg value="--include" />
                     </exec>
-                    <echo 
-                      message="yaz-config error (if any): ${yaz-config.error}"/>
-                    <condition property="yaz.include" 
-                      value="-I/usr/include"
-                      else="${yaz-config.include}">
-                      <equals arg1="${yaz-config.include}" arg2=""/>
+                    <echo message="yaz-config error (if any): ${yaz-config.error}" />
+                    <condition property="yaz.include" value="-I/usr/include" else="${yaz-config.include}">
+                      <equals arg1="${yaz-config.include}" arg2="" />
                     </condition>
-                    <echo message="YAZ INCLUDE=${yaz.include}"/>
-                    <mkdir dir="${basedir}/target"/>
-                    <echo file="${basedir}/target/swig.properties"
-                      message="yaz.include=${yaz.include}"/>
+                    <echo message="YAZ INCLUDE=${yaz.include}" />
+                    <mkdir dir="${basedir}/target" />
+                    <echo file="${basedir}/target/swig.properties" message="yaz.include=${yaz.include}" />
                   </target>
                 </configuration>
               </execution>

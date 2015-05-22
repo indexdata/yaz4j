@@ -1,9 +1,9 @@
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.yaz4j</groupId>
     <artifactId>yaz4j-lib</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
   </parent>
   <groupId>org.yaz4j</groupId>
   <artifactId>libyaz4j</artifactId>
@@ -30,20 +30,18 @@
                 <exec executable="${yaz.config}" outputproperty="yaz.cflags">
                   <arg value="--cflags" />
                 </exec>
-                <echo message="YAZ CFLAGS: ${yaz.cflags}"/>
+                <echo message="YAZ CFLAGS: ${yaz.cflags}" />
                 <exec executable="${yaz.config}" outputproperty="yaz.libs">
                   <arg value="--libs" />
                 </exec>
-                <echo message="YAZ LIBS: ${yaz.libs}"/>
+                <echo message="YAZ LIBS: ${yaz.libs}" />
                 <!-- this does not work on debian/ubuntu
-                <propertyfile file="${basedir}/target/yaz-config.properties"
-                  comment="YAZ COMPILER/LINKER FLAGS">
-                  <entry key="yaz.cflags" value="${yaz.cflags}"/>
-                  <entry key="yaz.libs" value="${yaz.libs}"/>
+                <propertyfile file="${basedir}/target/yaz-config.properties" comment="YAZ COMPILER/LINKER FLAGS">
+                  <entry key="yaz.cflags" value="${yaz.cflags}" />
+                  <entry key="yaz.libs" value="${yaz.libs}" />
                 </propertyfile>
                 -->
-                <echo file="${basedir}/target/yaz-config.properties"
-                  message="yaz.cflags=${yaz.cflags}${line.separator}yaz.libs=${yaz.libs}"/>
+                <echo file="${basedir}/target/yaz-config.properties" message="yaz.cflags=${yaz.cflags}${line.separator}yaz.libs=${yaz.libs}" />
               </target>
             </configuration>
           </execution>
