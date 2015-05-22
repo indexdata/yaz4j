@@ -259,8 +259,17 @@ Maven
 -----
 
 If you are using maven to build your application you can include Index Data's
-Maven repo location and include yaz4j dependency in your project:
+maven repository and include yaz4j as a dependency in your jar or war project:
 
+Index Data's Maven repository (put under `<repositories/>` in pom.xml):
+
+    <repository>
+      <id>id-maven-repo</id>
+      <name>Indexdata Maven Repository</name>
+      <url>http://maven.indexdata.com/</url>
+    </repository>
+
+Yaz4j API dependency (put under `<dependencies/>` in pom.xml):
 
     <dependency>
       <groupId>org.yaz4j</groupId>
