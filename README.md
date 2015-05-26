@@ -1,3 +1,12 @@
+% Developing with yaz4j
+% Index Data
+% 2015-05-26
+
+<!---
+  Generate standalone HTML with:
+  pandoc -s -o dev-with-yaz4j.html README.md
+-->
+
 INTRODUCTION
 ============
 
