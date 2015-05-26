@@ -42,7 +42,9 @@ contents:
     enabled=1
     priority=1
 
-under `/etc/yum.repos.d/indexdata.repo`.
+under `/etc/yum.repos.d/indexdata.repo` and import the package signing key with:
+
+    rpm --import http://ftp.indexdata.com/pub/yum/centos/6/RPM-GPG-KEY-indexdata
 
 With the above repository enabled, yaz4j can be simply installed with:
 
