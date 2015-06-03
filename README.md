@@ -22,7 +22,7 @@ INSTALLATION
 
 Index Data provides ready to use yaz4j RPMs for CentOS 5 and 6, available from
 our public YUM repository. On Windows yaz4j can be installed with the YAZ
-[installer][4] (select _Windows_ in the _Downloads_ section on the right)  Those methods are the simplest ways to get yaz4j up and running
+installer.  Those methods are the simplest ways to get yaz4j up and running
 on the particular platforms and are highly recommended.
 
 
@@ -59,9 +59,13 @@ program, which executes a search against a public Index Data Z39.50 test server:
 YAZ Installer (Windows)
 -----------------------
 
-YAZ Windows installer can be downloaded from [here][4] (select _Windows_ in 
-the _Downloads_ section on the right). Yaz4j is bundled with
-the installer: just make sure that during the installation yaz4j box is checked.
+YAZ Windows installer can be downloaded for [64-bit][9] and [32-bit][10] 
+Windows systems. Make sure you choose your architecture correctly and install 
+the latest available version for your system.
+
+Yaz4j is bundled with the installer: just make sure that during the 
+installation yaz4j box is checked.
+
 It is also recommended to check the box for updating the `PATH` environment
 variable with a path to yaz binaries and DLLs. 
 
@@ -330,3 +334,7 @@ gateway [here][7]
 [7]: http://www.indexdata.com/blog/2010/02/building-simple-http-z3950-gateway-using-yaz4j-and-tomcat "Building a simple HTTP-to-Z39.50 gateway using Yaz4j and Tomcat"
 
 [8]: http://www.indexdata.com/yaz/doc/installation.html "YAZ Compilation"
+
+[9]: http://ftp.indexdata.dk/pub/yaz/win64/ "YAZ Installer 64-bit"
+
+[10]: http://ftp.indexdata.dk/pub/yaz/win32/ "YAZ Installer 32-bit"
