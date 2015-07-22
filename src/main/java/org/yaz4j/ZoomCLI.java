@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1995-2013, Index Datassss
+ * Copyright (c) 1995-2013, Index Data
  * All rights reserved.
  * See the file LICENSE for details.
  */
