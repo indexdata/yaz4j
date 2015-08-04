@@ -1,5 +1,5 @@
 # spec file for yaz4j
-%define idmetaversion %(. ./IDMETA; echo $VERSION|tr -d '\n')
+%define idmetaversion %(. ./IDMETA; echo $VERSION)
 Name:		yaz4j
 Version:	%{idmetaversion}
 Release:	1.indexdata
