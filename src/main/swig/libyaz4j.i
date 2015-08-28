@@ -11,6 +11,7 @@
 	%pointer_functions(size_t, size_tp);
 	%include "carrays.i"
 	%array_functions(ZOOM_record, zoomRecordArray);
+	%array_functions(ZOOM_connection, zoomConnectionArray);
 	%typemap(jni) CharStarByteArray "jbyteArray"
 	%typemap(jtype) CharStarByteArray "byte[]"
 	%typemap(jstype) CharStarByteArray "byte[]"

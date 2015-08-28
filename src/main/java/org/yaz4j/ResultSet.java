@@ -31,15 +31,15 @@ import org.yaz4j.jni.yaz4jlib;
  */
 public class ResultSet implements Iterable<Record> {
   //for GC refcount
-
   private Connection conn;
-  private SWIGTYPE_p_ZOOM_resultset_p resultSet;
-  private long size = 0;
+  SWIGTYPE_p_ZOOM_resultset_p resultSet;
   private boolean disposed = false;
+  int asyncRecordOffset = 0;
 
   ResultSet(SWIGTYPE_p_ZOOM_resultset_p resultSet, Connection conn) {
+    //do not copy anything to the java side at this point, it won't be valid
+    //in the async mode
     this.resultSet = resultSet;
-    size = yaz4jlib.ZOOM_resultset_size(this.resultSet);
     this.conn = conn;
   }
 
@@ -121,7 +121,7 @@ public class ResultSet implements Iterable<Record> {
       private long cur;
       @Override
       public boolean hasNext() {
-        return cur < size;
+        return cur < getHitCount();
       }
 
       @Override
@@ -158,7 +158,7 @@ public class ResultSet implements Iterable<Record> {
   }
 
   public long getHitCount() {
-    return size;
+    return yaz4jlib.ZOOM_resultset_size(this.resultSet);
   }
 
   void _dispose() {

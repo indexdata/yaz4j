@@ -37,8 +37,8 @@ import org.yaz4j.jni.yaz4jlib;
  * @author jakub
  */
 public class Connection implements Closeable {
-  private final String host;
-  private final int port;
+  protected final String host;
+  protected final int port;
   protected SWIGTYPE_p_ZOOM_connection_p zoomConnection;
   //connection is initially closed
   protected boolean closed = true;
@@ -138,6 +138,8 @@ public class Connection implements Closeable {
     }
     return new ResultSet(yazResultSet, this);
   }
+  
+  
 
   /**
    * Performs a scan operation (obtains a list of candidate search terms against
