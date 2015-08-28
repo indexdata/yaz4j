@@ -151,29 +151,4 @@
       </plugin>
     </plugins>    
   </build>
-
-  <repositories>
-    <repository>
-      <id>Codehaus Snapshots</id>
-      <url>http://snapshots.repository.codehaus.org/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>Codehaus Snapshots</id>
-      <url>http://snapshots.repository.codehaus.org/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>  <!-- Workaround for MNG-2974, see note below -->
-      </releases>
-    </pluginRepository>
-  </pluginRepositories>
 </project>
