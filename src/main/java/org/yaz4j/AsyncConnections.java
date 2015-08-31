@@ -21,6 +21,10 @@ public class AsyncConnections {
   public void add(AsyncConnection conn) {
     conns.add(conn);
   }
+
+  public List<AsyncConnection> getConnections() {
+    return conns;
+  }
   
   public void start() {
     SWIGTYPE_p_p_ZOOM_connection_p c_conns = new_zoomConnectionArray(conns.size());
@@ -48,5 +52,5 @@ public class AsyncConnections {
       delete_zoomConnectionArray(c_conns);
     }
   }
-  
+
 }
