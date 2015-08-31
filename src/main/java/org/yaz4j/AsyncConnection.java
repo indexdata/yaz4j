@@ -6,7 +6,6 @@
 package org.yaz4j;
 
 import org.yaz4j.exception.ZoomException;
-import org.yaz4j.jni.yaz4jlib;
 import static org.yaz4j.jni.yaz4jlib.*;
 
 /**
@@ -16,6 +15,9 @@ import static org.yaz4j.jni.yaz4jlib.*;
 public class AsyncConnection extends Connection {
   private ResultSet lastResultSet;
   ErrorHandler eh;
+  //make sure error is only handled once
+  boolean errorHandled = false;
+  ErrorHandler reh;
   SearchHandler sh;
   RecordHandler rh;
   
@@ -34,14 +36,12 @@ public class AsyncConnection extends Connection {
   public AsyncConnection(String host, int port) {
     super(host, port);
     ZOOM_connection_option_set(zoomConnection, "async", "1");
-    //what about piggy back?
-    ZOOM_connection_option_set(zoomConnection, "count", "100");
-    ZOOM_connection_option_set(zoomConnection, "step", "20");
     closed = false;
   }
 
   @Override
   public ResultSet search(Query query) throws ZoomException {
+    errorHandled = false;
     lastResultSet = super.search(query);
     return null;
   }
@@ -61,6 +61,11 @@ public class AsyncConnection extends Connection {
     return this;
   }
   
+  public AsyncConnection onRecordError(ErrorHandler reh) {
+    this.reh = reh;
+    return this;
+  }
+  
   //actuall handler, pkg-private
   
   void handleSearch() {
@@ -70,10 +75,11 @@ public class AsyncConnection extends Connection {
   }
   
   void handleRecord() {
+    //TODO clone the record to detach it from the result set
     try {
       if (rh != null) rh.handle(lastResultSet.getRecord(lastResultSet.asyncRecordOffset));
     } catch (ZoomException ex) {
-      if (eh != null) eh.handle(ex);
+      if (reh != null) reh.handle(ex);
     } finally {
       lastResultSet.asyncRecordOffset++;
     }
@@ -81,9 +87,14 @@ public class AsyncConnection extends Connection {
   
   void handleError() {
     //handle error
-    ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
-    if (err != null) {
-      if (eh != null) eh.handle(err);
+    if (!errorHandled) {
+      ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
+      if (err != null) {
+        if (eh != null) {
+          eh.handle(err);
+          errorHandled = true;
+        }
+      }
     }
   }
   

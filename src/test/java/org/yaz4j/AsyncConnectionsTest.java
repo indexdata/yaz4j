@@ -58,6 +58,68 @@ public class AsyncConnectionsTest {
   @After
   public void tearDown() {
   }
+  
+  /**
+   * Test async ZOOM operation.
+   */
+  @Test
+  public void testBadDatabaseTarget() {
+    out.println("Trying bad async connection...");
+    AsyncConnection conn = new AsyncConnection("z3950.indexdata.dk:210/doesnotexist", 0);
+    conn.option("count", "100");
+    AsyncConnections conns = new AsyncConnections();
+    conns.add(conn);
+    final Box<Boolean> hadError = new Box<Boolean>(false);
+    try {
+      conn.setSyntax("sutrs");
+      conn.connect();
+      conn.search(new PrefixQuery("@attr 1=4 utah"));
+      conn
+        .onError(new AsyncConnection.ErrorHandler() {
+
+        public void handle(ZoomException e) {
+          out.println("There was an error "+e.getMessage());
+          hadError.setItem(true);
+        }
+      });
+      
+    } catch (ZoomException ex) {
+      fail(ex.getMessage());
+    }
+    conns.start();
+    assertTrue(hadError.item);
+  }
+  
+    /**
+   * Test async ZOOM operation.
+   */
+  @Test
+  public void testBadTarget() {
+    out.println("Trying bad target async connection...");
+    AsyncConnection conn = new AsyncConnection("z3950.indexdata.dk:70000/doesnotexist", 0);
+    conn.option("count", "100");
+    AsyncConnections conns = new AsyncConnections();
+    conns.add(conn);
+    final Box<Boolean> hadError = new Box<Boolean>(false);
+    try {
+      conn.setSyntax("sutrs");
+      conn.connect();
+      conn.search(new PrefixQuery("@attr 1=4 utah"));
+      conn
+        .onError(new AsyncConnection.ErrorHandler() {
+
+        public void handle(ZoomException e) {
+          out.println("There was an error "+e.getMessage());
+          hadError.setItem(true);
+        }
+      });
+      
+    } catch (ZoomException ex) {
+      fail(ex.getMessage());
+    }
+    conns.start();
+    assertTrue(hadError.item);
+  }
 
   /**
    * Test async ZOOM operation.
@@ -66,6 +128,7 @@ public class AsyncConnectionsTest {
   public void testSingleTarget() {
     out.println("Trying async connection...");
     AsyncConnection conn = new AsyncConnection("z3950.indexdata.dk:210/gils", 0);
+    conn.option("count", "100");
     AsyncConnections conns = new AsyncConnections();
     conns.add(conn);
     int expectedHitCount = 9;
@@ -107,8 +170,10 @@ public class AsyncConnectionsTest {
     out.println("Trying async with multile connections...");
     AsyncConnections conns = new AsyncConnections();
     AsyncConnection conn = new AsyncConnection("z3950.indexdata.dk:210/gils", 0);
+    conn.option("count", "100");
     conns.add(conn);
     AsyncConnection conn2 = new AsyncConnection("z3950.indexdata.dk:210/marc", 0);
+    conn2.option("count", "100");
     conns.add(conn2);
     int expectedHitCount = 19; //for both
     final Box<Long> actualHitCount = new Box<Long>(0L);
@@ -146,7 +211,7 @@ public class AsyncConnectionsTest {
           out.println("Received a record of type "+r.getSyntax());
           actualRecordCounter.setItem(actualRecordCounter.getItem()+1);
         }
-      })
+       })
         .onError(new AsyncConnection.ErrorHandler() {
 
         public void handle(ZoomException e) {
