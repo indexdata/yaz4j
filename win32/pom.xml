@@ -28,6 +28,7 @@
            <compilerStartOptions>
              <compilerStartOption>${yaz.include}</compilerStartOption>
              <compilerStartOption>/D WIN32</compilerStartOption>
+             <compilerStartOption>/MD</compilerStartOption>
            </compilerStartOptions>
            <sources>
             <source>
