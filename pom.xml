@@ -240,7 +240,7 @@
       </activation>
       <properties>
         <platform>win32</platform>
-        <yaz.path>C:\users\adam\desktop\proj\win32\yaz</yaz.path>
+        <yaz.path>C:\Program Files\YAZ</yaz.path>
         <swig>swig</swig>
         <!-- needed by swig -->
         <yaz.include>"-I${yaz.path}\include"</yaz.include>
