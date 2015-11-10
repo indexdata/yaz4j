@@ -45,9 +45,7 @@ public class AsyncConnections {
         switch (last) {
           case ZOOM_EVENT_RECV_SEARCH: conn.handleSearch(); break;
           case ZOOM_EVENT_RECV_RECORD: conn.handleRecord(); break;
-            //TODO this will make handle error twice
           case ZOOM_EVENT_END: conn.handleError(); break;
-            //TODO should we simply handle error for any event?
         }
       }
     } finally {
