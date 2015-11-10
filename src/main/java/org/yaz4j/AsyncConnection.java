@@ -7,11 +7,13 @@ package org.yaz4j;
 
 import org.yaz4j.exception.ZoomException;
 import static org.yaz4j.jni.yaz4jlib.*;
+import org.yaz4j.util.Unstable;
 
 /**
  *
  * @author jakub
  */
+@Unstable
 public class AsyncConnection extends Connection {
   private ResultSet lastResultSet;
   ErrorHandler eh;

@@ -10,11 +10,13 @@ import java.util.List;
 import org.yaz4j.jni.SWIGTYPE_p_p_ZOOM_connection_p;
 import static org.yaz4j.jni.yaz4jlib.*;
 import static java.lang.System.out;
+import org.yaz4j.util.Unstable;
 
 /**
  *
  * @author jakub
  */
+@Unstable
 public class AsyncConnections {
   private List<AsyncConnection> conns = new ArrayList<AsyncConnection>();
   
