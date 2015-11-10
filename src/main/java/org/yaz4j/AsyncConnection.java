@@ -91,7 +91,7 @@ public class AsyncConnection extends Connection {
   void handleError() {
     //handle error
     if (!errorHandled) {
-      ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
+      ZoomException err = getZoomException();
       if (err != null) {
         if (eh != null) {
           eh.handle(err);
