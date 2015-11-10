@@ -14,21 +14,34 @@ import static java.lang.System.out;
 import org.yaz4j.util.Unstable;
 
 /**
- *
+ * Allows to group and execute asynchronous connections within an event loop.
+ * 
  * @author jakub
  */
 @Unstable
 public class AsyncConnections {
   private List<AsyncConnection> conns = new ArrayList<AsyncConnection>();
   
+  /**
+   * Include async connection in the event loop processing.
+   * @param conn 
+   */
   public void add(AsyncConnection conn) {
     conns.add(conn);
   }
 
+  /**
+   * List all included connections.
+   * @return 
+   */
   public List<AsyncConnection> getConnections() {
     return conns;
   }
   
+  /**
+   * Start the event loop, which effectively executes and processes all 
+   * async connections.
+   */
   public void start() {
     SWIGTYPE_p_p_ZOOM_connection_p c_conns = new_zoomConnectionArray(conns.size());
     try {

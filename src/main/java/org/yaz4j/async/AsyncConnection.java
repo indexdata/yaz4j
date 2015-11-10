@@ -15,7 +15,11 @@ import static org.yaz4j.jni.yaz4jlib.*;
 import org.yaz4j.util.Unstable;
 
 /**
- *
+ * Represents an asynchronous connection, all methods of this class 
+ * (e.g connect, search) are non-blocking.
+ * 
+ * Note that async support is missing for scan and extended services at this point.
+ * 
  * @author jakub
  */
 @Unstable
@@ -29,14 +33,26 @@ public class AsyncConnection extends Connection {
   SearchHandler sh;
   RecordHandler rh;
   
+  /**
+   * Invoked immediately in response to the search request. 
+   * 
+   * Allows to read things the hit count and facets. Records should be read
+   * and processed in the record handler.
+   */
   public interface SearchHandler {
     public void handle(ResultSet rs);
   }
   
+  /**
+   * Invoked for every retrieved record.
+   */
   public interface RecordHandler {
     public void handle(Record r);
   }
   
+  /**
+   * Invoked for any protocol or connection level error.
+   */
   public interface ErrorHandler {
     public void handle(ZoomException e);
   }
@@ -54,21 +70,41 @@ public class AsyncConnection extends Connection {
     return null;
   }
   
+  /**
+   * Register a hander for the search response.
+   * @param sh search response handler
+   * @return 
+   */
   public AsyncConnection onSearch(SearchHandler sh) {
     this.sh = sh;
     return this;
   }
   
+  /**
+   * Register a handler for each retrieved record.
+   * @param rh record handler
+   * @return 
+   */
   public AsyncConnection onRecord(RecordHandler rh) {
     this.rh = rh;
     return this;
   }
   
+  /**
+   * Register a handler for a connection level errors.
+   * @param eh error handler
+   * @return 
+   */
   public AsyncConnection onError(ErrorHandler eh) {
     this.eh = eh;
     return this;
   }
   
+  /**
+   * Register a handler for record level errors (e.g decoding).
+   * @param reh record error handler
+   * @return 
+   */
   public AsyncConnection onRecordError(ErrorHandler reh) {
     this.reh = reh;
     return this;
