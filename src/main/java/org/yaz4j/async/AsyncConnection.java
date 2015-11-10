@@ -3,9 +3,14 @@
  * All rights reserved.
  * See the file LICENSE for details.
  */
-package org.yaz4j;
+package org.yaz4j.async;
 
+import org.yaz4j.Connection;
+import org.yaz4j.Query;
+import org.yaz4j.Record;
+import org.yaz4j.ResultSet;
 import org.yaz4j.exception.ZoomException;
+import org.yaz4j.jni.SWIGTYPE_p_ZOOM_connection_p;
 import static org.yaz4j.jni.yaz4jlib.*;
 import org.yaz4j.util.Unstable;
 
@@ -99,6 +104,13 @@ public class AsyncConnection extends Connection {
         }
       }
     }
+  }
+  
+  /**
+   * Expose native connection to the async package, keep it package private.
+   */
+  SWIGTYPE_p_ZOOM_connection_p getNativeConnection() {
+    return zoomConnection;
   }
   
 }

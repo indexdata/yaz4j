@@ -5,6 +5,8 @@
  */
 package org.yaz4j;
 
+import org.yaz4j.async.AsyncConnections;
+import org.yaz4j.async.AsyncConnection;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

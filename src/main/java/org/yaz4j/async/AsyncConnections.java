@@ -3,10 +3,11 @@
  * All rights reserved.
  * See the file LICENSE for details.
  */
-package org.yaz4j;
+package org.yaz4j.async;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.yaz4j.Connection;
 import org.yaz4j.jni.SWIGTYPE_p_p_ZOOM_connection_p;
 import static org.yaz4j.jni.yaz4jlib.*;
 import static java.lang.System.out;
@@ -32,8 +33,8 @@ public class AsyncConnections {
     SWIGTYPE_p_p_ZOOM_connection_p c_conns = new_zoomConnectionArray(conns.size());
     try {
       for (int i=0; i<conns.size(); i++) {
-        Connection conn = conns.get(i);
-        zoomConnectionArray_setitem(c_conns, i, conn.zoomConnection);
+        AsyncConnection conn = conns.get(i);
+        zoomConnectionArray_setitem(c_conns, i, conn.getNativeConnection());
       }
       int ret = 0;
       while ((ret = ZOOM_event(conns.size(), c_conns)) != 0) {

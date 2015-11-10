@@ -217,7 +217,7 @@ public class Connection implements Closeable {
    *
    * @return null if no error
    */
-  ZoomException getZoomException() {
+  protected ZoomException getZoomException() {
     ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
     return err;
   }
