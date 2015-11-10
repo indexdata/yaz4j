@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.yaz4j</groupId>
     <artifactId>yaz4j-lib</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.6-SNAPSHOT</version>
   </parent>
   <groupId>org.yaz4j</groupId>
   <artifactId>yaz4j</artifactId>
@@ -28,6 +28,7 @@
            <compilerStartOptions>
              <compilerStartOption>${yaz.include}</compilerStartOption>
              <compilerStartOption>/D WIN32</compilerStartOption>
+             <compilerStartOption>/MD</compilerStartOption>
            </compilerStartOptions>
            <sources>
             <source>
