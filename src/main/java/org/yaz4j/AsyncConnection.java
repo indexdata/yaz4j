@@ -19,6 +19,7 @@ public class AsyncConnection extends Connection {
   ErrorHandler eh;
   //make sure error is only handled once
   boolean errorHandled = false;
+  int handledRecordOffset = 0;
   ErrorHandler reh;
   SearchHandler sh;
   RecordHandler rh;
@@ -79,11 +80,11 @@ public class AsyncConnection extends Connection {
   void handleRecord() {
     //TODO clone the record to detach it from the result set
     try {
-      if (rh != null) rh.handle(lastResultSet.getRecord(lastResultSet.asyncRecordOffset));
+      if (rh != null) rh.handle(lastResultSet.getRecord(handledRecordOffset));
     } catch (ZoomException ex) {
       if (reh != null) reh.handle(ex);
     } finally {
-      lastResultSet.asyncRecordOffset++;
+      handledRecordOffset++;
     }
   }
   

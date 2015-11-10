@@ -34,7 +34,6 @@ public class ResultSet implements Iterable<Record> {
   private Connection conn;
   SWIGTYPE_p_ZOOM_resultset_p resultSet;
   private boolean disposed = false;
-  int asyncRecordOffset = 0;
 
   ResultSet(SWIGTYPE_p_ZOOM_resultset_p resultSet, Connection conn) {
     //do not copy anything to the java side at this point, it won't be valid
