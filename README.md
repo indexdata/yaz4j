@@ -1,6 +1,9 @@
+<!--
+  Pandoc meta-data not expanded by GitHub
 % Developing with yaz4j
 % Index Data
 % 2015-05-26
+-->
 
 <!---
   Generate standalone HTML with:
