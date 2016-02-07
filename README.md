@@ -240,7 +240,7 @@ and extend the `common.loader=` property with the following:
 
 again restarting Tomcat afterwards.
 
-Please consult Tomcat documentation for more information on [classloading][6].
+For more information on "classloading", please consult [Tomcat documentation][6] "Class Loader HOW-TO" for your version of Tomcat.
 
 Windows
 -------
@@ -329,7 +329,7 @@ gateway [here][7]
 
 [5]: http://www.microsoft.com/en-us/download/details.aspx?id=8279 "Windows SDK"
 
-[6]: https://tomcat.apache.org/tomcat-6.0-doc/class-loader-howto.html "Tomcat 6 class loading"
+[6]: https://tomcat.apache.org/ "Tomcat class loading"
 
 [7]: http://www.indexdata.com/blog/2010/02/building-simple-http-z3950-gateway-using-yaz4j-and-tomcat "Building a simple HTTP-to-Z39.50 gateway using Yaz4j and Tomcat"
 
