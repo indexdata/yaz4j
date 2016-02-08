@@ -148,7 +148,7 @@ If yaz-config is in your `PATH`, the following command should suffice:
 
     mvn install
 
-If yaz-config is not in your `PATH`, you'll have to tell where YAZ is located:
+If yaz-config is not in your `PATH`, then you will need to specify where YAZ is located:
 
     mvn -Dyaz.config=/path/to/yaz-config install
 
@@ -189,7 +189,7 @@ along with the webapp as that would break on consecutive redeployments. It must
 be deployed to the servlet container common classloader, similarly to JDBC 
 drivers.
 
-For convenience, `yaz4j-tomcat6` RPM is provided in the ID's YUM repo which will
+For convenience, `yaz4j-tomcat6` RPM is provided in the Index Data YUM repo, which will
 set up the default CentOS-provided Tomcat 6 with yaz4j automatically:
 
     sudo yum install yaz4j-tomcat6
@@ -217,7 +217,7 @@ Notice, that this has to be done for all native libraries that `yaz4j.so`
 depends on, e.g. `libyaz5.so` and so on, unless they are already on the default 
 system library paths (e.g. when installed from RPMs).
 
-If Tomcat is started by a custom init scripts, then a similar operation needs to be
+If Tomcat is started by a custom init script, then a similar operation needs to be
 performed there.
 
 The pure Java yaz4j.jar must be added to Tomcat's common classloader so that
@@ -281,7 +281,7 @@ If successful you can run the application with a URL as follows:
 
 [http://localhost:8080/zgate/?zurl=z3950.indexdata.com/marc&query=computer&syntax=usmarc](http://localhost:8080/zgate/?zurl=z3950.indexdata.com/marc&query=computer&syntax=usmarc)
 
-You should see results from the Index Data's test Z39.50 server.
+You should see results from Index Data's test Z39.50 server.
 
 PREPARING A DEVELOPMENT ENVIRONMENT
 ===================================
