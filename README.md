@@ -15,7 +15,7 @@ toolkit known as the ZOOM API. With Yaz4j you can program clients for YAZ-
 supported protocols like Z39.50, SRU/W and Solr. Yaz4j includes a native
 component and supports Windows, Linux and OSX.
 
-Yaz4j is covered by the [Revised BSD](http://www.indexdata.com/licences/revised-bsd) license. That should be same as the the [BSD 3 Clause License](http://opensource.org/licenses/BSD-3-Clause).
+Yaz4j is covered by the [Revised BSD](http://www.indexdata.com/licences/revised-bsd) license. That should be same as the [BSD 3 Clause License](http://opensource.org/licenses/BSD-3-Clause).
 
 INSTALLATION
 ============
@@ -29,7 +29,7 @@ on the particular platforms and are highly recommended.
 Index Data YUM repository (CentOS)
 ----------------------------------
 
-Yaz4j with it's runtime and compilation dependencies are provided through
+Yaz4j, with it's runtime and compilation dependencies, are provided through
 Index Data's YUM repository, the repository is enabled by placing the following
 contents:
 
@@ -90,7 +90,7 @@ Yaz4j can be checked out from Index Data's Git repository:
     git clone git://git.indexdata.com/yaz4j
 
 It's recommended to build the latest tagged version (see tags with `git tag`),
-e.g:
+e.g.:
 
     git checkout v1.5 -b v1.5
 
@@ -98,11 +98,11 @@ e.g:
 Compilation on CentOS/RHEL
 --------------------------
 
-Compilation requires [JDK][1], [Maven][2], [Swig][3] and [YAZ][4] development 
+Compilation requires [JDK][1], [Apache Maven][2], [SWIG][3] and [YAZ][4] development 
 packages installed.
 
 Installing build dependencies can be done through the package manager specific 
-for the distribution (subject to availability). For CentOS 5/6 (YUM) JDK and Swig RPMs can be installed  with:
+for the distribution (subject to availability). For CentOS 5/6 (YUM) JDK and SWIG RPMs can be installed  with:
 
     yum install java-1.7.0-openjdk-devel swig
 
@@ -129,8 +129,8 @@ Which will also run tests that open a connection to Index Data's public Z39.50
 server.
 
 Notice that `yaz-config` binary must be on the `PATH` (this is assured when 
-`libyaz5-devel` package is installed), if it isn't e.g if a local YAZ (source) 
-installation is used, the binary location can be specified with:
+`libyaz5-devel` package is installed). If it is not, for example if a local YAZ
+(source) installation is used, then the binary location can be specified with:
 
     mvn -Dyaz.config=/path/to/yaz-config install
 
@@ -140,7 +140,7 @@ in `unix/target/libyaz4j.so`.
 Compilation on generic Unix
 ---------------------------
 
-You will need the JDK, Maven, Swig and YAZ development packages.
+You will need the JDK, Maven, SWIG and YAZ development packages.
 Consult your package manager on how to install those. For compilation
 of YAZ please consult YAZ [manual][8].
 
@@ -148,14 +148,14 @@ If yaz-config is in your `PATH`, the following command should suffice:
 
     mvn install
 
-If yaz-config is not in your `PATH`, you'll have to tell where YAZ is located:
+If yaz-config is not in your `PATH`, then you will need to specify where YAZ is located:
 
     mvn -Dyaz.config=/path/to/yaz-config install
 
 Windows
 -------
 
-Besides the exact same requirements as in the Unix case (JDK, Maven, Swig,
+Besides the exact same requirements as in the Unix case (JDK, Maven, SWIG,
 YAZ), you will need the Windows [SDK][5] installed (which in turn requires
 .NET Framework 4) to compile yaz4j. Again it's much easier to use the
 YAZ Installer. Git must be installed to checkout yaz4j source code.
@@ -182,14 +182,14 @@ YAZ4J AND A SERVLET CONTAINER
 
 If you are coding a web application that uses yaz4j there's a couple of things
 to keep in mind. First, you are not invoking the JVM directly, but the servlet
-container (e.g Tomcat) run/init script is doing that for you and that's the 
-place to configure any environment settings (e.g the `PATH`). Second, yaz4j 
+container (e.g. Apache Tomcat) run/init script is doing that for you and that's the 
+place to configure any environment settings (e.g. the `PATH`). Second, yaz4j 
 includes static initializers to load the native part and can't be packaged 
 along with the webapp as that would break on consecutive redeployments. It must
 be deployed to the servlet container common classloader, similarly to JDBC 
 drivers.
 
-For convenience, `yaz4j-tomcat6` RPM is provided in the ID's YUM repo which will
+For convenience, `yaz4j-tomcat6` RPM is provided in the Index Data YUM repo, which will
 set up the default CentOS-provided Tomcat 6 with yaz4j automatically:
 
     sudo yum install yaz4j-tomcat6
@@ -214,10 +214,10 @@ script and putting the following lines in there:
     export LD_LIBRARY_PATH
 
 Notice, that this has to be done for all native libraries that `yaz4j.so`
-depends on, e.g `libyaz5.so` and so on, unless they are already on the default 
-system library paths (e.g when installed from RPMs).
+depends on, e.g. `libyaz5.so` and so on, unless they are already on the default 
+system library paths (e.g. when installed from RPMs).
 
-If Tomcat is started by a custom init scripts similar operation needs to be
+If Tomcat is started by a custom init script, then a similar operation needs to be
 performed there.
 
 The pure Java yaz4j.jar must be added to Tomcat's common classloader so that
@@ -230,7 +230,7 @@ installed from RPMs on CentOS):
 
     ln -s /path/to/yaz4j.jar /usr/share/tomcat6/lib
 
-and restart Tomcat.
+and then restart Tomcat.
 
 Another option is to edit the file `catalina.properties` shipped with Tomcat
 (and located in `CATALINA_BASE/conf/` e.g `/etc/tomcat6/`on RPM-packaged Tomcat)
@@ -240,16 +240,16 @@ and extend the `common.loader=` property with the following:
 
 again restarting Tomcat afterwards.
 
-Please consult Tomcat documentation for more information on [classloading][6].
+For more information on "classloading", please consult [Tomcat documentation][6] "Class Loader HOW-TO" for your version of Tomcat.
 
 Windows
 -------
 
-On Windows Tomcat will most likely be run from the binary distribution which
+On Windows, Tomcat will most likely be run from the binary distribution which
 includes `CATALINA_BASE/bin/setenv.bat` for the purpose of setting up the 
-environment. Unless, you have installed yaz4j.dll through the YAZ Installer and 
-checked the option to update the global `PATH` and include all native YAZ and
-yaz4j components or you have set up the global `PATH` on your own, edit 
+environment. Unless you have installed yaz4j.dll through the YAZ Installer and 
+checked the option to update the global `PATH` and included all native YAZ and
+yaz4j components, or you have set up the global `PATH` on your own, then edit 
 `setenv.bat` with the following:
 
     set PATH=%PATH;X:\path\to\yaz\bin;X:\path\to\yaz4j.dll
@@ -257,11 +257,11 @@ yaz4j components or you have set up the global `PATH` on your own, edit
 The `X:\path\to\yaz\bin` is `C:\Program Files\YAZ\bin` when the installer was
 used and includes also yaz4j.dll.
 
-In case Tomcat start up does not execute `setenv.sh`, e.g when custom startup
+In case Tomcat start-up does not execute `setenv.sh`, e.g. when custom startup
 script is used, please include similar steps there.
 
-To deploy `yaz4j.jar` you must edit `catalina.properties` files, see the Linux 
-section for details. Again, when the YAZ installer is used `yaz4j.jar` is 
+To deploy `yaz4j.jar` you must edit `catalina.properties` files. Refer to the Linux 
+section for details. Again, when the YAZ installer is used, then the `yaz4j.jar` is 
 located at `C:\Program Files\YAZ\java\yaz4j.jar` by default.
 
 
@@ -281,7 +281,7 @@ If successful you can run the application with a URL as follows:
 
 [http://localhost:8080/zgate/?zurl=z3950.indexdata.com/marc&query=computer&syntax=usmarc](http://localhost:8080/zgate/?zurl=z3950.indexdata.com/marc&query=computer&syntax=usmarc)
 
-You should see results from the Index Data's test z3950 server.
+You should see results from Index Data's test Z39.50 server.
 
 PREPARING A DEVELOPMENT ENVIRONMENT
 ===================================
@@ -314,7 +314,7 @@ It's crucial that the scope of this dependency is set to `provided` for web
 application type projects, otherwise the library would end up packaged in 
 the .war archive and we wouldn't want that.
 
-Yaz4j includes a trivial HTTP to z3590 gateway under `examples/zgate` that shows
+Yaz4j includes a trivial HTTP to Z39.50 gateway under `examples/zgate` that shows
 best how to use yaz4j in a servlet. There's also a blog entry on building the
 gateway [here][7]
 
@@ -323,13 +323,13 @@ gateway [here][7]
 
 [2]: http://maven.apache.org/download.cgi "Maven"
 
-[3]: http://www.swig.org/download.html "Swig"
+[3]: http://www.swig.org/download.html "SWIG"
 
 [4]: http://www.indexdata.com/yaz "YAZ"
 
 [5]: http://www.microsoft.com/en-us/download/details.aspx?id=8279 "Windows SDK"
 
-[6]: https://tomcat.apache.org/tomcat-6.0-doc/class-loader-howto.html "Tomcat 6 class loading"
+[6]: https://tomcat.apache.org/ "Tomcat class loading"
 
 [7]: http://www.indexdata.com/blog/2010/02/building-simple-http-z3950-gateway-using-yaz4j-and-tomcat "Building a simple HTTP-to-Z39.50 gateway using Yaz4j and Tomcat"
 
