@@ -98,7 +98,7 @@ e.g.:
 Compilation on CentOS/RHEL
 --------------------------
 
-Compilation requires [JDK][1], [Maven][2], [SWIG][3] and [YAZ][4] development 
+Compilation requires [JDK][1], [Apache Maven][2], [SWIG][3] and [YAZ][4] development 
 packages installed.
 
 Installing build dependencies can be done through the package manager specific 
@@ -182,7 +182,7 @@ YAZ4J AND A SERVLET CONTAINER
 
 If you are coding a web application that uses yaz4j there's a couple of things
 to keep in mind. First, you are not invoking the JVM directly, but the servlet
-container (e.g. Tomcat) run/init script is doing that for you and that's the 
+container (e.g. Apache Tomcat) run/init script is doing that for you and that's the 
 place to configure any environment settings (e.g. the `PATH`). Second, yaz4j 
 includes static initializers to load the native part and can't be packaged 
 along with the webapp as that would break on consecutive redeployments. It must
