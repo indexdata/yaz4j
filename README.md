@@ -85,9 +85,9 @@ COMPILATION FROM SOURCE
 Checking out the source code
 ----------------------------
 
-Yaz4j can be checked out from Index Data's Git repository:
+Yaz4j can be checked out from Index Data's GitHub repository:
 
-    git clone git://git.indexdata.com/yaz4j
+    git clone git://github.com/indexdata/yaz4j
 
 It's recommended to build the latest tagged version (see tags with `git tag`),
 e.g.:
@@ -222,7 +222,7 @@ performed there.
 
 The pure Java yaz4j.jar must be added to Tomcat's common classloader so that
 it becomes available to all deployed webapps and is loaded only once. There
-are a couple ways to do that.
+are a couple of ways to do that.
 
 One (employed by `yaz4j-tomcat6` RPM) is to place (or symlink) `yaz4j.jar` to
 to `CATALINA_BASE/lib` (`CATALINA_BASE` is `/usr/share/tomcat6` when Tomcat is
