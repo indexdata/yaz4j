@@ -222,7 +222,7 @@ performed there.
 
 The pure Java yaz4j.jar must be added to Tomcat's common classloader so that
 it becomes available to all deployed webapps and is loaded only once. There
-are a couple ways to do that.
+are a couple of ways to do that.
 
 One (employed by `yaz4j-tomcat6` RPM) is to place (or symlink) `yaz4j.jar` to
 to `CATALINA_BASE/lib` (`CATALINA_BASE` is `/usr/share/tomcat6` when Tomcat is
