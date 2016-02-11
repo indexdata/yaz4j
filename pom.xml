@@ -208,8 +208,8 @@
   </mailingLists>
 
   <scm>
-    <connection>scm:git:git://git.indexdata.com/yaz4j</connection>
-    <url>http://git.indexdata.com/?p=yaz4j.git</url>
+    <connection>scm:git:git://github.com/indexdata/yaz4j</connection>
+    <url>https://github.com/indexdata/yaz4j/</url>
   </scm>
 
   <issueManagement>

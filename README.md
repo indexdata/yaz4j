@@ -85,9 +85,9 @@ COMPILATION FROM SOURCE
 Checking out the source code
 ----------------------------
 
-Yaz4j can be checked out from Index Data's Git repository:
+Yaz4j can be checked out from Index Data's GitHub repository:
 
-    git clone git://git.indexdata.com/yaz4j
+    git clone git://github.com/indexdata/yaz4j
 
 It's recommended to build the latest tagged version (see tags with `git tag`),
 e.g.:
