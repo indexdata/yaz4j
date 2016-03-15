@@ -15,11 +15,18 @@ the Java Servlet technology.
 ### COMPILING AND INSTALLING YAZ4J
 
 Yaz4j is still an experimental piece of software and as such is not distributed
-via Index Data's public Debian Apt repository, and there is no Windows build (yet)
-either. While it is possible to use the pre-built Linux binaries, users of 
-other OSes will have to compile yaz4j from source. No need to worry (yet) - the 
-process of compiling yaz4j is quite simple and we will be up and running in no 
-time :).
+via Index Data's public Debian Apt repository.
+
+As explained in the README document included in the distribution, there are
+pre-built binaries for CentOS Linux, and on Windows yaz4j can be installed with
+the YAZ Windows installer.
+
+While it is possible to use the pre-built Linux binaries, users of 
+other OSes will have to compile yaz4j from source. No need to worry - the 
+process of compiling yaz4j is quite simple, and we will be up and running in no 
+time.
+
+(See the complete build instructions in the above-mentioned README.)
 
 As a prerequisite, to complete the build process you will need JDK, Apache Maven, SWIG
 and Yaz (development package) installed on your machine. On Debian/Ubuntu you
