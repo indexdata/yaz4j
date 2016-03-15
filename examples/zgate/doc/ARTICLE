@@ -100,7 +100,7 @@ a project. To generate a skeleton for our webapp use the Maven archetype plugin:
 
 This will generate a basic webapp project structure:
 
-<blockcode>
+<blockquote>
 
 |-- pom.xml
 `-- src
@@ -119,7 +119,7 @@ This will generate a basic webapp project structure:
             `-- indexdata
                 `-- zgate
 
-</blockcode>
+</blockquote>
 
 Maven has already added basic JEE APIs for web development as the project 
 dependencies, we need to do the same for yaz4j, so edit the `pom.xml` and 
