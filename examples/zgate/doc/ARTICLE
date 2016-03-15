@@ -1,21 +1,21 @@
-BUILDING A SIMPLE HTTP-TO-Z3950 GATEWAY USING YAZ4J AND TOMCAT
-==============================================================
+BUILDING A SIMPLE HTTP-TO-Z39.50 GATEWAY USING YAZ4J AND TOMCAT
+===============================================================
 
-[Yaz4J](http://www.indexdata.com/yaz4j) is a wrapper library over the 
+[Yaz4j](http://www.indexdata.com/yaz4j) is a wrapper library over the 
 client-specific parts of YAZ, a C-based Z39.50 toolkit, and allows you to use 
-the ZOOM API directly from Java. Initial version of Yaz4j has been written
+the ZOOM API directly from Java. The initial version of Yaz4j has been written
 by Rob Styles from [Talis](http://www.talis.com) and the project is now 
 developed and maintained at Index Data.
 [ZOOM](http://zoom.z3950.org/api/zoom-current.html) is a relatively straightforward 
 API, and with a few lines of code you can write a basic application that can 
-establish connection to a Z39.50 server. 
-Here we will build a very simple HTTP-to-Z39.50 gateway using yaz4j and 
+establish a connection to a Z39.50 server. 
+Here we will build a very simple HTTP-to-Z39.50 gateway using Yaz4j and 
 the Java Servlet technology.
 
 ### COMPILING AND INSTALLING YAZ4J
 
 Yaz4j is still an experimental piece of software and as such is not distributed
-via Index Data's public Debian Apt repository and there is no Windows build (yet)
+via Index Data's public Debian Apt repository, and there is no Windows build (yet)
 either. While it is possible to use the pre-built Linux binaries, users of 
 other OSes will have to compile yaz4j from source. No need to worry (yet) - the 
 process of compiling yaz4j is quite simple and we will be up and running in no 
@@ -28,19 +28,19 @@ can get those easily via apt:
     apt-get install sun-java6-jdk maven2 libyaz4-dev swig
 
 
-The Yaz4j's source code can be checked-out out from our 
+The Yaz4j's source code can be checked-out from our 
 [Git repository](http://git.indexdata.com/?p=yaz4j.git;a=summary), and assuming
 you have Git installed on your machine you can do that with:
 
     git clone git://git.indexdata.com/yaz4j
 
-The compilation of both native and Java source code is controlled by Maven2, 
-to build the library, invoke the following commands:
+The compilation of both native and Java source code is controlled by Maven2.
+To build the library, invoke the following commands:
 
     cd yaz4j
     mvn install
 
-That's it. If the build has completed successfully you end up with two files: 
+That's it. If the build has completed successfully, you end up with two files: 
 os-independent jar archive with Java ZOOM API classes 
 (yaz4j/any/target/yaz4j-any-VERSION.jar) and os-dependent shared library 
 (yaz4j/linux/target/libyaz4j.so or yaz4j/win32/target/yaz4j.dll) that contains 
@@ -241,7 +241,7 @@ Now we are ready to build our webapp:
     mvn package
 
 The resulting .war archive is located under `target/zgate.war`, we can deploy
-it on tomcat (e.g. by using the `/admin` Tomcat admin  console) and test by 
+it on Tomcat (e.g. by using the `/admin` Tomcat admin  console) and test by 
 issuing the following request with your browser or curl 
 (assuming Tomcat is running on localhost:8080):
 
