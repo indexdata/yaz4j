@@ -21,7 +21,7 @@ other OSes will have to compile yaz4j from source. No need to worry (yet) - the
 process of compiling yaz4j is quite simple and we will be up and running in no 
 time :).
 
-As a prerequisite, to complete th build process you will need JDK, Maven, Swig
+As a prerequisite, to complete the build process you will need JDK, Apache Maven, Swig
 and Yaz (development package) installed on your machine. On Debian/Ubuntu you
 can get those easily via apt:
 
@@ -58,7 +58,7 @@ application is executed:
 
 Setting up a development/runtime environment for a web (servlet) application is 
 a bit more complicated. First, you are not invoking the JVM directly, but the 
-servlet container (e.g. Tomcat) run-script is doing that for you. At this 
+servlet container (e.g. Apache Tomcat) run-script is doing that for you. At this 
 point the shared library (.so or .dll) has to be placed on the servlet container's
 shared libraries load path. Unless your library is deployed to the standard 
 system location for shared libs (`/usr/lib` on Linux) or it's location is 
