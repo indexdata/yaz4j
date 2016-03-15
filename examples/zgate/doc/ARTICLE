@@ -1,46 +1,53 @@
-BUILDING A SIMPLE HTTP-TO-Z3950 GATEWAY USING YAZ4J AND TOMCAT
-==============================================================
+BUILDING A SIMPLE HTTP-TO-Z39.50 GATEWAY USING YAZ4J AND TOMCAT
+===============================================================
 
-[Yaz4J](http://www.indexdata.com/yaz4j) is a wrapper library over the 
+[Yaz4j](http://www.indexdata.com/yaz4j) is a wrapper library over the 
 client-specific parts of YAZ, a C-based Z39.50 toolkit, and allows you to use 
-the ZOOM API directly from Java. Initial version of Yaz4j has been written
+the ZOOM API directly from Java. The initial version of Yaz4j has been written
 by Rob Styles from [Talis](http://www.talis.com) and the project is now 
-developed and maintained at IndexData.
-[ZOOM](http://zoom.z3950.org/api/zoom-1.4.html) is a relatively straightforward 
-API and with a few lines of code you can write a basic application that can 
-establish connection to a Z39.50 server. 
-Here we will try to build a very simple HTTP-to-Z3950 gateway using yaz4j and 
+developed and maintained at Index Data.
+[ZOOM](http://zoom.z3950.org/api/zoom-current.html) is a relatively straightforward 
+API, and with a few lines of code you can write a basic application that can 
+establish a connection to a Z39.50 server. 
+Here we will build a very simple HTTP-to-Z39.50 gateway using Yaz4j and 
 the Java Servlet technology.
 
 ### COMPILING AND INSTALLING YAZ4J
 
 Yaz4j is still an experimental piece of software and as such is not distributed
-via Index Data's public Debian Apt repository and there is no Windows build (yet)
-either. While it is possible to use the pre-built Linux binaries, users of 
-other OSes will have to compile yaz4j from source. No need to worry (yet) - the 
-process of compiling yaz4j is quite simple and we will be up and running in no 
-time :).
+via Index Data's public Debian Apt repository.
 
-As a prerequisite, to complete th build process you will need JDK, Maven, Swig
+As explained in the README document included in the distribution, there are
+pre-built binaries for CentOS Linux, and on Windows yaz4j can be installed with
+the YAZ Windows installer.
+
+While it is possible to use the pre-built Linux binaries, users of 
+other OSes will have to compile yaz4j from source. No need to worry - the 
+process of compiling yaz4j is quite simple, and we will be up and running in no 
+time.
+
+(See the complete build instructions in the above-mentioned README.)
+
+As a prerequisite, to complete the build process you will need JDK, Apache Maven, SWIG
 and Yaz (development package) installed on your machine. On Debian/Ubuntu you
 can get those easily via apt:
 
-    apt-get install sun-java6-jdk maven2 libyaz4-dev swig
+    apt-get install sun-java6-jdk maven3 libyaz4-dev swig
 
 
-The Yaz4j's source code can be checked-out out from our 
-[Git repository](http://git.indexdata.com/?p=yaz4j.git;a=summary), and assuming
-you have Git installed on your machine you can do that with:
+The Yaz4j source code can be checked-out from our 
+[GitHub repository](https://github.com/indexdata/yaz4j). Assuming that
+you have Git installed on your machine, you can do that with:
 
-    git clone git://git.indexdata.com/yaz4j
+    git clone https://github.com/indexdata/yaz4j.git
 
-The compilation of both native and Java source code is controlled by Maven2, 
-to build the library, invoke the following commands:
+The compilation of both native and Java source code is controlled by Maven3.
+To build the library, invoke the following commands:
 
     cd yaz4j
     mvn install
 
-That's it. If the build has completed successfully you end up with two files: 
+That's it. If the build has completed successfully, you end up with two files: 
 os-independent jar archive with Java ZOOM API classes 
 (yaz4j/any/target/yaz4j-any-VERSION.jar) and os-dependent shared library 
 (yaz4j/linux/target/libyaz4j.so or yaz4j/win32/target/yaz4j.dll) that contains 
@@ -58,8 +65,8 @@ application is executed:
 
 Setting up a development/runtime environment for a web (servlet) application is 
 a bit more complicated. First, you are not invoking the JVM directly, but the 
-servlet container (e.g Tomcat) run-script is doing that for you. At this 
-point the shared library (so or dll) has to be placed on the servlet container's
+servlet container (e.g. Apache Tomcat) run-script is doing that for you. At this 
+point the shared library (.so or .dll) has to be placed on the servlet container's
 shared libraries load path. Unless your library is deployed to the standard 
 system location for shared libs (`/usr/lib` on Linux) or it's location is 
 already added to the path, the easiest way to do this in Tomcat is by editing 
@@ -88,9 +95,9 @@ you deploy the webapp and all consecutive deployments would fail.
 
 ### WRITING A SERVLET-BASED GATEWAY
 
-With your servlet environment set up all that is left is to write the actual 
-application (peanuts :)). At IndexData we use Maven for managing builds of our 
-Java software components but Maven is also a great tool for quickly starting up 
+With your servlet environment set up, all that is left is to write the actual 
+application (peanuts :)). At Index Data we use Maven for managing builds of our 
+Java software components, but Maven is also a great tool for quickly starting up 
 a project. To generate a skeleton for our webapp use the Maven archetype plugin:
 
     mvn -DarchetypeVersion=1.0.1 -Darchetype.interactive=false \
@@ -100,7 +107,7 @@ a project. To generate a skeleton for our webapp use the Maven archetype plugin:
 
 This will generate a basic webapp project structure:
 
-<blockcode>
+<blockquote>
 
 |-- pom.xml
 `-- src
@@ -119,7 +126,7 @@ This will generate a basic webapp project structure:
             `-- indexdata
                 `-- zgate
 
-</blockcode>
+</blockquote>
 
 Maven has already added basic JEE APIs for web development as the project 
 dependencies, we need to do the same for yaz4j, so edit the `pom.xml` and 
@@ -224,7 +231,7 @@ src/main/webapp/WEB-INF/web.xml:
 
 </blockcode>
 
-On top of that, we will also  make sure that our servlet is automatically 
+On top of that, we will also make sure that our servlet is automatically 
 triggered when accessing the root path of our application:
 
 <blockcode type="xml">
@@ -241,17 +248,17 @@ Now we are ready to build our webapp:
     mvn package
 
 The resulting .war archive is located under `target/zgate.war`, we can deploy
-it on tomcat (e.g by using the `/admin` Tomcat admin  console) and test by 
+it on Tomcat (e.g. by using the `/admin` Tomcat admin  console) and test by 
 issuing the following request with your browser or curl 
 (assuming Tomcat is running on localhost:8080):
 
     http://localhost:8080/zgate/?zurl=z3950.loc.gov:7090/voyager&query=@attr%201=7%200253333490&syntax=usmarc
 
-  
-That's it! You just build yourself a HTTP-to-Z3950 gateway! Just be careful
+
+That's it! You just built yourself a HTTP-to-Z39.50 gateway! Just be careful
 with exposing it to the outside world - it's not very secure and could be 
 easily exploited. The source code and the gateway's Maven project is available 
-in the Yaz4j's Git repo under `examples/zgate`. In the meantime, IndexData 
+in the Yaz4j's Git repo under `examples/zgate`. In the meantime, Index Data 
 is working on a Debian/Ubuntu package to make the installation of Yaz4j and 
 Tomcat configuration greatly simplified - so stay tuned!. If you are interested 
 in Windows support - e.g. Visual Studio based build or an installer - please 
