@@ -21,7 +21,7 @@ other OSes will have to compile yaz4j from source. No need to worry (yet) - the
 process of compiling yaz4j is quite simple and we will be up and running in no 
 time :).
 
-As a prerequisite, to complete the build process you will need JDK, Apache Maven, Swig
+As a prerequisite, to complete the build process you will need JDK, Apache Maven, SWIG
 and Yaz (development package) installed on your machine. On Debian/Ubuntu you
 can get those easily via apt:
 
