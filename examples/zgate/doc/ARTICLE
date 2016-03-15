@@ -28,11 +28,11 @@ can get those easily via apt:
     apt-get install sun-java6-jdk maven2 libyaz4-dev swig
 
 
-The Yaz4j's source code can be checked-out from our 
-[Git repository](http://git.indexdata.com/?p=yaz4j.git;a=summary), and assuming
-you have Git installed on your machine you can do that with:
+The Yaz4j source code can be checked-out from our 
+[GitHub repository](https://github.com/indexdata/yaz4j). Assuming that
+you have Git installed on your machine, you can do that with:
 
-    git clone git://git.indexdata.com/yaz4j
+    git clone https://github.com/indexdata/yaz4j.git
 
 The compilation of both native and Java source code is controlled by Maven2.
 To build the library, invoke the following commands:
