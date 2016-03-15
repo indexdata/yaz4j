@@ -6,8 +6,8 @@ client-specific parts of YAZ, a C-based Z39.50 toolkit, and allows you to use
 the ZOOM API directly from Java. Initial version of Yaz4j has been written
 by Rob Styles from [Talis](http://www.talis.com) and the project is now 
 developed and maintained at Index Data.
-[ZOOM](http://zoom.z3950.org/api/zoom-1.4.html) is a relatively straightforward 
-API and with a few lines of code you can write a basic application that can 
+[ZOOM](http://zoom.z3950.org/api/zoom-current.html) is a relatively straightforward 
+API, and with a few lines of code you can write a basic application that can 
 establish connection to a Z39.50 server. 
 Here we will build a very simple HTTP-to-Z39.50 gateway using yaz4j and 
 the Java Servlet technology.
