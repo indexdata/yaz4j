@@ -9,7 +9,8 @@ jdk:
 addons:
  apt:
   packages:
-   - mvn
+   - maven
+   - swig
 
 before_install:
   - ./test/travis/travis-init.sh
