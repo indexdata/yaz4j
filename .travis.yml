@@ -1,0 +1,25 @@
+language: java
+sudo: required
+
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+  - openjdk7
+
+addons:
+ apt:
+  packages:
+   - maven
+   - swig
+
+before_install:
+  - ./test/travis/travis-init.sh
+  - sudo apt-get install -yq libyaz5-dev
+
+before_script:
+ - true
+
+script:
+ - mvn install -DskipTests=true
+ - mvn test
+
