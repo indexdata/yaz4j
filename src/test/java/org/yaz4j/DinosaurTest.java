@@ -12,7 +12,7 @@ public class DinosaurTest {
 
   @Test
   public void test() {
-    Connection con = new Connection("z3950.loc.gov:7090/voyager", 0);
+    Connection con = new Connection("lx2.loc.gov/LCDB_MARC8", 0);
     try {
       assertNotNull(con);
       con.setSyntax("usmarc");
