@@ -31,7 +31,7 @@ public class ZgateServlet extends HttpServlet {
 
   @Override
   /*
-   * For dinosaur search use: ?zurl=z3950.loc.gov:7090/voyager&query=@attr 1=7 0253333490&syntax=usmarc
+   * For dinosaur search use: ?zurl=lx2.loc.gov/LCDB_MARC8&query=@attr 1=7 0253333490&syntax=usmarc
    **/
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {

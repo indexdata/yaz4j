@@ -7,7 +7,7 @@ import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class ConnectionTest {
-  
+
   @Test
   public void testConnection() {
     Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
@@ -51,7 +51,7 @@ public class ConnectionTest {
       con.close();
     }
   }
-  
+
    @Test
   public void testConnectionScan() {
     Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
@@ -133,8 +133,8 @@ public class ConnectionTest {
 
   @Test
   public void unsupportedSyntax() {
-    System.out.println("Open connection to z3950.loc.gov:7090/voyager...");
-    Connection con = new Connection("z3950.loc.gov:7090/voyager", 0);
+    System.out.println("Open connection to lx2.loc.gov/LCDB_MARC8...");
+    Connection con = new Connection("lx2.loc.gov/LCDB_MARC8", 0);
     try {
       System.out.println("Set syntax to 'rusmarc'");
       con.setSyntax("rusmarc");
@@ -180,5 +180,5 @@ public class ConnectionTest {
       con.close();
     }
   }
-  
+
 }
