@@ -70,7 +70,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>native-maven-plugin</artifactId>
-        <version>1.0-alpha-8</version>
+        <version>1.0-alpha-9</version>
         <extensions>true</extensions>       
         <configuration>         
           <javahOS>${javahOS}</javahOS>
@@ -96,6 +96,12 @@
               </includes>
               <directory>../target/generated-sources/native</directory>
             </source>
+            <source>
+              <directory>${java.home}/include</directory>
+            </source>
+            <source>
+              <directory>${java.home}/include/linux</directory>
+            </source>
           </sources>
           <linkerExecutable>g++</linkerExecutable>
           <linkerStartOptions>
@@ -112,7 +118,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.7.0</version>
         <configuration>
           <encoding>UTF-8</encoding>
           <source>1.7</source>
