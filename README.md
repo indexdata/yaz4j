@@ -77,7 +77,7 @@ All native libraries and binaries are installed to `C:\Program Files\YAZ\bin\`
 while the `yaz4j.jar` is installed to `C:\Program Files\YAZ\java`. 
   
 `C:\Program Files\YAZ\` is the default YAZ location on a 64-bit Windows and 
-it is assumed for `yaz-path` in the yaz4j build process.
+it is assumed for `yaz.path` in the yaz4j build process.
 
 COMPILATION FROM SOURCE
 =======================
