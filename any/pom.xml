@@ -6,12 +6,11 @@
     <artifactId>yaz4j-lib</artifactId>
     <version>1.6-SNAPSHOT</version>
   </parent>
-  <artifactId>yaz4j-any</artifactId>
+  <artifactId>yaz4j</artifactId>
   <name>yaz4j-any</name>
   <packaging>jar</packaging>
 
   <build>
-    <finalName>yaz4j</finalName>
     <sourceDirectory>../src/main/java</sourceDirectory>
     <plugins>
      <plugin>
