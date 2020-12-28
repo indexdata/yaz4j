@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.yaz4j</groupId>
-  <artifactId>yaz4j-lib</artifactId>
+  <artifactId>yaz4j</artifactId>
   <version>1.6-SNAPSHOT</version>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
 
   <!-- Project Information -->
   <name>yaz4j</name>
@@ -61,10 +61,6 @@
     </developer>
   </developers>
 
-  <modules>
-    <module>any</module>
-  </modules>
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -94,20 +90,6 @@
     </extensions> 
 
     <plugins>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.2.2</version>
-        <configuration>
-          <preparationGoals>clean verify</preparationGoals>
-          <releaseProfiles>production</releaseProfiles>
-          <tagNameFormat>v@{project.version}</tagNameFormat>
-          <pushChanges>false</pushChanges>
-          <localCheckout>true</localCheckout>
-        </configuration>
-      </plugin>
-
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.8</version>
@@ -146,113 +128,58 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.18.1</version>
+        <configuration>
+          <forkMode>once</forkMode>
+          <workingDirectory>target</workingDirectory>
+          <argLine>-Djava.library.path=${project.build.directory}</argLine>
+        </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.9.1</version>
+        <executions>
+          <execution>
+            <id>include-generated-sources</id>
+            <phase>generate-sources</phase>
+            <goals><goal>add-source</goal></goals>
+            <configuration>
+              <sources><source>target/generated-sources/java</source></sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <source>1.8</source>
+          <target>1.8</target>
+          <showDeprecation>true</showDeprecation>
+          <showWarnings>true</showWarnings>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>org.yaz4j.ZoomCLI</mainClass>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
     </plugins>
 
   </build>
 
-  <!-- Reporting -->
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.15</version>
-        <configuration>
-          <enableRSS>false</enableRSS>
-          <include>**/*.java</include>
-          <sourceDirectory>src/main/java</sourceDirectory>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>
-          maven-project-info-reports-plugin
-        </artifactId>
-        <version>2.8</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>dependencies</report>
-              <report>project-team</report>
-              <report>mailing-list</report>
-              <report>issue-tracking</report>
-              <report>summary</report>
-              <report>scm</report>
-              <report>index</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.3</version>
-        <configuration>
-          <chartset>UTF-8</chartset>
-          <excludePackageNames>org.yaz4j.jni</excludePackageNames>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
-  <!-- ////////////// -->
-
-  <!-- Environment Information -->
-  <mailingLists>
-    <mailingList>
-      <name>Yazlist</name>
-      <subscribe />
-      <unsubscribe />
-      <post>yazlist@lists.indexdata.dk</post>
-      <archive>http://lists.indexdata.dk/pipermail/yazlist/</archive>
-    </mailingList>
-  </mailingLists>
-
-  <scm>
-    <connection>scm:git:git://github.com/indexdata/yaz4j</connection>
-    <url>https://github.com/indexdata/yaz4j/</url>
-  </scm>
-
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.indexdata.com</url>
-  </issueManagement>
-
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>id-maven-repo</id>
-      <name>Index Data Maven Repository</name>
-      <url>scp://maven.indexdata.com:22/var/www/maven/repository</url>
-    </repository>
-    <site>
-      <id>id-website</id>
-      <url>scpexe://www.indexdata.com/var/www/software/yaz4j/site</url>
-    </site>
-  </distributionManagement>
-
   <profiles>
-    <profile>
-      <id>win32</id>
-      <activation>
-        <os>
-          <family>windows</family>
-        </os>
-      </activation>
-      <properties>
-        <platform>win32</platform>
-        <yaz.path>C:\Program Files\YAZ</yaz.path>
-        <swig>swig</swig>
-        <!-- needed by swig -->
-        <yaz.include>"-I${yaz.path}\include"</yaz.include>
-        <yaz.libs>"${yaz.path}\lib\yaz5.lib"</yaz.libs>
-      </properties>
-      <modules>
-        <module>win32</module>
-      </modules>
-    </profile>
-
     <profile>
       <id>unix</id>
       <activation>
@@ -261,17 +188,11 @@
         </os>
       </activation>
       <properties>
-        <platform>linux</platform> <!-- no solaris etc -->
-        <packaging>so</packaging>
+        <platform>linux</platform>
         <!-- yaz-config executable -->
         <yaz.config>yaz-config</yaz.config>
 	<swig>swig</swig>
-        <javahOS>linux</javahOS>
-        <jdkIncludePath>${java.home}/../include</jdkIncludePath>
       </properties>
-      <modules>
-        <module>unix</module>
-      </modules>
       <build>
         <plugins>
           <plugin>
@@ -293,8 +214,17 @@
                       <equals arg1="${yaz-config.include}" arg2="" />
                     </condition>
                     <echo message="YAZ INCLUDE=${yaz.include}" />
+                    <exec executable="${yaz.config}" outputproperty="yaz.libs" errorproperty="yaz-config.error">
+                      <arg value="--libs" />
+                    </exec>
+                    <echo message="yaz-config error (if any): ${yaz-config.error}" />
+                    <echo message="YAZ LIBS=${yaz.libs}" />
                     <mkdir dir="${basedir}/target" />
-                    <echo file="${basedir}/target/swig.properties" message="yaz.include=${yaz.include}" />
+                    <echo file="${basedir}/target/swig.properties" message="yaz.include=${yaz.include}"/>
+                    <propertyfile file="${basedir}/target/swig.properties" comment="YAZ COMPILER/LINKER FLAGS">
+                      <entry key="yaz.include" value="${yaz.include}" />
+                      <entry key="yaz.libs" value="${yaz.libs}" />
+                    </propertyfile>
                   </target>
                 </configuration>
               </execution>
@@ -319,44 +249,69 @@
               </execution> 
             </executions> 
           </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.2.1</version>
+            <executions>
+              <execution>
+                <id>compile-zoom-extra</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>g++</executable>
+                  <arguments>
+                    <argument>-fPIC</argument>
+                    <argument>-Wno-deprecated-declarations</argument>
+                    <argument>-I${java.home}/include</argument>
+                    <argument>${yaz.include}</argument>
+                    <argument>-c</argument>
+                    <argument>${basedir}/src/main/native/zoom-extra.cpp</argument>
+                    <argument>-o</argument>
+                    <argument>${basedir}/target/zoom-extra.o</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>compile-libyaz4j</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>g++</executable>
+                  <arguments>
+                    <argument>-fPIC</argument>
+                    <argument>-Wno-deprecated-declarations</argument>
+                    <argument>-I${java.home}/include</argument>
+                    <argument>-I${java.home}/include/linux</argument>
+                    <argument>-I${java.home}/include/linux</argument>
+                    <argument>-I${basedir}/src/main/native</argument>
+                    <argument>${yaz.include}</argument>
+                    <argument>-c</argument>
+                    <argument>${basedir}/target/generated-sources/native/libyaz4j.cpp</argument>
+                    <argument>-o</argument>
+                    <argument>${basedir}/target/libyaz4j.o</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>compile-combined</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>g++</executable>
+                  <commandlineArgs>-shared -o ${basedir}/target/libyaz4j.so ${basedir}/target/libyaz4j.o ${basedir}/target/zoom-extra.o ${yaz.libs}</commandlineArgs>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
-    </profile>
-
-    <profile>
-      <!-- osx family is both 'unix' and 'mac' -->
-      <id>osx</id>
-      <activation>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
-      <properties>
-        <platform>osx</platform>
-        <packaging>dylib</packaging>
-        <javahOS>darwin</javahOS>
-        <jdkIncludePath>${java.home}/../include</jdkIncludePath>
-      </properties>
-      <modules>
-        <module>unix</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <!-- Apple JDK has a different include layout -->
-      <id>apple-jdk</id>
-      <activation>
-        <property>
-          <name>java.vendor</name>
-          <value>Apple Inc.</value>
-        </property>
-      </activation>
-      <properties>
-        <jdkIncludePath>${java.home}/../Headers</jdkIncludePath>
-      </properties>
-      <modules>
-        <module>unix</module>
-      </modules>
     </profile>
 
   </profiles>
