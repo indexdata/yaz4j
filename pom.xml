@@ -101,13 +101,14 @@
             <inherited>false</inherited>
             <configuration>
               <target>
-                <echo message="Using include: ${yaz.include}" />
+                <echo message="Using CFLAGS: ${yaz.cflags}" />
                 <mkdir dir="target/generated-sources/java/org/yaz4j/jni" />
                 <mkdir dir="target/generated-sources/native" />
                 <mkdir dir="${native.dir}" />
                 <exec executable="${swig}">
                   <arg value="-Isrc/main/native" />
-                  <arg value="${yaz.include}" />
+                  <arg line="${yaz.cflags}" />
+                  <arg value="-I/usr/include" />
                   <arg value="-outdir" />
                   <arg value="${basedir}/target/generated-sources/java/org/yaz4j/jni" />
                   <arg value="-package" />
@@ -226,14 +227,11 @@
                 </goals>
                 <configuration>
                   <target>
-                    <exec executable="${yaz.config}" outputproperty="yaz-config.include" errorproperty="yaz-config.error">
-                      <arg value="--include" />
+                    <exec executable="${yaz.config}" outputproperty="yaz.cflags" errorproperty="yaz-config.error">
+                      <arg value="--cflags" />
                     </exec>
                     <echo message="yaz-config error (if any): ${yaz-config.error}" />
-                    <condition property="yaz.include" value="-I/usr/include" else="${yaz-config.include}">
-                      <equals arg1="${yaz-config.include}" arg2="" />
-                    </condition>
-                    <echo message="YAZ INCLUDE=${yaz.include}" />
+                    <echo message="YAZ CFLAGS=${yaz.cflags}" />
                     <exec executable="${yaz.config}" outputproperty="yaz.libs" errorproperty="yaz-config.error">
                       <arg value="--libs" />
                     </exec>
@@ -241,7 +239,7 @@
                     <echo message="YAZ LIBS=${yaz.libs}" />
                     <mkdir dir="${basedir}/target" />
                     <propertyfile file="${basedir}/target/swig.properties" comment="YAZ COMPILER/LINKER FLAGS">
-                      <entry key="yaz.include" value="${yaz.include}" />
+                      <entry key="yaz.cflags" value="${yaz.cflags}" />
                       <entry key="yaz.libs" value="${yaz.libs}" />
                     </propertyfile>
                   </target>
@@ -285,7 +283,7 @@
                     <argument>-fPIC</argument>
                     <argument>-Wno-deprecated-declarations</argument>
                     <argument>-I${java.home}/include</argument>
-                    <argument>${yaz.include}</argument>
+                    <argument>${yaz.cflags}</argument>
                     <argument>-c</argument>
                     <argument>${basedir}/src/main/native/zoom-extra.cpp</argument>
                     <argument>-o</argument>
@@ -308,7 +306,7 @@
                     <argument>-I${java.home}/include/linux</argument>
                     <argument>-I${java.home}/include/linux</argument>
                     <argument>-I${basedir}/src/main/native</argument>
-                    <argument>${yaz.include}</argument>
+                    <argument>${yaz.cflags}</argument>
                     <argument>-c</argument>
                     <argument>${basedir}/target/generated-sources/native/libyaz4j.cpp</argument>
                     <argument>-o</argument>
