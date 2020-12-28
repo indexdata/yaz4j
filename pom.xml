@@ -72,6 +72,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <native.dir>${basedir}/target/native/${os.name}/${os.arch}</native.dir>
   </properties>
 
   <build>
@@ -103,6 +104,7 @@
                 <echo message="Using include: ${yaz.include}" />
                 <mkdir dir="target/generated-sources/java/org/yaz4j/jni" />
                 <mkdir dir="target/generated-sources/native" />
+                <mkdir dir="${native.dir}" />
                 <exec executable="${swig}">
                   <arg value="-Isrc/main/native" />
                   <arg value="${yaz.include}" />
@@ -128,11 +130,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.18.1</version>
-        <configuration>
-          <forkMode>once</forkMode>
-          <workingDirectory>target</workingDirectory>
-          <argLine>-Djava.library.path=${project.build.directory}</argLine>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -152,7 +149,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.1</version>
         <configuration>
           <encoding>UTF-8</encoding>
           <source>1.8</source>
@@ -160,6 +157,29 @@
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/native</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/target/native</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -174,7 +194,6 @@
           </archive>
         </configuration>
       </plugin>
-
     </plugins>
 
   </build>
@@ -192,6 +211,7 @@
         <!-- yaz-config executable -->
         <yaz.config>yaz-config</yaz.config>
 	<swig>swig</swig>
+        <native.file>libyaz4j.so</native.file>
       </properties>
       <build>
         <plugins>
@@ -220,7 +240,6 @@
                     <echo message="yaz-config error (if any): ${yaz-config.error}" />
                     <echo message="YAZ LIBS=${yaz.libs}" />
                     <mkdir dir="${basedir}/target" />
-                    <echo file="${basedir}/target/swig.properties" message="yaz.include=${yaz.include}"/>
                     <propertyfile file="${basedir}/target/swig.properties" comment="YAZ COMPILER/LINKER FLAGS">
                       <entry key="yaz.include" value="${yaz.include}" />
                       <entry key="yaz.libs" value="${yaz.libs}" />
@@ -304,8 +323,9 @@
                   <goal>exec</goal>
                 </goals>
                 <configuration>
+                  <mkdir dir="target/" />
                   <executable>g++</executable>
-                  <commandlineArgs>-shared -o ${basedir}/target/libyaz4j.so ${basedir}/target/libyaz4j.o ${basedir}/target/zoom-extra.o ${yaz.libs}</commandlineArgs>
+                  <commandlineArgs>-shared -o ${native.dir}/${native.file} ${basedir}/target/libyaz4j.o ${basedir}/target/zoom-extra.o ${yaz.libs}</commandlineArgs>
                 </configuration>
               </execution>
             </executions>
