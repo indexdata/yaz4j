@@ -110,7 +110,7 @@ the .war archive and we wouldn't want that.
 yaz4j includes a trivial HTTP to Z39.50 gateway under `examples/zgate` that shows
 best how to use yaz4j in a servlet.
 
-[yaz4j]: https:/www.indexdata.com/yaz4j
+[yaz4j]: https://www.indexdata.com/yaz4j
 
 [yaz4jgithub]: https://github.com/indexdata/yaz4j
 
