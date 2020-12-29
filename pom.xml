@@ -92,6 +92,17 @@
 
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+        <configuration>
+          <preparationGoals>clean verify</preparationGoals>
+          <tagNameFormat>v@{project.version}</tagNameFormat>
+          <pushChanges>false</pushChanges>
+          <localCheckout>true</localCheckout>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.8</version>
         <executions>
@@ -327,5 +338,40 @@
     </profile>
 
   </profiles>
+
+  <!-- Environment Information -->
+  <mailingLists>
+    <mailingList>
+      <name>Yazlist</name>
+      <subscribe />
+      <unsubscribe />
+      <post>yazlist@lists.indexdata.dk</post>
+      <archive>http://lists.indexdata.dk/pipermail/yazlist/</archive>
+    </mailingList>
+  </mailingLists>
+
+  <scm>
+    <connection>scm:git:git://github.com/indexdata/yaz4j</connection>
+    <url>https://github.com/indexdata/yaz4j/</url>
+  </scm>
+
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.indexdata.com</url>
+  </issueManagement>
+
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>id-maven-repo</id>
+      <name>Index Data Maven Repository</name>
+      <url>scpexe://maven.indexdata.com/var/www/maven/repository</url>
+    </repository>
+    <site>
+      <id>id-website</id>
+      <url>scpexe://www.indexdata.com/var/www/software/yaz4j/site</url>
+    </site>
+  </distributionManagement>
+
 </project>
 
