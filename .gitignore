@@ -3,3 +3,7 @@ target/
 .classpath
 *~
 *.swp
+out
+build
+*.iml
+.idea
