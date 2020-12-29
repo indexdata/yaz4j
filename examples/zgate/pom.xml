@@ -11,8 +11,8 @@
 
     <dependency>
       <groupId>org.yaz4j</groupId>
-      <artifactId>yaz4j-any</artifactId>
-      <version>1.6-SNAPSHOT</version>
+      <artifactId>yaz4j</artifactId>
+      <version>1.6.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 
