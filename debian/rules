@@ -6,3 +6,8 @@
 
 %:
 	dh $@
+
+override_dh_auto_install:
+	dh_auto_install
+	mkdir -p debian/tmp/usr/lib/${DEB_HOST_MULTIARCH}
+	cp target/native/libyaz4j.so debian/tmp/usr/lib/${DEB_HOST_MULTIARCH}
