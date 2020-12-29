@@ -88,7 +88,7 @@
         <artifactId>wagon-ssh-external</artifactId>
         <version>3.3.4</version>
       </extension>
-    </extensions> 
+    </extensions>
 
     <plugins>
       <plugin>
@@ -211,7 +211,7 @@
         <platform>linux</platform>
         <!-- yaz-config executable -->
         <yaz.config>yaz-config</yaz.config>
-	<swig>swig</swig>
+        <swig>swig</swig>
         <native.file>libyaz4j.so</native.file>
       </properties>
       <build>
@@ -238,92 +238,73 @@
                     <echo message="yaz-config error (if any): ${yaz-config.error}" />
                     <echo message="YAZ LIBS=${yaz.libs}" />
                     <mkdir dir="${basedir}/target" />
-                    <propertyfile file="${basedir}/target/swig.properties" comment="YAZ COMPILER/LINKER FLAGS">
+                    <propertyfile file="${basedir}/target/yaz.properties" comment="YAZ COMPILER/LINKER FLAGS">
                       <entry key="yaz.cflags" value="${yaz.cflags}" />
                       <entry key="yaz.libs" value="${yaz.libs}" />
                     </propertyfile>
                   </target>
                 </configuration>
               </execution>
-            </executions>
-          </plugin>
-          <plugin> 
-            <groupId>org.codehaus.mojo</groupId> 
-            <artifactId>properties-maven-plugin</artifactId> 
-            <version>1.0-alpha-1</version> 
-            <executions> 
-              <execution> 
-                <id>read-swig-config</id> 
-                <phase>initialize</phase> 
-                <goals> 
-                  <goal>read-project-properties</goal> 
-                </goals> 
-                <configuration> 
-                  <files> 
-                    <file>${basedir}/target/swig.properties</file> 
-                  </files> 
-                </configuration> 
-              </execution> 
-            </executions> 
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.2.1</version>
-            <executions>
               <execution>
                 <id>compile-zoom-extra</id>
                 <phase>compile</phase>
                 <goals>
-                  <goal>exec</goal>
+                  <goal>run</goal>
                 </goals>
                 <configuration>
-                  <executable>g++</executable>
-                  <arguments>
-                    <argument>-fPIC</argument>
-                    <argument>-Wno-deprecated-declarations</argument>
-                    <argument>-I${java.home}/include</argument>
-                    <argument>${yaz.cflags}</argument>
-                    <argument>-c</argument>
-                    <argument>${basedir}/src/main/native/zoom-extra.cpp</argument>
-                    <argument>-o</argument>
-                    <argument>${basedir}/target/zoom-extra.o</argument>
-                  </arguments>
+                  <target>
+                    <exec executable="g++">
+                      <arg value="-fPIC"/>
+                      <arg value="-Wno-deprecated-declarations" />
+                      <arg value="-I${java.home}/include" />
+                      <arg value="-I${java.home}/include/linux" />
+                      <arg value="-I${basedir}/src/main/native" />
+                      <arg line="${yaz.cflags}" />
+                      <arg value="-c" />
+                      <arg value="${basedir}/src/main/native/zoom-extra.cpp" />
+                      <arg value="-o"/>
+                      <arg value="${basedir}/target/zoom-extra.o" />
+                    </exec>
+                    <exec executable="g++">
+                      <arg value="-fPIC"/>
+                      <arg value="-Wno-deprecated-declarations" />
+                      <arg value="-I${java.home}/include" />
+                      <arg value="-I${java.home}/include/linux" />
+                      <arg value="-I${basedir}/src/main/native" />
+                      <arg line="${yaz.cflags}" />
+                      <arg value="-c" />
+                      <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
+                      <arg value="-o"/>
+                      <arg value="${basedir}/target/libyaz4j.o" />
+                    </exec>
+                    <exec executable="g++">
+                      <arg value="-shared"/>
+                      <arg value="-o" />
+                      <arg value="${native.dir}/${native.file}"/>
+                      <arg value="${basedir}/target/libyaz4j.o"/>
+                      <arg value="${basedir}/target/zoom-extra.o"/>
+                      <arg line="${yaz.libs}" />
+                    </exec>
+                  </target>
                 </configuration>
               </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>properties-maven-plugin</artifactId>
+            <version>1.0-alpha-1</version>
+            <executions>
               <execution>
-                <id>compile-libyaz4j</id>
-                <phase>compile</phase>
+                <id>read-yaz-config</id>
+                <phase>initialize</phase>
                 <goals>
-                  <goal>exec</goal>
+                  <goal>read-project-properties</goal>
                 </goals>
                 <configuration>
-                  <executable>g++</executable>
-                  <arguments>
-                    <argument>-fPIC</argument>
-                    <argument>-Wno-deprecated-declarations</argument>
-                    <argument>-I${java.home}/include</argument>
-                    <argument>-I${java.home}/include/linux</argument>
-                    <argument>-I${java.home}/include/linux</argument>
-                    <argument>-I${basedir}/src/main/native</argument>
-                    <argument>${yaz.cflags}</argument>
-                    <argument>-c</argument>
-                    <argument>${basedir}/target/generated-sources/native/libyaz4j.cpp</argument>
-                    <argument>-o</argument>
-                    <argument>${basedir}/target/libyaz4j.o</argument>
-                  </arguments>
-                </configuration>
-              </execution>
-              <execution>
-                <id>compile-combined</id>
-                <phase>compile</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <mkdir dir="target/" />
-                  <executable>g++</executable>
-                  <commandlineArgs>-shared -o ${native.dir}/${native.file} ${basedir}/target/libyaz4j.o ${basedir}/target/zoom-extra.o ${yaz.libs}</commandlineArgs>
+                  <files>
+                    <file>${basedir}/target/yaz.properties</file>
+                  </files>
                 </configuration>
               </execution>
             </executions>
