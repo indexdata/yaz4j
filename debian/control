@@ -4,7 +4,7 @@ Standards-Version: 3.6.2
 Maintainer: Adam Dickmeiss <adam@indexdata.dk>
 Priority: extra
 Build-Depends: debhelper (>= 9),
- libyaz5-dev, g++, swig, maven, default-jdk,
+ libyaz-dev, g++, swig, maven, default-jdk,
  maven-repo-helper, javahelper,
  libmaven-antrun-plugin-java, libproperties-maven-plugin-java,
  libbuild-helper-maven-plugin-java, libsurefire-java,
