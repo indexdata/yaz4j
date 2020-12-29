@@ -13,3 +13,6 @@
 # and version starting with 3., this dependency is then removed
 # from the POM
 #   junit junit jar s/3\\..*/3.x/
+
+org.apache.maven.wagon wagon-ssh
+org.apache.maven.wagon wagon-external
