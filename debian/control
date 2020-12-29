@@ -1,0 +1,32 @@
+Source: yaz4j
+Section: devel
+Standards-Version: 3.6.2
+Maintainer: Adam Dickmeiss <adam@indexdata.dk>
+Priority: extra
+Build-Depends: debhelper (>= 9),
+ libyaz5-dev, maven, openjdk-11-jdk,
+ libmaven-antrun-plugin-java, libproperties-maven-plugin-java,
+ libbuild-helper-maven-plugin-java, libsurefire-java,
+ libmaven-jar-plugin-java
+
+Package: yaz4j
+Section: libs
+Architecture: all
+Depends: openjdk-11-jre
+Description: Z39.50 client for JAVA
+ YAZ4J is a client-side Z39.50/SRU/Solr library for information
+ retrieval. It is based on the ZOOM API of YAZ.
+ .
+ This package include Java files.
+
+
+Package: libyaz4j
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Z39.50 client for JAVA
+ YAZ4J is a client-side Z39.50/SRU/Solr library for information
+ retrieval. It is based on the ZOOM API of YAZ.
+ .
+ This package includes shared library.
+

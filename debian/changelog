@@ -1,0 +1,5 @@
+yaz4j (1.6.0) unstable; urgency=medium
+
+  * First Debian package
+
+ -- Adam Dickmeiss <adam@indexdata.dk>  Tue, 29 Dec 2020 12:29:56 +0100
