@@ -19,7 +19,6 @@ Index Data provides a Maven repository with the artifact
 for development as well as a Debian packages for the most
 recent Debian and Ubuntu distributions.
 
-
 Installing from Debian/Ubuntu
 -----------------------------
 
@@ -51,6 +50,9 @@ debian/control file for packages required.
 If yaz-config is in the `PATH`, the following command should suffice:
 
     mvn install
+
+The result is `target/yaz4j-VERSION.jar` and a shared object
+`target/native/libyaz4j.so`.
 
 Windows
 -------
