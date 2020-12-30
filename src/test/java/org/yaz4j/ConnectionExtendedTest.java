@@ -9,30 +9,24 @@ import java.util.List;
 public class ConnectionExtendedTest {
   
   @Test
-  public void testConnection() {
+  public void testRecordUpdate() {
     ConnectionExtended con = new ConnectionExtended("z3950.indexdata.dk:210/gils", 0);
     assertNotNull(con);
     try {
       con.setSyntax("sutrs");
-      System.out.println("Open connection extended to z3950.indexdata.dk:210/gils...");
       con.connect();
       ResultSet s = con.search(new PrefixQuery("@attr 1=4 utah"));
-      System.out.println("Search for 'utah'...");
       assertNotNull(s);
       assertEquals(s.getHitCount(), 9);
       Record rec = s.getRecord(0);
       assertNotNull(rec);
-      byte[] content = rec.getContent();
-      // first SUTRS record
-      assertEquals(content.length, 1940);
-      assertEquals(content[0], 103);
       assertEquals(rec.getSyntax(), "SUTRS");
       assertEquals(rec.getDatabase(), "gils");
-      System.out.println("Update record..");
       Package p = con.getPackage("update");
       p.option("action", "specialUpdate");
       p.option("record", rec.render());
       p.send();
+      s.close();
     } catch (ZoomException ze) {
       assertEquals("Bib1Exception: Error Code = 223 (EsPermissionDeniedOnEsCannotModifyOrDelete)", 
         ze.getMessage());
@@ -40,5 +34,21 @@ public class ConnectionExtendedTest {
       con.close();
     }
   }
-  
+
+  @Test
+  public void testDatabaseDrop() {
+    try {
+      ConnectionExtended conn = new ConnectionExtended("z3950.indexdata.dk:210/gils", 0);
+      conn.setSyntax("sutrs");
+      conn.connect();
+      Package create = conn.getPackage("create"); //db create
+      create.option("databaseName", "yaz4j");
+      create.send();
+      Package drop = conn.getPackage("drop");
+      drop.send();
+    } catch (ZoomException ze) {
+      assertEquals("Bib1Exception: Error Code = 223 (EsPermissionDeniedOnEsCannotModifyOrDelete)",
+          ze.getMessage());
+    }
+  }
 }

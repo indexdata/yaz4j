@@ -6,26 +6,17 @@ import org.yaz4j.jni.yaz4jlib;
 public class Record implements Cloneable {
 
   private SWIGTYPE_p_ZOOM_record_p record;
-  private ResultSet rset;
-  private boolean disposed = false;
-
-  Record(SWIGTYPE_p_ZOOM_record_p record, ResultSet rset) {
-    this.record = record;
-    this.rset = rset;
-  }
+  private SWIGTYPE_p_ZOOM_record_p record_cloned;
 
   protected Record(SWIGTYPE_p_ZOOM_record_p record) {
     this.record = record;
   }
 
-  @Override
-  public void finalize() {
-    _dispose();
-  }
-
   public byte[] get(String type) {
+    if (record == null)
+      throw new IllegalStateException("Record is closed");
     if (type == null)
-      throw new NullPointerException("type cannot be null");
+      throw new IllegalArgumentException("type cannot be null");
     return yaz4jlib.ZOOM_record_get_bytes(record, type);
   }
 
@@ -46,20 +37,18 @@ public class Record implements Cloneable {
   }
 
   @Override
-  public Object clone() {
-    SWIGTYPE_p_ZOOM_record_p clone = yaz4jlib.ZOOM_record_clone(record);
-    return new Record(clone);
+  public Record clone() {
+    Record newRecord = new Record(yaz4jlib.ZOOM_record_clone(this.record));
+    newRecord.record_cloned = newRecord.record;
+    return newRecord;
   }
 
-  void _dispose() {
-    if (!disposed) {
-      //was cloned, need to dealloc?
-      if (rset == null) {
-        yaz4jlib.ZOOM_record_destroy(record);
-      }
-      rset = null;
-      record = null;
-      disposed = true;
+  public void close() {
+    // only cloned records are really closed
+    if (record_cloned != null) {
+      yaz4jlib.ZOOM_record_destroy(record_cloned);
+      record_cloned = null;
     }
+    record = null;
   }
 }

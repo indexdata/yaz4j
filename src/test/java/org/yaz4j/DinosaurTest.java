@@ -17,11 +17,11 @@ public class DinosaurTest {
       assertNotNull(con);
       con.setSyntax("usmarc");
       con.connect();
-      ResultSet set = con.search("@attr 1=7 0253333490",
-        Connection.QueryType.PrefixQuery);
+      ResultSet set = con.search("@attr 1=7 0253333490", Connection.QueryType.PrefixQuery);
       assertNotNull(set);
       Record rec = set.getRecord(0);
       assertNotNull(rec);
+      set.close();
     } catch (ZoomException ze) {
       fail(ze.getMessage());
     } finally {

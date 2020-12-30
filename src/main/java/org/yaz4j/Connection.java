@@ -2,7 +2,6 @@ package org.yaz4j;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.rmi.UnexpectedException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,14 +44,10 @@ public class Connection implements Closeable {
   private final String host;
   private final int port;
   protected SWIGTYPE_p_ZOOM_connection_p zoomConnection;
-  //connection is initially closed
-  protected boolean closed = true;
-  private boolean disposed = false;
 
   public enum QueryType {
-
     CQLQuery, PrefixQuery
-  };
+  }
 
   static Logger logger = Logger.getLogger("Connection");
 
@@ -74,16 +69,17 @@ public class Connection implements Closeable {
    */
   public Connection(String host, int port) {
     if (host == null)
-      throw new NullPointerException("host cannot be null");
+      throw new IllegalArgumentException("host cannot be null");
     this.host = host;
     this.port = port;
     zoomConnection = yaz4jlib.ZOOM_connection_create(null);
   }
 
-  public void finalize() {
-    _dispose();
-  }
+  private void check() {
+    if (zoomConnection == null)
+      throw new IllegalStateException("Connection is closed");
 
+  }
   /**
    * Performs a search operation (submits the query to the server, waits for
    * response and creates a new result set that allows to retrieve particular
@@ -99,11 +95,10 @@ public class Connection implements Closeable {
   public ResultSet search(String query, QueryType queryType) throws
     ZoomException {
     if (query == null)
-      throw new NullPointerException("query cannot be null");
+      throw new IllegalArgumentException("query cannot be null");
     if (queryType == null)
-      throw new NullPointerException("queryType cannot be null");
-    if (closed)
-      throw new IllegalStateException("Connection is closed.");
+      throw new IllegalArgumentException("queryType cannot be null");
+    check();
     SWIGTYPE_p_ZOOM_query_p yazQuery = null;
     if (queryType == QueryType.CQLQuery) {
       yazQuery = yaz4jlib.ZOOM_query_create();
@@ -135,9 +130,8 @@ public class Connection implements Closeable {
    */
   public ResultSet search(Query query) throws ZoomException {
     if (query == null)
-      throw new NullPointerException("query cannot be null");
-    if (closed)
-      throw new IllegalStateException("Connection is closed.");
+      throw new IllegalArgumentException("query cannot be null");
+    check();
     SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(
       zoomConnection, query.query);
     ZoomException err = ExceptionUtil.getError(zoomConnection, host,
@@ -160,9 +154,8 @@ public class Connection implements Closeable {
   @Deprecated
   public ScanSet scan(String query) throws ZoomException {
     if (query == null)
-      throw new NullPointerException("query cannot be null");
-    if (closed)
-      throw new IllegalStateException("Connection is closed.");
+      throw new IllegalArgumentException("query cannot be null");
+    check();
     SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan(
       zoomConnection, query);
     ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
@@ -170,8 +163,7 @@ public class Connection implements Closeable {
       yaz4jlib.ZOOM_scanset_destroy(yazScanSet);
       throw err;
     }
-    ScanSet scanSet = new ScanSet(yazScanSet, this);
-    return scanSet;
+    return new ScanSet(yazScanSet);
   }
   
     /**
@@ -184,9 +176,8 @@ public class Connection implements Closeable {
    */
   public ScanSet scan(Query query) throws ZoomException {
     if (query == null)
-      throw new NullPointerException("query cannot be null");
-    if (closed)
-      throw new IllegalStateException("Connection is closed.");
+      throw new IllegalArgumentException("query cannot be null");
+    check();
     SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan1(
       zoomConnection, query.query);
     ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
@@ -194,21 +185,20 @@ public class Connection implements Closeable {
       yaz4jlib.ZOOM_scanset_destroy(yazScanSet);
       throw err;
     }
-    ScanSet scanSet = new ScanSet(yazScanSet, this);
-    return scanSet;
+    return new ScanSet(yazScanSet);
   }
 
   /**
    * Establishes a connection to the remote server.
-   * @throws ZoomException any (possibly network-level) errors that may occurr
+   * @throws ZoomException any (possibly network-level) errors that may occur
    */
   public void connect() throws ZoomException {
+    check();
     yaz4jlib.ZOOM_connection_connect(zoomConnection, host, port);
     ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
     if (err != null) {
       throw err;
     }
-    closed = false;
   }
 
   /**
@@ -216,8 +206,9 @@ public class Connection implements Closeable {
    */
   @Override
   public void close() {
-    yaz4jlib.ZOOM_connection_close(zoomConnection);
-    closed = true;
+    if (zoomConnection != null)
+      yaz4jlib.ZOOM_connection_destroy(zoomConnection);
+    zoomConnection = null;
   }
   
   /**
@@ -226,19 +217,22 @@ public class Connection implements Closeable {
    * @return null if no error
    */
   ZoomException getZoomException() {
-    ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
-    return err;
+    if (zoomConnection == null) {
+      return null;
+    }
+    return ExceptionUtil.getError(zoomConnection, host, port);
   }
 
   /**
    * Write option with a given name.
    * @param name option name
    * @param value option value
-   * @return connection (self) for chainability
+   * @return connection (self) for fluent interface
    */
   public Connection option(String name, String value) {
     if (name == null)
-      throw new NullPointerException("option name cannot be null");
+      throw new IllegalArgumentException("option name cannot be null");
+    check();
     yaz4jlib.ZOOM_connection_option_set(zoomConnection, name, value);
     return this;
   }
@@ -250,7 +244,8 @@ public class Connection implements Closeable {
    */
   public String option(String name) {
     if (name == null)
-      throw new NullPointerException("option name cannot be null");
+      throw new IllegalArgumentException("option name cannot be null");
+    check();
     return yaz4jlib.ZOOM_connection_option_get(zoomConnection, name);
   }
 
@@ -318,14 +313,4 @@ public class Connection implements Closeable {
     option("password", value);
   }
 
-  /**
-   * INTERNAL, GC-ONLY
-   */
-  void _dispose() {
-    if (!disposed) {
-      yaz4jlib.ZOOM_connection_destroy(zoomConnection);
-      zoomConnection = null;
-      disposed = true;
-    }
-  }
 }

@@ -22,14 +22,10 @@ public class Package {
 
   Package(SWIGTYPE_p_ZOOM_package_p pack, ConnectionExtended conn, String type) {
     if (type == null)
-      throw new NullPointerException("type cannot be null");
+      throw new IllegalArgumentException("type cannot be null");
     this.type = type;
     this.pack = pack;
     this.conn = conn;
-  }
-
-  public void finalize() {
-    _dispose();
   }
 
   /**
@@ -40,7 +36,7 @@ public class Package {
    */
   public Package option(String key, String value) {
     if (key == null)
-      throw new NullPointerException("option name cannot be null");
+      throw new IllegalArgumentException("option name cannot be null");
     yaz4jlib.ZOOM_package_option_set(pack, key, value);
     return this;
   }
@@ -52,7 +48,7 @@ public class Package {
    */
   public String option(String key) {
     if (key == null)
-      throw new NullPointerException("option name cannot be null");
+      throw new IllegalArgumentException("option name cannot be null");
     return yaz4jlib.ZOOM_package_option_get(pack, key);
   }
 
@@ -64,14 +60,6 @@ public class Package {
     ZoomException e = conn.getZoomException();
     if (e != null) {
       throw e;
-    }
-  }
-
-  void _dispose() {
-    if (pack != null) {
-      yaz4jlib.ZOOM_package_destroy(pack);
-      pack = null;
-      conn = null;
     }
   }
 }

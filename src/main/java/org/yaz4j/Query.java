@@ -14,13 +14,13 @@ import org.yaz4j.jni.yaz4jlib;
  * @author jakub
  */
 public abstract class Query {
-  
+
+  // TODO make accessor and throw exception when referred to and null (if closed)
   SWIGTYPE_p_ZOOM_query_p query;
-  private boolean disposed = false;
-  
+
   protected Query(String queryString) {
     if (queryString == null)
-      throw new NullPointerException("query string cannot be null");
+      throw new IllegalArgumentException("query string cannot be null");
     query = yaz4jlib.ZOOM_query_create();
   }
   
@@ -31,14 +31,10 @@ public abstract class Query {
     }
   }
   
-  protected void finalize() {
-    _dispose();
-  }
-
-  void _dispose() {
-    if (!disposed) {
+  public void close() {
+    if (query != null) {
       yaz4jlib.ZOOM_query_destroy(query);
-      disposed = true;
+      query = null;
     }
   }
   

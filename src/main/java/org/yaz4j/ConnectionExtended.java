@@ -25,7 +25,7 @@ public class ConnectionExtended extends Connection {
    * @return 
    */
   public Package getPackage(String type) {
-    if (closed) {
+    if (zoomConnection == null) {
       throw new IllegalStateException("Connection is closed.");
     }
     Package pack = null;

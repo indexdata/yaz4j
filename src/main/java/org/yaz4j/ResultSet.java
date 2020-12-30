@@ -30,22 +30,15 @@ import org.yaz4j.jni.yaz4jlib;
  * @author jakub
  */
 public class ResultSet implements Iterable<Record> {
-  //for GC refcount
 
   private Connection conn;
   private SWIGTYPE_p_ZOOM_resultset_p resultSet;
   private long size = 0;
-  private boolean disposed = false;
 
   ResultSet(SWIGTYPE_p_ZOOM_resultset_p resultSet, Connection conn) {
     this.resultSet = resultSet;
     size = yaz4jlib.ZOOM_resultset_size(this.resultSet);
     this.conn = conn;
-  }
-
-  @Override
-  public void finalize() {
-    this._dispose();
   }
 
   /**
@@ -54,6 +47,7 @@ public class ResultSet implements Iterable<Record> {
    * @return option value
    */
   public String option(String name) {
+    check();
     return yaz4jlib.ZOOM_resultset_option_get(resultSet, name);
   }
 
@@ -65,12 +59,14 @@ public class ResultSet implements Iterable<Record> {
    */
   public ResultSet option(String name, String value) {
     if (name == null)
-      throw new NullPointerException("option name cannot be null");
+      throw new IllegalArgumentException("option name cannot be null");
+    check();
     yaz4jlib.ZOOM_resultset_option_set(resultSet, name, value);
     return this;
   }
 
   public Record getRecord(long index) throws ZoomException {
+    check();
     SWIGTYPE_p_ZOOM_record_p record =
       yaz4jlib.ZOOM_resultset_record(resultSet, index);
     //may be out of range or unsupported syntax
@@ -81,7 +77,7 @@ public class ResultSet implements Iterable<Record> {
     if (errorCode != 0) {
       throw new ZoomException("Record exception, code " + errorCode);
     }
-    return new Record(record, this);
+    return new Record(record);
   }
   
   /**
@@ -93,10 +89,11 @@ public class ResultSet implements Iterable<Record> {
    * @throws ZoomException raised in case of protocol errors
    */
   public List<Record> getRecords(long start, int count) throws ZoomException {
+    check();
     List<Record> out = new ArrayList<Record>(count);
     SWIGTYPE_p_p_ZOOM_record_p recs = yaz4jlib.new_zoomRecordArray(count);
     yaz4jlib.ZOOM_resultset_records(resultSet, recs, start, count);
-    ZoomException err = this.conn.getZoomException();
+    ZoomException err = conn.getZoomException();
     if (err != null) { 
       throw err;
     }
@@ -110,7 +107,7 @@ public class ResultSet implements Iterable<Record> {
       if (errorCode != 0) {
         throw new ZoomException("Record exception, code " + errorCode);
       }
-      out.add(new Record(record, this));
+      out.add(new Record(record));
     }
     return out;
   }
@@ -148,25 +145,33 @@ public class ResultSet implements Iterable<Record> {
    * @throws ZoomException 
    */
   public ResultSet sort(String type, String spec) throws ZoomException {
+    check();
     if (type == null)
-      throw new NullPointerException("sort type cannot be null");
+      throw new IllegalArgumentException("sort type cannot be null");
     if (spec == null)
-      throw new NullPointerException("sort spec cannot be null");
+      throw new IllegalArgumentException("sort spec cannot be null");
+    check();
     int ret = yaz4jlib.ZOOM_resultset_sort1(resultSet, type, spec);
     if (ret != 0) throw new ZoomException("Sorting resultset failed");
     return this;
   }
 
   public long getHitCount() {
+    check();
     return size;
   }
 
-  void _dispose() {
-    if (!disposed) {
+  private void check() {
+    if (resultSet == null) {
+      throw new IllegalStateException("resultSet is closed");
+    }
+  }
+
+  public void close() {
+    if (resultSet != null) {
       yaz4jlib.ZOOM_resultset_destroy(resultSet);
       resultSet = null;
       conn = null;
-      disposed = true;
     }
   }
 }

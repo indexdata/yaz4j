@@ -9,23 +9,17 @@ import org.yaz4j.jni.yaz4jlib;
 
 public class ScanSet implements Iterable<ScanTerm> {
 
-  //for GC ref-count
-  private Connection conn;
   private SWIGTYPE_p_ZOOM_scanset_p scanSet;
-  private boolean disposed = false;
   private long size = 0;
 
-  ScanSet(SWIGTYPE_p_ZOOM_scanset_p scanSet, Connection conn) {
+  ScanSet(SWIGTYPE_p_ZOOM_scanset_p scanSet) {
     this.scanSet = scanSet;
     size = yaz4jlib.ZOOM_scanset_size(scanSet);
-    this.conn = conn;
-  }
-
-  public void finalize() {
-    _dispose();
   }
 
   public ScanTerm get(long index) {
+    if (scanSet == null)
+      throw new IllegalStateException("ScanSet is closed");
     SWIGTYPE_p_size_t occ = yaz4jlib.new_size_tp();
     SWIGTYPE_p_size_t length = yaz4jlib.new_size_tp();
     String term = yaz4jlib.ZOOM_scanset_term(scanSet, (long) index, occ, length);
@@ -39,12 +33,10 @@ public class ScanSet implements Iterable<ScanTerm> {
     return size;
   }
 
-  void _dispose() {
-    if (!disposed) {
+  public void close() {
+    if (scanSet != null) {
       yaz4jlib.ZOOM_scanset_destroy(scanSet);
       scanSet = null;
-      conn = null;
-      disposed = true;
     }
   }
 
