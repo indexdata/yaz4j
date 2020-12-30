@@ -351,7 +351,7 @@
       <properties>
         <swig>swig</swig>
 	<native.file>yaz4j.dll</native.file>
-	<yaz.path>c:\users\Adam Dickmeiss\Desktop\proj\win64\YAZ</yaz.path>
+	<yaz.path>c:\Program Files\YAZ</yaz.path>
 	<yaz.lib>${yaz.path}\lib\yaz5.lib</yaz.lib>
 	<yaz.include>${yaz.path}\include</yaz.include>
 	<yaz.cflags></yaz.cflags>
