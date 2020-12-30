@@ -1,5 +1,4 @@
-INTRODUCTION
-============
+# INTRODUCTION
 
 [yaz4j] is a Java binding for the
 high-level, client-side portion of the [YAZ] toolkit known as the ZOOM API.
@@ -12,15 +11,13 @@ yaz4j is covered by the
 That should be same as the
 [BSD 3 Clause License](http://opensource.org/licenses/BSD-3-Clause).
 
-INSTALLATION
-============
+# INSTALLATION
 
 Index Data provides a Maven repository with the artifact
 for development as well as a Debian packages for the most
 recent Debian and Ubuntu distributions.
 
-Installing from Debian/Ubuntu
------------------------------
+## Debian/Ubuntu
 
 The easiest way to install the package is to enable Index Data's
 APT. For Debian refer to
@@ -32,11 +29,14 @@ When done, proceed with
     sudo apt update
     sudo apt install yaz4j libyaz4j
 
-COMPILATION FROM SOURCE
-=======================
 
-Unix
-----
+## Windows
+
+yaz4j is part of the YAZ package for Windows. [32-bit](http://ftp.indexdata.dk/pub/yaz/win32/) [64-bit](http://ftp.indexdata.dk/pub/yaz/win64/).
+
+# COMPILATION FROM SOURCE
+
+## Unix
 
 [yaz4j] can be cloned the [GitHub][yaz4jgithub] repository:
 
@@ -54,16 +54,12 @@ If yaz-config is in the `PATH`, the following command should suffice:
 The result is `target/yaz4j-VERSION.jar` and a shared object
 `target/native/libyaz4j.so`.
 
-Windows
--------
-
-(Windows support was removed for version 1.6.0 due to major
-changes in the build structure for yaz4j. Will be available again).
+## Windows
 
 Besides the exact same requirements as in the Unix case (JDK, Maven, SWIG,
-YAZ), you will need the Windows SDK installed (which in turn requires
-.NET Framework 4) to compile yaz4j. Again it's much easier to use the
-YAZ Installer. Git must be installed to checkout yaz4j source code.
+YAZ), you will need the Visual Studio to compile yaz4j. Since you
+are not using the YAZ installer you are probably also compiling YAZ
+on your own. Use same compiler for yaz4j as you use for YAZ.
 
 Use the command prompt provided with the Windows SDK, navigate to the yaz4j
 source directory and run:
@@ -78,12 +74,11 @@ environment variable to include the directory containing
 
     mvn -Dyaz.path=/path/to/yaz/installdir -Dswig=/path/to/swig/binary install
 
-The compiled jar file ends up in `any/target/yaz4j.jar` while the native library
-in `win32/target/libyaz4j.dll`.
+The compiled jar file ends up in `target/yaz4j-version.jar` while the
+native library in `target/native/yaz4j.dll`.
 
 
-Using Maven
-===========
+## Using Maven
 
 If you are using maven to build your application you can include Index Data's
 maven repository and include yaz4j as a dependency in your jar or war project:
