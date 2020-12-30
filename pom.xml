@@ -236,6 +236,8 @@
         <yaz.config>yaz-config</yaz.config>
         <swig>swig</swig>
         <native.file>libyaz4j.so</native.file>
+        <compiler>g++</compiler>
+        <compiler.flags>-O</compiler.flags>
       </properties>
       <build>
         <plugins>
@@ -276,8 +278,9 @@
                 </goals>
                 <configuration>
                   <target>
-                    <exec executable="g++">
+                    <exec executable="${compiler}">
                       <arg value="-fPIC"/>
+                      <arg line="${compiler.flags}"/>
                       <arg value="-Wno-deprecated-declarations" />
                       <arg value="-I${java.home}/include" />
                       <arg value="-I${java.home}/include/linux" />
@@ -288,8 +291,9 @@
                       <arg value="-o"/>
                       <arg value="${basedir}/target/zoom-extra.o" />
                     </exec>
-                    <exec executable="g++">
+                    <exec executable="${compiler}">
                       <arg value="-fPIC"/>
+                      <arg line="${compiler.flags}"/>
                       <arg value="-Wno-deprecated-declarations" />
                       <arg value="-I${java.home}/include" />
                       <arg value="-I${java.home}/include/linux" />
@@ -300,8 +304,9 @@
                       <arg value="-o"/>
                       <arg value="${basedir}/target/libyaz4j.o" />
                     </exec>
-                    <exec executable="g++">
+                    <exec executable="${compiler}">
                       <arg value="-shared"/>
+                      <arg line="${compiler.flags}"/>
                       <arg value="-o" />
                       <arg value="${native.dir}/${native.file}"/>
                       <arg value="${basedir}/target/libyaz4j.o"/>
