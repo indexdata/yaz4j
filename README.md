@@ -1,4 +1,4 @@
-# INTRODUCTION
+# Introduction
 
 [yaz4j] is a Java binding for the
 high-level, client-side portion of the [YAZ] toolkit known as the ZOOM API.
@@ -11,7 +11,7 @@ yaz4j is covered by the
 That should be same as the
 [BSD 3 Clause License](http://opensource.org/licenses/BSD-3-Clause).
 
-# INSTALLATION
+# Installation
 
 Index Data provides a Maven repository with the artifact
 for development as well as a Debian packages for the most
@@ -29,12 +29,11 @@ When done, proceed with
     sudo apt update
     sudo apt install yaz4j libyaz4j
 
-
 ## Windows
 
 yaz4j is part of the YAZ package for Windows. [32-bit](http://ftp.indexdata.dk/pub/yaz/win32/) [64-bit](http://ftp.indexdata.dk/pub/yaz/win64/).
 
-# COMPILATION FROM SOURCE
+# Compilation from source
 
 ## Unix
 
