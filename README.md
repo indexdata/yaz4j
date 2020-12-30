@@ -64,27 +64,35 @@ When done, proceed with
 
 ## Windows
 
-yaz4j is part of the YAZ package for Windows. [32-bit](http://ftp.indexdata.dk/pub/yaz/win32/) [64-bit](http://ftp.indexdata.dk/pub/yaz/win64/).
+yaz4j is part of the YAZ package for Windows.
+[32-bit](http://ftp.indexdata.dk/pub/yaz/win32/)
+[64-bit](http://ftp.indexdata.dk/pub/yaz/win64/).
 
 # Compilation from source
 
-## Unix
+You will need JDK, [Maven](https://maven.apache.org),
+[SWIG](http://swig.org) and [YAZ] development packages.
+
+For compilation of YAZ please consult YAZ [manual].
 
 [yaz4j] can be cloned the [GitHub][yaz4jgithub] repository:
 
     git clone https://github.com/indexdata/yaz4j.git
 
-You will need JDK, Maven, SWIG and YAZ development packages.
-Consult your package manager on how to install those. For compilation
-of YAZ please consult YAZ [manual]. If using Debian/Ubuntu, see
-debian/control file for packages required.
-
-If yaz-config is in the `PATH`, the following command should suffice:
+In all cases you'll have to invoke the Maven command `mvn` to
+compile yaz4j. For example
 
     mvn install
 
-The result is `target/yaz4j-VERSION.jar` and a shared object
-`target/native/libyaz4j.so`.
+## Unix
+
+On Unix, the `yaz-config` utility is used to get compiler flags and
+linker libraries for the shared object. Usually it's enough
+to install as whole. If there are packages for YAZ already, use
+install the "devel" package or "dev" package. Check that `yaz-config`
+is in the `PATH`. After running 'mvn install`, the result is the Java
+archive `target/yaz4j-VERSION.jar` and a shared
+object `target/native/libyaz4j.so`.
 
 ## Windows
 
@@ -98,7 +106,7 @@ source directory and run:
 
     mvn install
 
-Default 64-bit YAZ installer location, that is`C:\Program Files\YAZ\`,
+Default 64-bit YAZ installer location, that is`C:\Program Files\YAZ`,
 is assumed for the `yaz.path` property. Nothing is assumed for `swig`, 
 so you either need to specify an absolute path or update the `PATH` 
 environment variable to include the directory containing 
@@ -108,7 +116,6 @@ environment variable to include the directory containing
 
 The compiled jar file ends up in `target/yaz4j-version.jar` while the
 native library in `target/native/yaz4j.dll`.
-
 
 ## Using Maven
 
