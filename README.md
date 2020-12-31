@@ -90,7 +90,7 @@ On Unix, the `yaz-config` utility is used to get compiler flags and
 linker libraries for the shared object. Usually it's enough
 to install as whole. If there are packages for YAZ already, use
 install the "devel" package or "dev" package. Check that `yaz-config`
-is in the `PATH`. After running 'mvn install`, the result is the Java
+is in the `PATH`. After running `mvn install`, the result is the Java
 archive `target/yaz4j-VERSION.jar` and a shared
 object `target/native/libyaz4j.so`.
 
