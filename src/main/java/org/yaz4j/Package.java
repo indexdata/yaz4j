@@ -58,7 +58,6 @@ public class Package {
    */
   public void send() throws ZoomException {
     check();
-    conn.check();
     yaz4jlib.ZOOM_package_send(pack, type);
     ZoomException e = conn.getZoomException();
     if (e != null) {
@@ -77,5 +76,6 @@ public class Package {
       yaz4jlib.ZOOM_package_destroy(pack);
       pack = null;
     }
+    conn = null;
   }
 }
