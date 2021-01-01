@@ -15,7 +15,6 @@ import org.yaz4j.jni.yaz4jlib;
  * @author jakub
  */
 public class Package {
-  //for GC ref count
   private ConnectionExtended conn;
   private SWIGTYPE_p_ZOOM_package_p pack;
   private final String type;
@@ -37,6 +36,7 @@ public class Package {
   public Package option(String key, String value) {
     if (key == null)
       throw new IllegalArgumentException("option name cannot be null");
+    check();
     yaz4jlib.ZOOM_package_option_set(pack, key, value);
     return this;
   }
@@ -49,6 +49,7 @@ public class Package {
   public String option(String key) {
     if (key == null)
       throw new IllegalArgumentException("option name cannot be null");
+    check();
     return yaz4jlib.ZOOM_package_option_get(pack, key);
   }
 
@@ -56,10 +57,25 @@ public class Package {
    * Send the package.
    */
   public void send() throws ZoomException {
+    check();
+    conn.check();
     yaz4jlib.ZOOM_package_send(pack, type);
     ZoomException e = conn.getZoomException();
     if (e != null) {
       throw e;
+    }
+  }
+
+  protected void check() {
+    if (pack == null) {
+      throw new IllegalStateException("package is closed");
+    }
+  }
+
+  public void close() {
+    if (pack != null) {
+      yaz4jlib.ZOOM_package_destroy(pack);
+      pack = null;
     }
   }
 }

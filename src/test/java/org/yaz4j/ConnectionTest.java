@@ -233,7 +233,7 @@ public class ConnectionTest {
   public void connectionNullHost() {
     String msg = "";
     try {
-      Connection con = new Connection(null, 0);
+      new Connection(null, 0);
     } catch (IllegalArgumentException e) {
       msg = e.getMessage();
     }

@@ -4,6 +4,9 @@ import org.yaz4j.jni.SWIGTYPE_p_ZOOM_options_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_package_p;
 import org.yaz4j.jni.yaz4jlib;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Offers an interface to a subset of the Z39.50 extended services as well as a 
  * few privately defined ones. E.g, Z59.50 ILL, record update, database drop,
@@ -15,6 +18,8 @@ import org.yaz4j.jni.yaz4jlib;
  */
 public class ConnectionExtended extends Connection {
 
+  List<Package> packages = new LinkedList<>(); // all packages returnded
+
   public ConnectionExtended(String host, int port) {
     super(host, port);
   }
@@ -25,14 +30,24 @@ public class ConnectionExtended extends Connection {
    * @return 
    */
   public Package getPackage(String type) {
-    if (zoomConnection == null) {
-      throw new IllegalStateException("Connection is closed.");
-    }
-    Package pack = null;
+    check();
     SWIGTYPE_p_ZOOM_options_p options = yaz4jlib.ZOOM_options_create();
     SWIGTYPE_p_ZOOM_package_p yazPackage = yaz4jlib.ZOOM_connection_package(
       zoomConnection, options);
-    pack = new Package(yazPackage, this, type);
+    Package pack = new Package(yazPackage, this, type);
+    packages.add(pack);
     return pack;
+  }
+
+  protected void check() {
+    super.check();
+  }
+
+  @Override
+  public void close() {
+    super.close();
+    for (Package pack: packages) {
+      pack.close();
+    }
   }
 }

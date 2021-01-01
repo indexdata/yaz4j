@@ -1,7 +1,9 @@
 package org.yaz4j;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.yaz4j.exception.ZoomException;
@@ -29,11 +31,12 @@ import org.yaz4j.jni.yaz4jlib;
  *
  * @author jakub
  */
-public class ResultSet implements Iterable<Record> {
+public class ResultSet implements Closeable, Iterable<Record> {
 
   private Connection conn;
   private SWIGTYPE_p_ZOOM_resultset_p resultSet;
   private long size = 0;
+  private List<Record> records = new LinkedList<>(); // all records returned by this set
 
   ResultSet(SWIGTYPE_p_ZOOM_resultset_p resultSet, Connection conn) {
     this.resultSet = resultSet;
@@ -67,17 +70,19 @@ public class ResultSet implements Iterable<Record> {
 
   public Record getRecord(long index) throws ZoomException {
     check();
-    SWIGTYPE_p_ZOOM_record_p record =
+    SWIGTYPE_p_ZOOM_record_p nativeRecord =
       yaz4jlib.ZOOM_resultset_record(resultSet, index);
     //may be out of range or unsupported syntax
-    if (record == null) {
+    if (nativeRecord == null) {
       return null;
     }
-    int errorCode = yaz4jlib.ZOOM_record_error(record, null, null, null);
+    int errorCode = yaz4jlib.ZOOM_record_error(nativeRecord, null, null, null);
     if (errorCode != 0) {
       throw new ZoomException("Record exception, code " + errorCode);
     }
-    return new Record(record);
+    Record record = new Record(nativeRecord);
+    records.add(record);
+    return record;
   }
   
   /**
@@ -98,16 +103,18 @@ public class ResultSet implements Iterable<Record> {
       throw err;
     }
     for (int i = 0; i < count; i++) {
-      SWIGTYPE_p_ZOOM_record_p record =
+      SWIGTYPE_p_ZOOM_record_p nativeRecord =
         yaz4jlib.zoomRecordArray_getitem(recs, i);
-      if (record == null) {
+      if (nativeRecord == null) {
         continue;
       }
-      int errorCode = yaz4jlib.ZOOM_record_error(record, null, null, null);
+      int errorCode = yaz4jlib.ZOOM_record_error(nativeRecord, null, null, null);
       if (errorCode != 0) {
         throw new ZoomException("Record exception, code " + errorCode);
       }
-      out.add(new Record(record));
+      Record record = new Record(nativeRecord);
+      records.add(record);
+      out.add(record);
     }
     return out;
   }
@@ -145,7 +152,6 @@ public class ResultSet implements Iterable<Record> {
    * @throws ZoomException 
    */
   public ResultSet sort(String type, String spec) throws ZoomException {
-    check();
     if (type == null)
       throw new IllegalArgumentException("sort type cannot be null");
     if (spec == null)
@@ -161,13 +167,18 @@ public class ResultSet implements Iterable<Record> {
     return size;
   }
 
-  private void check() {
+  protected void check() {
     if (resultSet == null) {
       throw new IllegalStateException("resultSet is closed");
     }
   }
 
+  @Override
   public void close() {
+    for (Record record : records) {
+      record.close();
+    }
+    records.clear();
     if (resultSet != null) {
       yaz4jlib.ZOOM_resultset_destroy(resultSet);
       resultSet = null;

@@ -2,6 +2,8 @@ package org.yaz4j;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +46,8 @@ public class Connection implements Closeable {
   private final String host;
   private final int port;
   protected SWIGTYPE_p_ZOOM_connection_p zoomConnection;
+  private List<ResultSet> resultSets = new LinkedList<>(); // all result sets returned
+  private List<ScanSet> scanSets = new LinkedList<>(); // all scan sets returned
 
   public enum QueryType {
     CQLQuery, PrefixQuery
@@ -75,10 +79,9 @@ public class Connection implements Closeable {
     zoomConnection = yaz4jlib.ZOOM_connection_create(null);
   }
 
-  private void check() {
+  protected void check() {
     if (zoomConnection == null)
       throw new IllegalStateException("Connection is closed");
-
   }
   /**
    * Performs a search operation (submits the query to the server, waits for
@@ -92,8 +95,7 @@ public class Connection implements Closeable {
    * @throws ZoomException protocol or network-level error
    */
   @Deprecated
-  public ResultSet search(String query, QueryType queryType) throws
-    ZoomException {
+  public ResultSet search(String query, QueryType queryType) throws ZoomException {
     if (query == null)
       throw new IllegalArgumentException("query cannot be null");
     if (queryType == null)
@@ -107,16 +109,12 @@ public class Connection implements Closeable {
       yazQuery = yaz4jlib.ZOOM_query_create();
       yaz4jlib.ZOOM_query_prefix(yazQuery, query);
     }
-    SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(
-      zoomConnection, yazQuery);
-    yaz4jlib.ZOOM_query_destroy(yazQuery);
-    ZoomException err = ExceptionUtil.getError(zoomConnection, host,
-      port);
-    if (err != null) {
-      yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
-      throw err;
+    try {
+      return search(yaz4jlib.ZOOM_connection_search(
+          zoomConnection, yazQuery));
+    } finally {
+      yaz4jlib.ZOOM_query_destroy(yazQuery);
     }
-    return new ResultSet(yazResultSet, this);
   }
   
     /**
@@ -132,15 +130,18 @@ public class Connection implements Closeable {
     if (query == null)
       throw new IllegalArgumentException("query cannot be null");
     check();
-    SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(
-      zoomConnection, query.query);
-    ZoomException err = ExceptionUtil.getError(zoomConnection, host,
-      port);
+    return search(yaz4jlib.ZOOM_connection_search(zoomConnection, query.query));
+  }
+
+  private ResultSet search(SWIGTYPE_p_ZOOM_resultset_p yazResultSet) throws ZoomException {
+    ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
     if (err != null) {
       yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
       throw err;
     }
-    return new ResultSet(yazResultSet, this);
+    ResultSet set = new ResultSet(yazResultSet, this);
+    resultSets.add(set);
+    return set;
   }
 
   /**
@@ -156,14 +157,7 @@ public class Connection implements Closeable {
     if (query == null)
       throw new IllegalArgumentException("query cannot be null");
     check();
-    SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan(
-      zoomConnection, query);
-    ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
-    if (err != null) {
-      yaz4jlib.ZOOM_scanset_destroy(yazScanSet);
-      throw err;
-    }
-    return new ScanSet(yazScanSet);
+    return scan(yaz4jlib.ZOOM_connection_scan(zoomConnection, query));
   }
   
     /**
@@ -178,14 +172,18 @@ public class Connection implements Closeable {
     if (query == null)
       throw new IllegalArgumentException("query cannot be null");
     check();
-    SWIGTYPE_p_ZOOM_scanset_p yazScanSet = yaz4jlib.ZOOM_connection_scan1(
-      zoomConnection, query.query);
+    return scan(yaz4jlib.ZOOM_connection_scan1(zoomConnection, query.query));
+  }
+
+  private ScanSet scan(SWIGTYPE_p_ZOOM_scanset_p yazScanSet) throws ZoomException {
     ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
     if (err != null) {
       yaz4jlib.ZOOM_scanset_destroy(yazScanSet);
       throw err;
     }
-    return new ScanSet(yazScanSet);
+    ScanSet set = new ScanSet(yazScanSet);
+    scanSets.add(set);
+    return set;
   }
 
   /**
@@ -206,9 +204,18 @@ public class Connection implements Closeable {
    */
   @Override
   public void close() {
-    if (zoomConnection != null)
+    for (ResultSet set : resultSets) {
+      set.close();
+    }
+    resultSets.clear();
+    for (ScanSet set : scanSets) {
+      set.close();
+    }
+    scanSets.clear();
+    if (zoomConnection != null) {
       yaz4jlib.ZOOM_connection_destroy(zoomConnection);
-    zoomConnection = null;
+      zoomConnection = null;
+    }
   }
   
   /**

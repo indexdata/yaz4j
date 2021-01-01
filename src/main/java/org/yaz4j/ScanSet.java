@@ -1,5 +1,6 @@
 package org.yaz4j;
 
+import java.io.Closeable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.yaz4j.exception.ZoomException;
@@ -7,7 +8,7 @@ import org.yaz4j.jni.SWIGTYPE_p_ZOOM_scanset_p;
 import org.yaz4j.jni.SWIGTYPE_p_size_t;
 import org.yaz4j.jni.yaz4jlib;
 
-public class ScanSet implements Iterable<ScanTerm> {
+public class ScanSet implements Closeable, Iterable<ScanTerm> {
 
   private SWIGTYPE_p_ZOOM_scanset_p scanSet;
   private long size = 0;
@@ -18,8 +19,7 @@ public class ScanSet implements Iterable<ScanTerm> {
   }
 
   public ScanTerm get(long index) {
-    if (scanSet == null)
-      throw new IllegalStateException("ScanSet is closed");
+    check();
     SWIGTYPE_p_size_t occ = yaz4jlib.new_size_tp();
     SWIGTYPE_p_size_t length = yaz4jlib.new_size_tp();
     String term = yaz4jlib.ZOOM_scanset_term(scanSet, (long) index, occ, length);
@@ -33,6 +33,13 @@ public class ScanSet implements Iterable<ScanTerm> {
     return size;
   }
 
+  protected void check() {
+    if (scanSet == null) {
+      throw new IllegalStateException("scanSet is closed");
+    }
+  }
+
+  @Override
   public void close() {
     if (scanSet != null) {
       yaz4jlib.ZOOM_scanset_destroy(scanSet);

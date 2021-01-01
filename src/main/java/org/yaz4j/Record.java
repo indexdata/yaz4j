@@ -3,7 +3,9 @@ package org.yaz4j;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_record_p;
 import org.yaz4j.jni.yaz4jlib;
 
-public class Record implements Cloneable {
+import java.io.Closeable;
+
+public class Record implements Closeable {
 
   private SWIGTYPE_p_ZOOM_record_p record;
   private SWIGTYPE_p_ZOOM_record_p record_cloned;
@@ -13,8 +15,7 @@ public class Record implements Cloneable {
   }
 
   public byte[] get(String type) {
-    if (record == null)
-      throw new IllegalStateException("Record is closed");
+    check();
     if (type == null)
       throw new IllegalArgumentException("type cannot be null");
     return yaz4jlib.ZOOM_record_get_bytes(record, type);
@@ -38,9 +39,16 @@ public class Record implements Cloneable {
 
   @Override
   public Record clone() {
+    check();
     Record newRecord = new Record(yaz4jlib.ZOOM_record_clone(this.record));
     newRecord.record_cloned = newRecord.record;
     return newRecord;
+  }
+
+  protected void check() {
+    if (record == null) {
+      throw new IllegalStateException("record is closed");
+    }
   }
 
   public void close() {

@@ -33,7 +33,6 @@ public class DinosaurTest {
       ResultSet set = con.search(new PrefixQuery("@attr 1=7 0253333490"));
       Record rec = set.getRecord(0);
       System.out.println(rec.render());
-      set.close();
     } catch (ZoomException ze) {
       Assert.fail(ze.getMessage());
     } finally {
