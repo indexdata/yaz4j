@@ -109,12 +109,7 @@ public class Connection implements Closeable {
       yazQuery = yaz4jlib.ZOOM_query_create();
       yaz4jlib.ZOOM_query_prefix(yazQuery, query);
     }
-    try {
-      return search(yaz4jlib.ZOOM_connection_search(
-          zoomConnection, yazQuery));
-    } finally {
-      yaz4jlib.ZOOM_query_destroy(yazQuery);
-    }
+    return search(yazQuery);
   }
   
     /**
@@ -130,18 +125,24 @@ public class Connection implements Closeable {
     if (query == null)
       throw new IllegalArgumentException("query cannot be null");
     check();
-    return search(yaz4jlib.ZOOM_connection_search(zoomConnection, query.query));
+    SWIGTYPE_p_ZOOM_query_p nativeQuery = query.getNativeQuery();
+    return search(nativeQuery);
   }
 
-  private ResultSet search(SWIGTYPE_p_ZOOM_resultset_p yazResultSet) throws ZoomException {
-    ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
-    if (err != null) {
-      yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
-      throw err;
+  private ResultSet search(SWIGTYPE_p_ZOOM_query_p nativeQuery) throws ZoomException {
+    try {
+      SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(zoomConnection, nativeQuery);
+      ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
+      if (err != null) {
+        yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
+        throw err;
+      }
+      ResultSet set = new ResultSet(yazResultSet, this);
+      resultSets.add(set);
+      return set;
+    } finally {
+      yaz4jlib.ZOOM_query_destroy(nativeQuery);
     }
-    ResultSet set = new ResultSet(yazResultSet, this);
-    resultSets.add(set);
-    return set;
   }
 
   /**
@@ -172,7 +173,13 @@ public class Connection implements Closeable {
     if (query == null)
       throw new IllegalArgumentException("query cannot be null");
     check();
-    return scan(yaz4jlib.ZOOM_connection_scan1(zoomConnection, query.query));
+    SWIGTYPE_p_ZOOM_query_p nativeQuery = query.getNativeQuery();
+    try {
+      ScanSet scanSet = scan(yaz4jlib.ZOOM_connection_scan1(zoomConnection, nativeQuery));
+      return scanSet;
+    } finally {
+      yaz4jlib.ZOOM_query_destroy(nativeQuery);
+    }
   }
 
   private ScanSet scan(SWIGTYPE_p_ZOOM_scanset_p yazScanSet) throws ZoomException {

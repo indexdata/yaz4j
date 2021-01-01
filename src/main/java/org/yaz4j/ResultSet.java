@@ -182,7 +182,7 @@ public class ResultSet implements Closeable, Iterable<Record> {
     if (resultSet != null) {
       yaz4jlib.ZOOM_resultset_destroy(resultSet);
       resultSet = null;
-      conn = null;
     }
+    conn = null;
   }
 }

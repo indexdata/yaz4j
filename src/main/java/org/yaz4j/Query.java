@@ -14,28 +14,46 @@ import org.yaz4j.jni.yaz4jlib;
  * @author jakub
  */
 public abstract class Query {
+  String queryString;
+  String strategy;
+  String criteria;
 
-  // TODO make accessor and throw exception when referred to and null (if closed)
-  SWIGTYPE_p_ZOOM_query_p query;
-
-  protected Query(String queryString) {
+  protected Query(String queryString) throws ZoomException {
     if (queryString == null)
       throw new IllegalArgumentException("query string cannot be null");
-    query = yaz4jlib.ZOOM_query_create();
+    this.queryString = queryString;
+    SWIGTYPE_p_ZOOM_query_p nativeQuery = getNativeQuery();
+    yaz4jlib.ZOOM_query_destroy(nativeQuery);
   }
   
   public void sortBy(String strategy, String criteria) throws ZoomException {
-    int ret = yaz4jlib.ZOOM_query_sortby2(query, strategy, criteria);
-    if (ret != 0) {
-      throw new ZoomException("query sortBy failed");
-    }
+    if (strategy == null)
+      throw new IllegalArgumentException("strategy string cannot be null");
+    this.strategy = strategy;
+    this.criteria = criteria;
+    SWIGTYPE_p_ZOOM_query_p nativeQuery = getNativeQuery();
+    yaz4jlib.ZOOM_query_destroy(nativeQuery);
   }
-  
-  public void close() {
-    if (query != null) {
-      yaz4jlib.ZOOM_query_destroy(query);
-      query = null;
+
+  abstract int createQuery(SWIGTYPE_p_ZOOM_query_p nativeQuery, String queryString);
+
+  protected SWIGTYPE_p_ZOOM_query_p getNativeQuery() throws ZoomException {
+    SWIGTYPE_p_ZOOM_query_p nativeQuery = yaz4jlib.ZOOM_query_create();
+    if (createQuery(nativeQuery, queryString) != 0) {
+      yaz4jlib.ZOOM_query_destroy(nativeQuery);
+      throw new ZoomException("invalid query " + queryString);
     }
+    if (strategy != null && criteria != null) {
+      int ret = yaz4jlib.ZOOM_query_sortby2(nativeQuery, strategy, criteria);
+      if (ret == -1) {
+        yaz4jlib.ZOOM_query_destroy(nativeQuery);
+        throw new ZoomException("invalid sort strategy " + strategy);
+      }
+      if (ret == -2) {
+        yaz4jlib.ZOOM_query_destroy(nativeQuery);
+        throw new ZoomException("invalid sort criteria " + criteria);
+      }
+    }
+    return nativeQuery;
   }
-  
 }

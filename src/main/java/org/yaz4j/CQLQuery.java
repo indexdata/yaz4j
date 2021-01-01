@@ -5,6 +5,8 @@
  */
 package org.yaz4j;
 
+import org.yaz4j.exception.ZoomException;
+import org.yaz4j.jni.SWIGTYPE_p_ZOOM_query_p;
 import org.yaz4j.jni.yaz4jlib;
 
 /**
@@ -13,9 +15,12 @@ import org.yaz4j.jni.yaz4jlib;
  */
 public class CQLQuery extends Query {
 
-  public CQLQuery(String cqlQuery) {
+  public CQLQuery(String cqlQuery) throws ZoomException {
     super(cqlQuery);
-    yaz4jlib.ZOOM_query_cql(query, cqlQuery);
   }
-  
+
+  int createQuery(SWIGTYPE_p_ZOOM_query_p nativeQuery, String queryString) {
+    return yaz4jlib.ZOOM_query_cql(nativeQuery, queryString);
+  }
+
 }

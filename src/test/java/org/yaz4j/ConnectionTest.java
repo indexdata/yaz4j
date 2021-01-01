@@ -89,6 +89,44 @@ public class ConnectionTest {
   }
 
   @Test
+  public void testConnectionSortBy() {
+    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
+    assertNotNull(con);
+    try {
+      con.setSyntax("sutrs");
+      con.connect();
+      Query query = new PrefixQuery("@attr 1=4 utah");
+      query.sortBy("z3950", "1=4 <i");
+
+      ResultSet s = con.search(query);
+      assertNotNull(s);
+      assertEquals(s.getHitCount(), 9);
+
+      // dig title out of our SUTRS records originating from GRS-1
+      Pattern MY_PATTERN = Pattern.compile("title:\\s*(.*)\\n");
+
+      logger.fine("sorted ones");
+      List<Record> all = s.getRecords(0, (int) s.getHitCount());
+      String p = "";
+      for (Record r : all) {
+        String content = new String(r.getContent());
+        Matcher m = MY_PATTERN.matcher(content);
+        assertTrue(m.find());
+        String title = m.group(1);
+        logger.fine("TITLE=" + title);
+        assertTrue(p.compareTo(title) <= 0);
+        p = title;
+      }
+    } catch (ZoomException ze) {
+      fail(ze.getMessage());
+    } finally {
+      con.close();
+    }
+  }
+
+
+
+  @Test
   public void recordError() {
     Connection con = new Connection("z3950.indexdata.com/gils", 0);
     ResultSet s = null;
