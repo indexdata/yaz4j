@@ -4,6 +4,8 @@ import org.yaz4j.exception.ZoomException;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_package_p;
 import org.yaz4j.jni.yaz4jlib;
 
+import java.io.Closeable;
+
 /**
  * Allows to perform an extended-service operation.
  * 
@@ -14,7 +16,7 @@ import org.yaz4j.jni.yaz4jlib;
  * 
  * @author jakub
  */
-public class Package {
+public class Package implements Closeable {
   private ConnectionExtended conn;
   private SWIGTYPE_p_ZOOM_package_p pack;
   private final String type;
@@ -71,6 +73,7 @@ public class Package {
     }
   }
 
+  @Override
   public void close() {
     if (pack != null) {
       yaz4jlib.ZOOM_package_destroy(pack);
