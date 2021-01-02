@@ -51,6 +51,7 @@ public class Record implements Closeable {
     }
   }
 
+  @Override
   public void close() {
     // only cloned records are really closed
     if (record_cloned != null) {
