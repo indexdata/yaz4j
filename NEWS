@@ -1,3 +1,24 @@
+--- 1.6.0 2021/01/02
+
+* One pom.xml instead of 4. The consequence is that yaz4j uses
+maven-antrun-plugin to run yaz-config, swig, compilers etc. However,
+we'll have to figure out compilation options ourselves. Only Windows
+and Linux supported now.
+
+* yaz4j no longer uses finalize. This makes it more difficult to prevent
+leaks for ZOOM objects such as Record. To ease the use of the API, most
+objects supports Closeable interface. Connections manages result sets,
+scan sets and packages. Result sets manages returned records.. This means
+that in normal operations users of the API will primarily just have to
+do RAII for Connection. Rest will be taken care of. Query is a standalone
+managed object in YAZ. It will never be stored in object state, just
+constructed temporarily. If a closed object is used, IllegalStateException
+is thrown.
+
+* PrefixQuery and CQLQuery may throw ZoomException.
+
+* Native shared object may be bundled with jar. Enable with profile `bundle`.
+
 --- 1.5 2015/05/21
 
 * breaking API change: Package#send throws ZoomException
