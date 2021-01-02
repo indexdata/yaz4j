@@ -15,9 +15,8 @@ public class ConnectionTest {
 
   @Test
   public void testConnectionScan() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
-    assertNotNull(con);
-    try {
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+      assertNotNull(con);
       con.setSyntax("sutrs");
       con.connect();
       ScanSet s = con.scan(new PrefixQuery("@attr 1=4 utah"));
@@ -39,16 +38,13 @@ public class ConnectionTest {
       }
     } catch (ZoomException ze) {
       fail(ze.getMessage());
-    } finally {
-      con.close();
     }
   }
 
   @Test
   public void testConnectionSorting() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
-    assertNotNull(con);
-    try {
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+      assertNotNull(con);
       con.setSyntax("sutrs");
       con.connect();
       ResultSet s = con.search("@attr 1=4 utah", Connection.QueryType.PrefixQuery);
@@ -83,16 +79,13 @@ public class ConnectionTest {
       s.close();
     } catch (ZoomException ze) {
       fail(ze.getMessage());
-    } finally {
-      con.close();
     }
   }
 
   @Test
   public void testConnectionSortBy() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
-    assertNotNull(con);
-    try {
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+      assertNotNull(con);
       con.setSyntax("sutrs");
       con.connect();
       Query query = new PrefixQuery("@attr 1=4 utah");
@@ -119,153 +112,130 @@ public class ConnectionTest {
       }
     } catch (ZoomException ze) {
       fail(ze.getMessage());
-    } finally {
-      con.close();
     }
   }
-
-
 
   @Test
   public void recordError() {
-    Connection con = new Connection("z3950.indexdata.com/gils", 0);
-    ResultSet s = null;
-    assertNotNull(con);
-    String failMessage = "";
-    try {
-      con.setSyntax("postscript");
-      con.connect();
-      s = con.search("@attr 1=4 utah", Connection.QueryType.PrefixQuery);
-      assertNotNull(s);
-      assertEquals(9, s.getHitCount());
-      s.getRecord(0);
-    } catch (ZoomException ze) {
-      failMessage = ze.getMessage();
-    } finally {
-      if (s != null) {
-        s.close();
+    try (Connection con = new Connection("z3950.indexdata.com/gils", 0)) {
+      assertNotNull(con);
+      String failMessage = "";
+      try {
+        con.setSyntax("postscript"); // target does not support this syntax
+        con.connect();
+        ResultSet s = con.search(new PrefixQuery("@attr 1=4 utah"));
+        assertNotNull(s);
+        assertEquals(9, s.getHitCount());
+        s.getRecord(0);
+      } catch (ZoomException ze) {
+        failMessage = ze.getMessage();
       }
-      con.close();
+      assertEquals("Record exception, code 238", failMessage);
     }
-    assertEquals("Record exception, code 238", failMessage);
   }
-
 
   @Test
   public void testRecords() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
-    assertNotNull(con);
-    try {
-      con.setSyntax("usmarc");
-      con.connect();
-      ResultSet s = con.search(new PrefixQuery("@attr 1=4 utah"));
-      assertNotNull(s);
-      assertEquals(9, s.getHitCount());
-      Record record1 = s.getRecord(0);
-      assertNotNull(record1);
-      Record record2 = record1.clone();
-      record1.close();
-      s.close();
-      record2.close();
-    } catch (ZoomException ze) {
-      fail(ze.getMessage());
-    } finally {
-      con.close();
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+      assertNotNull(con);
+      try {
+        con.setSyntax("usmarc");
+        con.connect();
+        ResultSet s = con.search(new PrefixQuery("@attr 1=4 utah"));
+        assertNotNull(s);
+        assertEquals(9, s.getHitCount());
+        Record record1 = s.getRecord(0);
+        assertNotNull(record1);
+        Record record2 = record1.clone();
+        record1.close();
+        s.close();
+        record2.close();
+      } catch (ZoomException ze) {
+        fail(ze.getMessage());
+      }
     }
   }
 
   @Test
-  public void connectionFailsConnect() {
-    Connection con = new Connection("z3950.indexdata.dk:211/gils", 0);
-    assertNotNull(con);
+  public void connectionFailsConnectPort0() {
     String msg = "";
-    try {
+    try (Connection con = new Connection("z3950.indexdata.dk:211", 0)) {
+      assertNotNull(con);
       con.option("timeout", "1");
-      con.setSyntax("usmarc");
       con.connect();
     } catch (ZoomException ze) {
       msg = ze.getMessage();
-    } finally {
-      con.close();
     }
-    assertEquals("Server z3950.indexdata.dk:211/gils:0 timed out handling our request", msg);
+    assertEquals("Server z3950.indexdata.dk:211 timed out handling our request", msg);
+  }
+
+  @Test
+  public void connectionFailsConnecPort211() {
+    String msg = "";
+    try (Connection con = new Connection("z3950.indexdata.dk", 211)) {
+      assertNotNull(con);
+      con.option("timeout", "1");
+      con.connect();
+    } catch (ZoomException ze) {
+      msg = ze.getMessage();
+    }
+    assertEquals("Server z3950.indexdata.dk:211 timed out handling our request", msg);
   }
 
   @Test
   public void connectionFailsSearchBadQuery() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
-    assertNotNull(con);
     String msg = "";
-    try {
-      con.search(null,  Connection.QueryType.PrefixQuery);
-    } catch (IllegalArgumentException|ZoomException e) {
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+      con.search(null, Connection.QueryType.PrefixQuery);
+    } catch (IllegalArgumentException | ZoomException e) {
       msg = e.getMessage();
-    } finally {
-      con.close();
     }
     assertEquals("query cannot be null", msg);
   }
 
   @Test
   public void connectionFailsSearchBadQueryType() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
-    assertNotNull(con);
     String msg = "";
-    try {
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
       con.search("utah", null);
-    } catch (IllegalArgumentException|ZoomException e) {
+    } catch (IllegalArgumentException | ZoomException e) {
       msg = e.getMessage();
-    } finally {
-      con.close();
     }
     assertEquals("queryType cannot be null", msg);
   }
 
   @Test
   public void connectionFailsSearchBadQueryObject() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
-    assertNotNull(con);
     String msg = "";
-    try {
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
       con.search(null);
     } catch (IllegalArgumentException|ZoomException e) {
       msg = e.getMessage();
-    } finally {
-      con.close();
     }
     assertEquals("query cannot be null", msg);
   }
 
   @Test
   public void connectionFailsScanBadQueryString() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
-    assertNotNull(con);
     String msg = "";
-    try {
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
       con.scan((String) null);
     } catch (IllegalArgumentException|ZoomException e) {
       msg = e.getMessage();
-    } finally {
-      con.close();
     }
     assertEquals("query cannot be null", msg);
   }
 
   @Test
   public void connectionFailsScanBadQueryObject() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
-    assertNotNull(con);
     String msg = "";
-    try {
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
       con.scan((Query) null);
     } catch (IllegalArgumentException|ZoomException e) {
       msg = e.getMessage();
-    } finally {
-      con.close();
     }
     assertEquals("query cannot be null", msg);
   }
-
 
   @Test
   public void connectionNullHost() {
@@ -295,48 +265,41 @@ public class ConnectionTest {
 
   @Test
   public void connectionOptionInvalid1() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
     String msg = "";
-    try {
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
       con.option(null, null);
     } catch (IllegalArgumentException e) {
       msg = e.getMessage();
-    } finally {
-      con.close();
     }
     assertEquals("option name cannot be null", msg);
   }
 
   @Test
   public void connectionOptionInvalid2() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
     String msg = "";
-    try {
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
       con.option(null);
     } catch (IllegalArgumentException e) {
       msg = e.getMessage();
-    } finally {
-      con.close();
     }
     assertEquals("option name cannot be null", msg);
   }
 
   @Test
   public void connectionOptionGetSet() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
-    assertNull(con.option("v1"));
-    con.option("n1", "v1");
-    assertEquals("v1", con.option("n1"));
-    con.setPassword("pass");
-    assertEquals("pass", con.getPassword());
-    con.setUsername("user");
-    assertEquals("user", con.getUsername());
-    assertNull(con.getDatabaseName());
-    con.setDatabaseName("db");
-    assertEquals("db", con.getDatabaseName());
-    con.setSyntax("grs-1");
-    assertEquals("grs-1", con.getSyntax());
+    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+      assertNull(con.option("v1"));
+      con.option("n1", "v1");
+      assertEquals("v1", con.option("n1"));
+      con.setPassword("pass");
+      assertEquals("pass", con.getPassword());
+      con.setUsername("user");
+      assertEquals("user", con.getUsername());
+      assertNull(con.getDatabaseName());
+      con.setDatabaseName("db");
+      assertEquals("db", con.getDatabaseName());
+      con.setSyntax("grs-1");
+      assertEquals("grs-1", con.getSyntax());
+    }
   }
-
-
 }

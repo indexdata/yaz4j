@@ -18,26 +18,26 @@ class ExceptionUtil {
 
   static ZoomException getError(SWIGTYPE_p_ZOOM_connection_p zoomConnection,
     String host, int port) {
+
+    String fHost = host + (port == 0 ? "" : ":" + port);
+
     int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
     String message;
     switch (errorCode) {
       case yaz4jlibConstants.ZOOM_ERROR_NONE:
         return null;
       case yaz4jlib.ZOOM_ERROR_CONNECT:
-        message = String.format("Connection could not be made to %s:%d", host,
-          port);
+        message = String.format("Connection could not be made to %s", fHost);
         return new ConnectionUnavailableException(message);
       case yaz4jlib.ZOOM_ERROR_INVALID_QUERY:
         message = String.format(
           "The query requested is not valid or not supported");
         return new InvalidQueryException(message);
       case yaz4jlib.ZOOM_ERROR_INIT:
-        message = String.format("Server %s:%d rejected our init request", host,
-          port);
+        message = String.format("Server %s rejected our init request", fHost);
         return new InitRejectedException(message);
       case yaz4jlib.ZOOM_ERROR_TIMEOUT:
-        message = String.format("Server %s:%d timed out handling our request",
-          host, port);
+        message = String.format("Server %s timed out handling our request", fHost);
         return new ConnectionTimeoutException(message);
       case yaz4jlib.ZOOM_ERROR_MEMORY:
       case yaz4jlib.ZOOM_ERROR_ENCODE:
