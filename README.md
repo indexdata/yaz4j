@@ -26,8 +26,7 @@ import org.yaz4j.exception.ZoomException;
 public class DinosaurTest {
   @Test
   public void test() {
-    Connection con = new Connection("lx2.loc.gov/LCDB", 0);
-    try {
+    try (Connection con = new Connection("lx2.loc.gov/LCDB", 0)) {
       con.setSyntax("usmarc");
       con.connect();
       ResultSet set = con.search(new PrefixQuery("@attr 1=7 0253333490"));
@@ -35,8 +34,6 @@ public class DinosaurTest {
       System.out.println(rec.render());
     } catch (ZoomException ze) {
       Assert.fail(ze.getMessage());
-    } finally {
-      con.close();
     }
   }
 }
