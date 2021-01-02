@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.yaz4j</groupId>
   <artifactId>yaz4j</artifactId>
-  <version>1.6.0-SNAPSHOT</version>
+  <version>1.6.0</version>
   <packaging>jar</packaging>
 
   <!-- Project Information -->
@@ -275,8 +275,8 @@
                 <configuration>
                   <target>
                     <exec failonerror="true" executable="${compiler}">
-                      <arg value="-fPIC"/>
-                      <arg line="${compiler.flags}"/>
+                      <arg value="-fPIC" />
+                      <arg line="${compiler.flags}" />
                       <arg value="-Wno-deprecated-declarations" />
                       <arg value="-I${java.home}/include" />
                       <arg value="-I${java.home}/include/linux" />
@@ -284,12 +284,12 @@
                       <arg line="${yaz.cflags}" />
                       <arg value="-c" />
                       <arg value="${basedir}/src/main/native/zoom-extra.cpp" />
-                      <arg value="-o"/>
+                      <arg value="-o" />
                       <arg value="${basedir}/target/zoom-extra.o" />
                     </exec>
                     <exec failonerror="true" executable="${compiler}">
-                      <arg value="-fPIC"/>
-                      <arg line="${compiler.flags}"/>
+                      <arg value="-fPIC" />
+                      <arg line="${compiler.flags}" />
                       <arg value="-Wno-deprecated-declarations" />
                       <arg value="-I${java.home}/include" />
                       <arg value="-I${java.home}/include/linux" />
@@ -297,16 +297,16 @@
                       <arg line="${yaz.cflags}" />
                       <arg value="-c" />
                       <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
-                      <arg value="-o"/>
+                      <arg value="-o" />
                       <arg value="${basedir}/target/libyaz4j.o" />
                     </exec>
                     <exec failonerror="true" executable="${compiler}">
-                      <arg value="-shared"/>
-                      <arg line="${compiler.flags}"/>
+                      <arg value="-shared" />
+                      <arg line="${compiler.flags}" />
                       <arg value="-o" />
-                      <arg value="${native.dir}/${native.file}"/>
-                      <arg value="${basedir}/target/libyaz4j.o"/>
-                      <arg value="${basedir}/target/zoom-extra.o"/>
+                      <arg value="${native.dir}/${native.file}" />
+                      <arg value="${basedir}/target/libyaz4j.o" />
+                      <arg value="${basedir}/target/zoom-extra.o" />
                       <arg line="${yaz.libs}" />
                     </exec>
                   </target>
@@ -355,7 +355,7 @@
         <!-- include directory for YAZ -->
         <yaz.include>${yaz.path}\include</yaz.include>
         <!-- yaz.cflags: also passed to swig. Only -Defines and -Includes -->
-        <yaz.cflags></yaz.cflags>
+        <yaz.cflags />
       </properties>
       <build>
         <plugins>
@@ -389,10 +389,10 @@
                       <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
                     </exec>
                     <exec failonerror="true" executable="link">
-                      <arg value="/dll"/>
-                      <arg value="/out:${native.dir}/${native.file}"/>
-                      <arg value="${basedir}/target/libyaz4j.obj"/>
-                      <arg value="${basedir}/target/zoom-extra.obj"/>
+                      <arg value="/dll" />
+                      <arg value="/out:${native.dir}/${native.file}" />
+                      <arg value="${basedir}/target/libyaz4j.obj" />
+                      <arg value="${basedir}/target/zoom-extra.obj" />
                       <arg value="${yaz.lib}" />
                     </exec>
                   </target>
@@ -420,6 +420,7 @@
   <scm>
     <connection>scm:git:git://github.com/indexdata/yaz4j</connection>
     <url>https://github.com/indexdata/yaz4j/</url>
+    <tag>v1.6.0</tag>
   </scm>
 
   <issueManagement>
