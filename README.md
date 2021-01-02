@@ -80,15 +80,27 @@ compile yaz4j. For example
 
     mvn install
 
+After running `mvn install`, the result is the Java
+archive `target/yaz4j-VERSION.jar` and a shared object (JNI) in
+directory `target/native`.
+
+As an option, the shared object may be bundled with the JAR file.
+Thus, the jar can be distributed as self-contained - provided that the
+platform is the same. Enable this by selecting profile `bundle` with
+Maven. Use something like:
+
+    mvn -Pbundle install
+
+The bundled shared object is stored in directory
+`native/${os.name}/${os.arch}`  - for example `Linux/amd64/libyaz4j.so`.
+
 ## Unix
 
 On Unix, the `yaz-config` utility is used to get compiler flags and
 linker libraries for the shared object. Usually it's enough
 to install as whole. If there are packages for YAZ already, use
 install the "devel" package or "dev" package. Check that `yaz-config`
-is in the `PATH`. After running `mvn install`, the result is the Java
-archive `target/yaz4j-VERSION.jar` and a shared
-object `target/native/libyaz4j.so`.
+is in the `PATH`.
 
 ## Windows
 
