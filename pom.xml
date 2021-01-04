@@ -373,7 +373,7 @@
                   <target>
                     <echo message="Using java_home=${java.home}" />
                     <exec failonerror="true" executable="cl">
-                      <arg value="-/DWIN32"/>
+                      <arg value="/DWIN32"/>
                       <arg value="-I${jdk.include}" />
                       <arg value="-I${jdk.include}/win32" />
                       <arg value="-I${basedir}/src/main/native" />
@@ -383,7 +383,7 @@
                       <arg value="${basedir}/src/main/native/zoom-extra.cpp" />
                     </exec>
                     <exec failonerror="true" executable="cl">
-                      <arg value="-/DWIN32"/>
+                      <arg value="/DWIN32"/>
                       <arg value="-I${jdk.include}" />
                       <arg value="-I${jdk.include}/win32" />
                       <arg value="-I${basedir}/src/main/native" />
