@@ -354,6 +354,7 @@
         <yaz.lib>${yaz.path}\lib\yaz5.lib</yaz.lib>
         <!-- include directory for YAZ -->
         <yaz.include>${yaz.path}\include</yaz.include>
+        <jdk.include>${java.home}\..\include</jdk.include>
         <!-- yaz.cflags: also passed to swig. Only -Defines and -Includes -->
         <yaz.cflags />
       </properties>
@@ -370,9 +371,11 @@
                 </goals>
                 <configuration>
                   <target>
+                    <echo message="Using java_home=${java.home}" />
                     <exec failonerror="true" executable="cl">
-                      <arg value="-I${java.home}/include" />
-                      <arg value="-I${java.home}/include/win32" />
+                      <arg value="-/DWIN32"/>
+                      <arg value="-I${jdk.include}" />
+                      <arg value="-I${jdk.include}/win32" />
                       <arg value="-I${basedir}/src/main/native" />
                       <arg value="-I${yaz.include}" />
                       <arg value="/Fo${basedir}/target/zoom-extra.obj" />
@@ -380,8 +383,9 @@
                       <arg value="${basedir}/src/main/native/zoom-extra.cpp" />
                     </exec>
                     <exec failonerror="true" executable="cl">
-                      <arg value="-I${java.home}/include" />
-                      <arg value="-I${java.home}/include/win32" />
+                      <arg value="-/DWIN32"/>
+                      <arg value="-I${jdk.include}" />
+                      <arg value="-I${jdk.include}/win32" />
                       <arg value="-I${basedir}/src/main/native" />
                       <arg value="-I${yaz.include}" />
                       <arg value="/Fo${basedir}/target/libyaz4j.obj" />
