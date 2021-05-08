@@ -127,15 +127,17 @@ native library in `target/native/yaz4j.dll`.
 
 ## Using Maven
 
-If you are using maven to build your application you can include Index Data's
-maven repository and include yaz4j as a dependency in your jar or war project:
+If you are using Maven to build your application you can include Index Data's
+Maven repository and include yaz4j as a dependency in your jar or war project.
+
+You still need the [YAZ] runtime (`apt install libyaz5` or similar)
 
 Index Data's Maven repository (put under `<repositories/>` in pom.xml):
 
     <repository>
       <id>indexdata</id>
       <name>Index Data</name>
-      <url>http://maven.indexdata.com/</url>
+      <url>https://maven.indexdata.com/</url>
     </repository>
 
 yaz4j API dependency (put under `<dependencies/>` in pom.xml):
