@@ -354,7 +354,7 @@
         <yaz.lib>${yaz.path}\lib\yaz5.lib</yaz.lib>
         <!-- include directory for YAZ -->
         <yaz.include>${yaz.path}\include</yaz.include>
-        <jdk.include>${java.home}\..\include</jdk.include>
+        <jdk.include>${java.home}\include</jdk.include><!-- in some cases ..\include -->
         <!-- yaz.cflags: also passed to swig. Only -Defines and -Includes -->
         <yaz.cflags />
       </properties>
