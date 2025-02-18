@@ -387,7 +387,7 @@
                       <arg value="-I${jdk.include}" />
                       <arg value="-I${jdk.include}/win32" />
                       <arg value="-I${basedir}/src/main/native" />
-                      <arg value="${yaz.clags}" />
+                      <arg value="${yaz.cflags}" />
                       <arg value="/Fo${basedir}/target/libyaz4j.obj" />
                       <arg value="-c" />
                       <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
