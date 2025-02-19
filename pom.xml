@@ -231,7 +231,7 @@
         </os>
       </activation>
       <properties>
-        <pkg.config>pkg-config</pkg.config>
+        <yaz.config>${basedir}/yaz-config-wrap.sh</yaz.config>
         <swig>swig</swig>
         <native.file>libyaz4j.so</native.file>
         <compiler>g++</compiler>
@@ -250,12 +250,10 @@
                 </goals>
                 <configuration>
                   <target>
-                    <exec failonerror="true" executable="${pkg.config}" outputproperty="yaz.cflags">
-                      <arg value="yaz" />
+                    <exec failonerror="true" executable="${yaz.config}" outputproperty="yaz.cflags">
                       <arg value="--cflags" />
                     </exec>
-                    <exec failonerror="true" executable="${pkg.config}" outputproperty="yaz.libs">
-                      <arg value="yaz" />
+                    <exec failonerror="true" executable="${yaz.config}" outputproperty="yaz.libs">
                       <arg value="--libs" />
                     </exec>
                     <mkdir dir="${basedir}/target" />

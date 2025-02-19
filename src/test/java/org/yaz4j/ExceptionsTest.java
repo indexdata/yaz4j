@@ -10,7 +10,7 @@ public class ExceptionsTest {
   @Test
   public void testNullPointers4() {
     try {
-      Connection conn = new Connection("z3950.indexdata.dk:210/gils", 0);
+      Connection conn = new Connection("z3950.indexdata.com:210/gils", 0);
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(new CQLQuery(null));
@@ -25,7 +25,7 @@ public class ExceptionsTest {
   @Test
   public void testNullPointers5() {
     try {
-      Connection conn = new Connection("z3950.indexdata.dk:210/gils", 0);
+      Connection conn = new Connection("z3950.indexdata.com:210/gils", 0);
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(new PrefixQuery(null));
@@ -40,7 +40,7 @@ public class ExceptionsTest {
   @Test
   public void testNullPointers15() {
     try {
-      Connection conn = new Connection("z3950.indexdata.dk:210/gils", 0);
+      Connection conn = new Connection("z3950.indexdata.com:210/gils", 0);
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(new PrefixQuery("@attr 1=4 water"));
@@ -56,7 +56,7 @@ public class ExceptionsTest {
   @Test
   public void testNullPointers16() {
     try {
-      Connection conn = new Connection("z3950.indexdata.dk:210/gils", 0);
+      Connection conn = new Connection("z3950.indexdata.com:210/gils", 0);
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(new PrefixQuery("@attr 1=4 water"));
@@ -72,7 +72,7 @@ public class ExceptionsTest {
   @Test
   public void testNullPointers17() {
     try {
-      Connection conn = new Connection("z3950.indexdata.dk:210/gils", 0);
+      Connection conn = new Connection("z3950.indexdata.com:210/gils", 0);
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(new PrefixQuery("@attr 1=4 water"));
@@ -89,7 +89,7 @@ public class ExceptionsTest {
   @Test
   public void testRecordUnknownType() {
     try {
-      Connection conn = new Connection("z3950.indexdata.dk:210/gils", 0);
+      Connection conn = new Connection("z3950.indexdata.com:210/gils", 0);
       conn.setSyntax("sutrs");
       conn.connect();
       ResultSet s = conn.search(new PrefixQuery("@attr 1=4 water"));
@@ -105,7 +105,7 @@ public class ExceptionsTest {
   @Test
   public void testNullPointers19() {
     try {
-      ConnectionExtended conn = new ConnectionExtended("z3950.indexdata.dk:210/gils", 0);
+      ConnectionExtended conn = new ConnectionExtended("z3950.indexdata.com:210/gils", 0);
       conn.setSyntax("sutrs");
       conn.connect();
       Package p = conn.getPackage(null);
@@ -120,7 +120,7 @@ public class ExceptionsTest {
   @Test
   public void testPackageOptionValueNull() {
     try {
-      ConnectionExtended conn = new ConnectionExtended("z3950.indexdata.dk:210/gils", 0);
+      ConnectionExtended conn = new ConnectionExtended("z3950.indexdata.com:210/gils", 0);
       conn.setSyntax("sutrs");
       conn.connect();
       Package p = conn.getPackage("some");
@@ -133,7 +133,7 @@ public class ExceptionsTest {
   @Test
   public void testPackageNameNull() {
     try {
-      ConnectionExtended conn = new ConnectionExtended("z3950.indexdata.dk:210/gils", 0);
+      ConnectionExtended conn = new ConnectionExtended("z3950.indexdata.com:210/gils", 0);
       conn.setSyntax("sutrs");
       conn.connect();
       Package p = conn.getPackage("some");
