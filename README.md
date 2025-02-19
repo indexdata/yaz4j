@@ -99,8 +99,7 @@ The bundled shared object is stored in directory
 On Unix, the `yaz-config` utility is used to get compiler flags and
 linker libraries for the shared object. Usually it's enough
 to install as whole. If there are packages for YAZ already, use
-install the "devel" package or "dev" package. Check that `yaz-config`
-is in the `PATH`.
+install the "devel" package or "dev" package.
 
 ## Windows
 

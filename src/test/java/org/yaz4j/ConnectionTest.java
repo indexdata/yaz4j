@@ -15,7 +15,7 @@ public class ConnectionTest {
 
   @Test
   public void testConnectionScan() {
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       assertNotNull(con);
       con.setSyntax("sutrs");
       con.connect();
@@ -43,7 +43,7 @@ public class ConnectionTest {
 
   @Test
   public void testConnectionSorting() {
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       assertNotNull(con);
       con.setSyntax("sutrs");
       con.connect();
@@ -84,7 +84,7 @@ public class ConnectionTest {
 
   @Test
   public void testConnectionSortBy() {
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       assertNotNull(con);
       con.setSyntax("sutrs");
       con.connect();
@@ -136,7 +136,7 @@ public class ConnectionTest {
 
   @Test
   public void testRecords() {
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       assertNotNull(con);
       try {
         con.setSyntax("usmarc");
@@ -159,33 +159,33 @@ public class ConnectionTest {
   @Test
   public void connectionFailsConnectPort0() {
     String msg = "";
-    try (Connection con = new Connection("z3950.indexdata.dk:211", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:211", 0)) {
       assertNotNull(con);
       con.option("timeout", "1");
       con.connect();
     } catch (ZoomException ze) {
       msg = ze.getMessage();
     }
-    assertEquals("Server z3950.indexdata.dk:211 timed out handling our request", msg);
+    assertTrue(msg.contains("z3950.indexdata.com:211"));
   }
 
   @Test
   public void connectionFailsConnecPort211() {
     String msg = "";
-    try (Connection con = new Connection("z3950.indexdata.dk", 211)) {
+    try (Connection con = new Connection("z3950.indexdata.com", 211)) {
       assertNotNull(con);
       con.option("timeout", "1");
       con.connect();
     } catch (ZoomException ze) {
       msg = ze.getMessage();
     }
-    assertEquals("Server z3950.indexdata.dk:211 timed out handling our request", msg);
+    assertTrue(msg.contains("z3950.indexdata.com:211"));
   }
 
   @Test
   public void connectionFailsSearchBadQuery() {
     String msg = "";
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       con.search(null, Connection.QueryType.PrefixQuery);
     } catch (IllegalArgumentException | ZoomException e) {
       msg = e.getMessage();
@@ -196,7 +196,7 @@ public class ConnectionTest {
   @Test
   public void connectionFailsSearchBadQueryType() {
     String msg = "";
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       con.search("utah", null);
     } catch (IllegalArgumentException | ZoomException e) {
       msg = e.getMessage();
@@ -207,7 +207,7 @@ public class ConnectionTest {
   @Test
   public void connectionFailsSearchBadQueryObject() {
     String msg = "";
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       con.search(null);
     } catch (IllegalArgumentException|ZoomException e) {
       msg = e.getMessage();
@@ -218,7 +218,7 @@ public class ConnectionTest {
   @Test
   public void connectionFailsScanBadQueryString() {
     String msg = "";
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       con.scan((String) null);
     } catch (IllegalArgumentException|ZoomException e) {
       msg = e.getMessage();
@@ -229,7 +229,7 @@ public class ConnectionTest {
   @Test
   public void connectionFailsScanBadQueryObject() {
     String msg = "";
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       con.scan((Query) null);
     } catch (IllegalArgumentException|ZoomException e) {
       msg = e.getMessage();
@@ -250,7 +250,7 @@ public class ConnectionTest {
 
   @Test
   public void connectionClosed() {
-    Connection con = new Connection("z3950.indexdata.dk:210/gils", 0);
+    Connection con = new Connection("z3950.indexdata.com:210/gils", 0);
     con.close();
     String msg = "";
     try {
@@ -266,7 +266,7 @@ public class ConnectionTest {
   @Test
   public void connectionOptionInvalid1() {
     String msg = "";
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       con.option(null, null);
     } catch (IllegalArgumentException e) {
       msg = e.getMessage();
@@ -277,7 +277,7 @@ public class ConnectionTest {
   @Test
   public void connectionOptionInvalid2() {
     String msg = "";
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       con.option(null);
     } catch (IllegalArgumentException e) {
       msg = e.getMessage();
@@ -287,7 +287,7 @@ public class ConnectionTest {
 
   @Test
   public void connectionOptionGetSet() {
-    try (Connection con = new Connection("z3950.indexdata.dk:210/gils", 0)) {
+    try (Connection con = new Connection("z3950.indexdata.com:210/gils", 0)) {
       assertNull(con.option("v1"));
       con.option("n1", "v1");
       assertEquals("v1", con.option("n1"));

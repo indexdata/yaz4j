@@ -10,7 +10,7 @@ public class ConnectionExtendedTest {
   
   @Test
   public void testRecordUpdate() {
-    ConnectionExtended con = new ConnectionExtended("z3950.indexdata.dk:210/gils", 0);
+    ConnectionExtended con = new ConnectionExtended("z3950.indexdata.com:210/gils", 0);
     assertNotNull(con);
     try {
       con.setSyntax("sutrs");
@@ -38,7 +38,7 @@ public class ConnectionExtendedTest {
   @Test
   public void testDatabaseDrop() {
     try {
-      ConnectionExtended conn = new ConnectionExtended("z3950.indexdata.dk:210/gils", 0);
+      ConnectionExtended conn = new ConnectionExtended("z3950.indexdata.com:210/gils", 0);
       conn.setSyntax("sutrs");
       conn.connect();
       Package create = conn.getPackage("create"); //db create

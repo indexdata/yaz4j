@@ -112,14 +112,13 @@
             <inherited>false</inherited>
             <configuration>
               <target>
-                <echo message="Using CFLAGS: ${yaz.cflags} ${yaz.include}" />
+                <echo message="Using CFLAGS: ${yaz.cflags}" />
                 <mkdir dir="target/generated-sources/java/org/yaz4j/jni" />
                 <mkdir dir="target/generated-sources/native" />
                 <mkdir dir="${native.dir}" />
                 <exec failonerror="true" executable="${swig}">
                   <arg value="-Isrc/main/native" />
                   <arg value="${yaz.cflags}" />
-                  <arg value="-I${yaz.include}" />
                   <arg value="-I/usr/include" />
                   <arg value="-outdir" />
                   <arg value="${basedir}/target/generated-sources/java/org/yaz4j/jni" />
@@ -232,8 +231,7 @@
         </os>
       </activation>
       <properties>
-        <!-- yaz-config executable -->
-        <yaz.config>yaz-config</yaz.config>
+        <yaz.config>${basedir}/yaz-config-wrap.sh</yaz.config>
         <swig>swig</swig>
         <native.file>libyaz4j.so</native.file>
         <compiler>g++</compiler>
@@ -352,8 +350,8 @@
         <yaz.path>c:\Program Files\YAZ</yaz.path>
         <!-- import library -->
         <yaz.lib>${yaz.path}\lib\yaz5.lib</yaz.lib>
-        <!-- include directory for YAZ -->
-        <yaz.include>${yaz.path}\include</yaz.include>
+        <!-- CFLAGS with include directory for YAZ -->
+        <yaz.cflags>-I${yaz.path}\include</yaz.cflags>
         <jdk.include>${java.home}\include</jdk.include><!-- in some cases ..\include -->
         <!-- yaz.cflags: also passed to swig. Only -Defines and -Includes -->
         <yaz.cflags />
@@ -377,7 +375,7 @@
                       <arg value="-I${jdk.include}" />
                       <arg value="-I${jdk.include}/win32" />
                       <arg value="-I${basedir}/src/main/native" />
-                      <arg value="-I${yaz.include}" />
+                      <arg value="${yaz.cflags}" />
                       <arg value="/Fo${basedir}/target/zoom-extra.obj" />
                       <arg value="-c" />
                       <arg value="${basedir}/src/main/native/zoom-extra.cpp" />
@@ -387,7 +385,7 @@
                       <arg value="-I${jdk.include}" />
                       <arg value="-I${jdk.include}/win32" />
                       <arg value="-I${basedir}/src/main/native" />
-                      <arg value="-I${yaz.include}" />
+                      <arg value="${yaz.cflags}" />
                       <arg value="/Fo${basedir}/target/libyaz4j.obj" />
                       <arg value="-c" />
                       <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
@@ -446,4 +444,3 @@
   </distributionManagement>
 
 </project>
-
