@@ -112,7 +112,7 @@
             <inherited>false</inherited>
             <configuration>
               <target>
-                <echo message="Using CFLAGS: ${yaz.cflags}" />
+                <echo message="swig using CFLAGS: ${yaz.cflags}" />
                 <mkdir dir="target/generated-sources/java/org/yaz4j/jni" />
                 <mkdir dir="target/generated-sources/native" />
                 <mkdir dir="${native.dir}" />
@@ -353,8 +353,6 @@
         <!-- CFLAGS with include directory for YAZ -->
         <yaz.cflags>-I${yaz.path}\include</yaz.cflags>
         <jdk.include>${java.home}\include</jdk.include><!-- in some cases ..\include -->
-        <!-- yaz.cflags: also passed to swig. Only -Defines and -Includes -->
-        <yaz.cflags />
       </properties>
       <build>
         <plugins>
