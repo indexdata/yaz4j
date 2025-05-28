@@ -13,6 +13,6 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Install yaz, swig
-      run: sudo apt install libyaz-dev swig -y
+      run: sudo apt-get install libyaz-dev swig -y
     - name: Run the Maven verify phase
       run: mvn --batch-mode verify
