@@ -118,7 +118,7 @@
                 <mkdir dir="${native.dir}" />
                 <exec failonerror="true" executable="${swig}">
                   <arg value="-Isrc/main/native" />
-                  <arg value="${yaz.cflags}" />
+                  <arg line="${yaz.cflags}" />
                   <arg value="-I/usr/include" />
                   <arg value="-outdir" />
                   <arg value="${basedir}/target/generated-sources/java/org/yaz4j/jni" />
