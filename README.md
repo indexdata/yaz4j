@@ -7,9 +7,9 @@ SRU/W and Solr. yaz4j includes a native component and supports Linux
 and Windows.
 
 yaz4j is covered by the
-[Revised BSD](http://www.indexdata.com/licences/revised-bsd) license.
+[Revised BSD](https://www.indexdata.com/licences/revised-bsd) license.
 That should be same as the
-[BSD 3 Clause License](http://opensource.org/licenses/BSD-3-Clause).
+[BSD 3 Clause License](https://opensource.org/licenses/BSD-3-Clause).
 
 
 ```java
@@ -50,9 +50,9 @@ recent Debian and Ubuntu distributions.
 
 The easiest way to install the package is to enable Index Data's
 APT. For Debian refer to
-[README](http://ftp.indexdata.dk/pub/yaz4j/debian/README).
+[README](https://ftp.indexdata.com/pub/yaz4j/debian/README).
 For Ubuntu refer to
-[README](http://ftp.indexdata.dk/pub/yaz4j/ubuntu/README).
+[README](https://ftp.indexdata.com/pub/yaz4j/ubuntu/README).
 When done, proceed with
 
     sudo apt update
@@ -61,8 +61,8 @@ When done, proceed with
 ## Windows
 
 yaz4j is part of the YAZ package for Windows.
-[32-bit](http://ftp.indexdata.dk/pub/yaz/win32/)
-[64-bit](http://ftp.indexdata.dk/pub/yaz/win64/).
+[32-bit](https://ftp.indexdata.com/pub/yaz/win32/)
+[64-bit](https://ftp.indexdata.com/pub/yaz/win64/).
 
 # Compilation from source
 
@@ -159,9 +159,9 @@ best how to use yaz4j in a servlet.
 
 [yaz4jgithub]: https://github.com/indexdata/yaz4j
 
-[YAZ]: http://www.indexdata.com/yaz "YAZ"
+[YAZ]: https://www.indexdata.com/yaz "YAZ"
 
-[manual]: http://www.indexdata.com/yaz/doc/installation.html
+[manual]: https://www.indexdata.com/yaz/doc/installation.html
 
 
 
