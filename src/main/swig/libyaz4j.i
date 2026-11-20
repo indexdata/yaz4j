@@ -1,5 +1,14 @@
 %javaconst(1);
 %module yaz4jlib
+%pragma(java) jniclasscode=%{
+  static {
+    try {
+      org.yaz4j.LoadLib.load("yaz4j");
+    } catch (java.io.IOException e) {
+      throw new ExceptionInInitializerError(e);
+    }
+  }
+%}
 	%{
 		#include "zoom-extra.h"
 		#include <yaz/zoom.h>
