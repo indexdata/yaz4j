@@ -161,11 +161,14 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
+        <version>3.13.0</version>
         <configuration>
           <encoding>UTF-8</encoding>
-          <source>1.8</source>
-          <target>1.8</target>
+          <release>8</release>
+          <compilerArgs>
+            <!-- Keep Java 8 compatibility without obsolete-option warnings. -->
+            <arg>-Xlint:-options</arg>
+          </compilerArgs>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
         </configuration>
