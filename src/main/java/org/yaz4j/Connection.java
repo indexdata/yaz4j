@@ -1,10 +1,8 @@
 package org.yaz4j;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.yaz4j.exception.ZoomException;
@@ -54,16 +52,6 @@ public class Connection implements Closeable {
   }
 
   static Logger logger = Logger.getLogger("Connection");
-
-  static {
-    // on Linux   'yaz4j' maps to 'libyaz4j.so' (i.e. 'lib' prefix & '.so'  extension)
-    // on Windows 'yaz4j' maps to 'yaz4j.dll'   (i.e.                '.dll' extension)
-    try {
-      LoadLib.load("yaz4j");
-    } catch (UnsatisfiedLinkError | IOException e) {
-      logger.log(Level.WARNING, e.getMessage(), e);
-    }
-  }
 
   /**
    * Create new connection object without physically opening a connection to the

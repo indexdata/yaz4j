@@ -14,5 +14,7 @@ jobs:
         cache: maven
     - name: Install yaz, swig
       run: sudo apt-get install libyaz-dev swig -y
+    - name: Test queries without initializing a connection first
+      run: mvn --batch-mode -Dtest=QueryTest test
     - name: Run the Maven verify phase
       run: mvn --batch-mode verify
