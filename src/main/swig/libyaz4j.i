@@ -29,6 +29,8 @@
 	%typemap(javaout) CharStarByteArray { return $jnicall; }
 	%define YAZ_BEGIN_CDECL %enddef
 	%define YAZ_END_CDECL %enddef
+	// The data pointer borrows record storage and must not be assigned from Java.
+	%immutable CharStarByteArray::data;
 	%include "zoom-extra.h"
 	%include <yaz/zoom.h>
 
