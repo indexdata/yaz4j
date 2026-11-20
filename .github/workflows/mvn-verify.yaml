@@ -1,20 +1,60 @@
 name: mvn-verify
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  mvn-verify:
+  verify:
+    name: Verify (Java ${{ matrix.java }})
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['11', '21', '25']
+
     steps:
-    - uses: actions/checkout@v6
-    - name: Set up JDK 11
-      uses: actions/setup-java@v5
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        cache: maven
-    - name: Install yaz, swig
-      run: sudo apt-get install libyaz-dev swig -y
-    - name: Test queries without initializing a connection first
-      run: mvn --batch-mode -Dtest=QueryTest test
-    - name: Run the Maven verify phase
-      run: mvn --batch-mode verify
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v6
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: temurin
+          cache: maven
+
+      - name: Install YAZ and SWIG
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libyaz-dev swig
+
+      - name: Test queries without initializing a connection first
+        run: mvn --batch-mode --no-transfer-progress -Dtest=QueryTest test
+
+      - name: Run the Maven verify phase
+        run: mvn --batch-mode --no-transfer-progress verify
+
+  mvn-verify:
+    name: mvn-verify
+    needs: verify
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Require all Java versions to pass
+        env:
+          VERIFY_RESULT: ${{ needs.verify.result }}
+        run: test "$VERIFY_RESULT" = success
