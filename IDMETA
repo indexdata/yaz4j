@@ -1,5 +1,5 @@
 NAME=yaz4j
 DEBIAN_DIST="bookworm trixie"
 UBUNTU_DIST="jammy noble resolute"
-VERSION=1.6.0
+VERSION=1.6.1
 DEB_TARGETS=amd64
