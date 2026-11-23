@@ -1,4 +1,5 @@
 NAME=yaz4j
-UBUNTU_DIST="focal bionic"
-DEBIAN_DIST="buster"
+DEBIAN_DIST="bookworm trixie"
+UBUNTU_DIST="jammy noble resolute"
 VERSION=1.6.0
+DEB_TARGETS=amd64
