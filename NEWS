@@ -1,3 +1,51 @@
+--- 1.6.1 2026/11/23
+
+* Fix native library initialization when queries are used before a
+Connection is created. Loading now takes place in the generated JNI
+class, allowing standalone CQLQuery and PrefixQuery operations to work
+without first initializing a connection.
+
+* Fix NegativeArraySizeException when retrieving records for which YAZ
+returns a negative length, including Record.get("ext"). Return an empty
+byte array when there is no byte buffer or the length is nonpositive.
+Add regression coverage for the "ext" record type.
+
+* Make CharStarByteArray.data read-only in the generated JNI bindings.
+The pointer refers to storage owned by YAZ and must not be assigned from
+Java. This removes the generated setData method, prevents its potential
+memory leak, and eliminates SWIG warning 451.
+
+* Support building with YAZ development packages that do not provide
+yaz-config, including Debian's libyaz-dev. Use a wrapper that falls back
+to pkg-config to obtain YAZ compiler and linker flags.
+
+* Fix passing multiple YAZ compiler flags to SWIG. Expand yaz.cflags as
+separate command-line arguments instead of passing the entire string as
+one argument, so multiple include paths and defines are handled correctly.
+
+* Fix Windows native build configuration. Preserve the YAZ include flags,
+define WIN32 correctly, and use the configurable jdk.include property for
+JNI headers, defaulting to the include directory beneath java.home.
+
+* Update the Maven compiler plugin and compile with release 8 to retain
+Java 8 API and bytecode compatibility when building with newer JDKs.
+Suppress obsolete compiler-option warnings while retaining deprecation
+and other compiler warnings.
+
+* Update Debian packaging for Debian bookworm and trixie, and Ubuntu
+jammy, noble and resolute. Use debhelper compatibility level 13 and the
+distribution's JUnit 4.x version. Package builds are limited to amd64
+until cross-compilation is supported.
+
+* Add and modernize GitHub Actions testing with Java 11, 21 and 25.
+Run query tests separately to catch native initialization problems that
+could otherwise be hidden by test order. Update network tests to use
+z3950.indexdata.com and tolerate different connection-failure messages.
+
+* Refresh installation instructions and project links, including HTTPS
+URLs for the Maven repository and package downloads. Clarify that the
+YAZ runtime library is still required when using the Maven artifact.
+
 --- 1.6.0 2021/01/02
 
 * One pom.xml instead of 4. The consequence is that yaz4j uses
