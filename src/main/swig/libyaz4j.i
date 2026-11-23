@@ -24,7 +24,11 @@
 	%typemap(jtype) CharStarByteArray "byte[]"
 	%typemap(jstype) CharStarByteArray "byte[]"
 	%typemap(out) CharStarByteArray {
-		$result = SWIG_JavaArrayOutSchar(jenv, (signed char*) $1.data, $1.length);
+		// A negative length can accompany a native pointer, as with "ext".
+		if ($1.data && $1.length > 0)
+			$result = SWIG_JavaArrayOutSchar(jenv, (signed char*) $1.data, $1.length);
+		else
+			$result = jenv->NewByteArray(0);
 	}
 	%typemap(javaout) CharStarByteArray { return $jnicall; }
 	%define YAZ_BEGIN_CDECL %enddef
