@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="yaz4j">
-    <bannerLeft>
-        <name>yaz4j</name>
-        <src>images/id77x100x.png</src>
-        <href>http://indexdata.com/yaz4j/</href>
+<site xmlns="http://maven.apache.org/SITE/2.0.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd"
+      name="yaz4j">
+    <bannerLeft name="yaz4j" href="https://www.indexdata.com/yaz4j/">
+        <image src="images/id77x100x.png"/>
     </bannerLeft>
     <publishDate format="dd MMM yyyy"/>
     <skin>
-        <groupId>org.apache.tapestry</groupId>
-        <artifactId>maven-skin</artifactId>
-        <version>1.1</version>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>2.0.1</version>
     </skin>
     <body>
+        <menu name="Documentation">
+            <item name="Java API" href="apidocs/index.html"/>
+        </menu>
         <menu ref="modules"/>
-        ${reports}
+        <menu ref="reports"/>
     </body>
-</project>
+</site>
 

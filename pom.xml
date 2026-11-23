@@ -68,6 +68,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <native.dir>${basedir}/target/native</native.dir>
+    <!-- The site directory is writable by the deployment account, but owned by root. -->
+    <maven.site.chmod>false</maven.site.chmod>
   </properties>
   <build>
     <extensions>
@@ -83,6 +85,11 @@
       </extension>
     </extensions>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.21.0</version>
+      </plugin>
       <!--
         Publishing a release:
         1. Update NEWS and commit all release changes. Disable IDE automatic
@@ -419,6 +426,27 @@
       </build>
     </profile>
   </profiles>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>3.9.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.12.0</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
   <scm>
     <connection>scm:git:git://github.com/indexdata/yaz4j</connection>
     <url>https://github.com/indexdata/yaz4j/</url>
