@@ -26,8 +26,8 @@
       <email>Rob.Styles@talis.com</email>
       <organization>Talis</organization>
       <organizationUrl>https://talis.com/</organizationUrl>
-      <roles/>
-      <timezone/>
+      <roles />
+      <timezone />
     </developer>
     <developer>
       <name>Adam Dickmeiss</name>
@@ -35,8 +35,8 @@
       <email>adam@indexdata.dk</email>
       <organization>Index Data</organization>
       <organizationUrl>https://www.indexdata.com</organizationUrl>
-      <roles/>
-      <timezone/>
+      <roles />
+      <timezone />
     </developer>
     <developer>
       <name>Jakub Skoczen</name>
@@ -44,17 +44,17 @@
       <email>jakub@indexdata.com</email>
       <organization>Index Data</organization>
       <organizationUrl>https://www.indexdata.com</organizationUrl>
-      <roles/>
-      <timezone/>
+      <roles />
+      <timezone />
     </developer>
     <developer>
       <name>Juan Cayetano</name>
       <id>cayetano</id>
       <email>juancayetano.delgado@gmail.com</email>
-      <organization/>
-      <organizationUrl/>
-      <roles/>
-      <timezone/>
+      <organization />
+      <organizationUrl />
+      <roles />
+      <timezone />
     </developer>
   </developers>
   <dependencies>
@@ -83,6 +83,25 @@
       </extension>
     </extensions>
     <plugins>
+      <!--
+        Publishing a release:
+        1. Update NEWS and commit all release changes. Disable IDE automatic
+           Java builds so they do not overwrite Maven's compiled classes.
+        2. Prepare the release, selecting the release and next development versions:
+             mvn -DautoVersionSubmodules=true release:clean release:prepare
+        3. Build from the local release tag and publish artifacts and documentation:
+             mvn release:perform -DreleaseProfiles=bundle -Darguments="-Dmaven.site.chmod=false"
+           The bundle profile includes the native library in the published JAR.
+           The arguments option passes the site setting to the forked Maven build.
+           Disable chmod because the deployment account can write to the site
+           directory but does not own it and cannot change its permissions.
+        4. Verify the published artifacts, then push the release commits and tag.
+
+        Keep release.properties until publishing is complete. To retry only the
+        documentation upload, run this from target/checkout:
+             mvn site:deploy -Dmaven.site.chmod=false
+        SSH access is required for both destinations in distributionManagement.
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
@@ -104,23 +123,23 @@
             <inherited>false</inherited>
             <configuration>
               <target>
-                <echo message="swig using CFLAGS: ${yaz.cflags}"/>
-                <mkdir dir="target/generated-sources/java/org/yaz4j/jni"/>
-                <mkdir dir="target/generated-sources/native"/>
-                <mkdir dir="${native.dir}"/>
+                <echo message="swig using CFLAGS: ${yaz.cflags}" />
+                <mkdir dir="target/generated-sources/java/org/yaz4j/jni" />
+                <mkdir dir="target/generated-sources/native" />
+                <mkdir dir="${native.dir}" />
                 <exec failonerror="true" executable="${swig}">
-                  <arg value="-Isrc/main/native"/>
-                  <arg line="${yaz.cflags}"/>
-                  <arg value="-I/usr/include"/>
-                  <arg value="-outdir"/>
-                  <arg value="${basedir}/target/generated-sources/java/org/yaz4j/jni"/>
-                  <arg value="-package"/>
-                  <arg value="org.yaz4j.jni"/>
-                  <arg value="-o"/>
-                  <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp"/>
-                  <arg value="-c++"/>
-                  <arg value="-java"/>
-                  <arg value="src/main/swig/libyaz4j.i"/>
+                  <arg value="-Isrc/main/native" />
+                  <arg line="${yaz.cflags}" />
+                  <arg value="-I/usr/include" />
+                  <arg value="-outdir" />
+                  <arg value="${basedir}/target/generated-sources/java/org/yaz4j/jni" />
+                  <arg value="-package" />
+                  <arg value="org.yaz4j.jni" />
+                  <arg value="-o" />
+                  <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
+                  <arg value="-c++" />
+                  <arg value="-java" />
+                  <arg value="src/main/swig/libyaz4j.i" />
                 </exec>
               </target>
             </configuration>
@@ -247,15 +266,15 @@
                 <configuration>
                   <target>
                     <exec failonerror="true" executable="${yaz.config}" outputproperty="yaz.cflags">
-                      <arg value="--cflags"/>
+                      <arg value="--cflags" />
                     </exec>
                     <exec failonerror="true" executable="${yaz.config}" outputproperty="yaz.libs">
-                      <arg value="--libs"/>
+                      <arg value="--libs" />
                     </exec>
-                    <mkdir dir="${basedir}/target"/>
+                    <mkdir dir="${basedir}/target" />
                     <propertyfile file="${basedir}/target/yaz.properties" comment="YAZ COMPILER/LINKER FLAGS">
-                      <entry key="yaz.cflags" value="${yaz.cflags}"/>
-                      <entry key="yaz.libs" value="${yaz.libs}"/>
+                      <entry key="yaz.cflags" value="${yaz.cflags}" />
+                      <entry key="yaz.libs" value="${yaz.libs}" />
                     </propertyfile>
                   </target>
                 </configuration>
@@ -269,39 +288,39 @@
                 <configuration>
                   <target>
                     <exec failonerror="true" executable="${compiler}">
-                      <arg value="-fPIC"/>
-                      <arg line="${compiler.flags}"/>
-                      <arg value="-Wno-deprecated-declarations"/>
-                      <arg value="-I${java.home}/include"/>
-                      <arg value="-I${java.home}/include/linux"/>
-                      <arg value="-I${basedir}/src/main/native"/>
-                      <arg line="${yaz.cflags}"/>
-                      <arg value="-c"/>
-                      <arg value="${basedir}/src/main/native/zoom-extra.cpp"/>
-                      <arg value="-o"/>
-                      <arg value="${basedir}/target/zoom-extra.o"/>
+                      <arg value="-fPIC" />
+                      <arg line="${compiler.flags}" />
+                      <arg value="-Wno-deprecated-declarations" />
+                      <arg value="-I${java.home}/include" />
+                      <arg value="-I${java.home}/include/linux" />
+                      <arg value="-I${basedir}/src/main/native" />
+                      <arg line="${yaz.cflags}" />
+                      <arg value="-c" />
+                      <arg value="${basedir}/src/main/native/zoom-extra.cpp" />
+                      <arg value="-o" />
+                      <arg value="${basedir}/target/zoom-extra.o" />
                     </exec>
                     <exec failonerror="true" executable="${compiler}">
-                      <arg value="-fPIC"/>
-                      <arg line="${compiler.flags}"/>
-                      <arg value="-Wno-deprecated-declarations"/>
-                      <arg value="-I${java.home}/include"/>
-                      <arg value="-I${java.home}/include/linux"/>
-                      <arg value="-I${basedir}/src/main/native"/>
-                      <arg line="${yaz.cflags}"/>
-                      <arg value="-c"/>
-                      <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp"/>
-                      <arg value="-o"/>
-                      <arg value="${basedir}/target/libyaz4j.o"/>
+                      <arg value="-fPIC" />
+                      <arg line="${compiler.flags}" />
+                      <arg value="-Wno-deprecated-declarations" />
+                      <arg value="-I${java.home}/include" />
+                      <arg value="-I${java.home}/include/linux" />
+                      <arg value="-I${basedir}/src/main/native" />
+                      <arg line="${yaz.cflags}" />
+                      <arg value="-c" />
+                      <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
+                      <arg value="-o" />
+                      <arg value="${basedir}/target/libyaz4j.o" />
                     </exec>
                     <exec failonerror="true" executable="${compiler}">
-                      <arg value="-shared"/>
-                      <arg line="${compiler.flags}"/>
-                      <arg value="-o"/>
-                      <arg value="${native.dir}/${native.file}"/>
-                      <arg value="${basedir}/target/libyaz4j.o"/>
-                      <arg value="${basedir}/target/zoom-extra.o"/>
-                      <arg line="${yaz.libs}"/>
+                      <arg value="-shared" />
+                      <arg line="${compiler.flags}" />
+                      <arg value="-o" />
+                      <arg value="${native.dir}/${native.file}" />
+                      <arg value="${basedir}/target/libyaz4j.o" />
+                      <arg value="${basedir}/target/zoom-extra.o" />
+                      <arg line="${yaz.libs}" />
                     </exec>
                   </target>
                 </configuration>
@@ -363,33 +382,33 @@
                 </goals>
                 <configuration>
                   <target>
-                    <echo message="Using java_home=${java.home}"/>
+                    <echo message="Using java_home=${java.home}" />
                     <exec failonerror="true" executable="cl">
-                      <arg value="/DWIN32"/>
-                      <arg value="-I${jdk.include}"/>
-                      <arg value="-I${jdk.include}/win32"/>
-                      <arg value="-I${basedir}/src/main/native"/>
-                      <arg value="${yaz.cflags}"/>
-                      <arg value="/Fo${basedir}/target/zoom-extra.obj"/>
-                      <arg value="-c"/>
-                      <arg value="${basedir}/src/main/native/zoom-extra.cpp"/>
+                      <arg value="/DWIN32" />
+                      <arg value="-I${jdk.include}" />
+                      <arg value="-I${jdk.include}/win32" />
+                      <arg value="-I${basedir}/src/main/native" />
+                      <arg value="${yaz.cflags}" />
+                      <arg value="/Fo${basedir}/target/zoom-extra.obj" />
+                      <arg value="-c" />
+                      <arg value="${basedir}/src/main/native/zoom-extra.cpp" />
                     </exec>
                     <exec failonerror="true" executable="cl">
-                      <arg value="/DWIN32"/>
-                      <arg value="-I${jdk.include}"/>
-                      <arg value="-I${jdk.include}/win32"/>
-                      <arg value="-I${basedir}/src/main/native"/>
-                      <arg value="${yaz.cflags}"/>
-                      <arg value="/Fo${basedir}/target/libyaz4j.obj"/>
-                      <arg value="-c"/>
-                      <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp"/>
+                      <arg value="/DWIN32" />
+                      <arg value="-I${jdk.include}" />
+                      <arg value="-I${jdk.include}/win32" />
+                      <arg value="-I${basedir}/src/main/native" />
+                      <arg value="${yaz.cflags}" />
+                      <arg value="/Fo${basedir}/target/libyaz4j.obj" />
+                      <arg value="-c" />
+                      <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
                     </exec>
                     <exec failonerror="true" executable="link">
-                      <arg value="/dll"/>
-                      <arg value="/out:${native.dir}/${native.file}"/>
-                      <arg value="${basedir}/target/libyaz4j.obj"/>
-                      <arg value="${basedir}/target/zoom-extra.obj"/>
-                      <arg value="${yaz.lib}"/>
+                      <arg value="/dll" />
+                      <arg value="/out:${native.dir}/${native.file}" />
+                      <arg value="${basedir}/target/libyaz4j.obj" />
+                      <arg value="${basedir}/target/zoom-extra.obj" />
+                      <arg value="${yaz.lib}" />
                     </exec>
                   </target>
                 </configuration>
@@ -418,7 +437,7 @@
     </repository>
     <site>
       <id>id-website</id>
-      <url>scpexe://www.indexdata.com/var/www/software/yaz4j/site</url>
+      <url>scpexe://idsoft@software.indexdata.com/home/indexdata/software-site/htdocs/yaz4j/site</url>
     </site>
   </distributionManagement>
 </project>
