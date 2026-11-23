@@ -418,7 +418,7 @@
     </repository>
     <site>
       <id>id-website</id>
-      <url>scpexe://www.indexdata.com/var/www/software/yaz4j/site</url>
+      <url>scpexe://idsoft@software.indexdata.com/home/indexdata/software-site/htdocs/yaz4j/site</url>
     </site>
   </distributionManagement>
 </project>
