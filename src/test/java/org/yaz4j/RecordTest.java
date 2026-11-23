@@ -41,6 +41,7 @@ public class RecordTest {
     Assert.assertEquals("gils", record2.getDatabase());
     Assert.assertEquals("SUTRS", new String(record2.get("syntax")));
     Assert.assertEquals(record2.render(), new String(record2.get("render")));
+    Assert.assertArrayEquals(new byte[0], record2.get("ext"));
 
     msg = null;
     try {
