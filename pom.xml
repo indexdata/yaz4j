@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.yaz4j</groupId>
   <artifactId>yaz4j</artifactId>
-  <version>1.6.1</version>
+  <version>1.7.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <!-- Project Information -->
   <name>yaz4j</name>
@@ -403,7 +403,7 @@
   <scm>
     <connection>scm:git:git://github.com/indexdata/yaz4j</connection>
     <url>https://github.com/indexdata/yaz4j/</url>
-    <tag>v1.6.1</tag>
+    <tag>HEAD</tag>
   </scm>
   <issueManagement>
     <system>GitHub</system>
