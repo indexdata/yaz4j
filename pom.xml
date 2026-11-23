@@ -83,6 +83,25 @@
       </extension>
     </extensions>
     <plugins>
+      <!--
+        Publishing a release:
+        1. Update NEWS and commit all release changes. Disable IDE automatic
+           Java builds so they do not overwrite Maven's compiled classes.
+        2. Prepare the release, selecting the release and next development versions:
+             mvn -DautoVersionSubmodules=true release:clean release:prepare
+        3. Build from the local release tag and publish artifacts and documentation:
+             mvn release:perform -DreleaseProfiles=bundle -Darguments="-Dmaven.site.chmod=false"
+           The bundle profile includes the native library in the published JAR.
+           The arguments option passes the site setting to the forked Maven build.
+           Disable chmod because the deployment account can write to the site
+           directory but does not own it and cannot change its permissions.
+        4. Verify the published artifacts, then push the release commits and tag.
+
+        Keep release.properties until publishing is complete. To retry only the
+        documentation upload, run this from target/checkout:
+             mvn site:deploy -Dmaven.site.chmod=false
+        SSH access is required for both destinations in distributionManagement.
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
