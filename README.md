@@ -5,7 +5,8 @@ high-level, client-side portion of the [YAZ] toolkit known as the ZOOM API.
 With yaz4j you can program clients for YAZ-supported protocols like Z39.50,
 SRU/W and Solr. yaz4j calls the YAZ shared library directly using the
 Java Foreign Function and Memory API, so it is pure Java and needs no
-native component of its own. It requires Java 22 or later.
+native component of its own. It requires a 64-bit Java 22 or later and
+a 64-bit YAZ library.
 
 yaz4j is covered by the
 [Revised BSD](https://www.indexdata.com/licences/revised-bsd) license.
@@ -59,11 +60,18 @@ When done, proceed with
     sudo apt update
     sudo apt install yaz4j
 
+The package depends on the distribution's default Java runtime if it is
+Java 22 or later, and otherwise installs OpenJDK 25. OpenJDK 25 then
+becomes the `java` command, unless the system has been set to use a
+specific older Java with `update-alternatives`. In that case, run
+applications with the Java 25 binary, for example
+`/usr/lib/jvm/java-25-openjdk-amd64/bin/java`, or select it with
+`sudo update-alternatives --config java`.
+
 ## Windows
 
-yaz4j is part of the YAZ package for Windows.
-[32-bit](https://ftp.indexdata.com/pub/yaz/win32/)
-[64-bit](https://ftp.indexdata.com/pub/yaz/win64/).
+Install the [64-bit YAZ package for Windows](https://ftp.indexdata.com/pub/yaz/win64/).
+32-bit YAZ cannot be used, because yaz4j requires a 64-bit JVM.
 
 # Compilation from source
 
@@ -83,7 +91,7 @@ Compile, test and package with:
     mvn install
 
 The result is the Java archive `target/yaz4j-VERSION.jar`. The same JAR
-works on every platform where YAZ is installed.
+works on every 64-bit platform where YAZ is installed.
 
 # Running
 

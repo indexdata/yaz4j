@@ -4,5 +4,11 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+include /usr/share/dpkg/architecture.mk
+
+# The distribution's default JDK may predate Java 22, so build with
+# OpenJDK 25 from Build-Depends instead.
+export JAVA_HOME = /usr/lib/jvm/java-25-openjdk-$(DEB_BUILD_ARCH)
+
 %:
 	dh $@

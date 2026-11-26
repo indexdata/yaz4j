@@ -3,11 +3,14 @@
 * Replace the SWIG-generated JNI bindings with the Java Foreign Function
 and Memory API. yaz4j now calls the YAZ shared library directly and no
 longer includes a native component of its own. The same JAR works on
-every platform where YAZ is installed. Building yaz4j no longer requires
-a C compiler, SWIG or YAZ development headers.
+every 64-bit platform where YAZ is installed. Building yaz4j no longer
+requires a C compiler, SWIG or YAZ development headers.
 
 * Require Java 22 or later, the first release in which the Foreign
 Function and Memory API is final.
+
+* Require a 64-bit JVM and YAZ library. yaz4j fails to load on 32-bit
+platforms, where size_t is not 64 bits.
 
 * Load the YAZ library at runtime. Use the yaz4j.library system property
 if it is set. Otherwise search for the platform's usual YAZ library names
@@ -28,7 +31,10 @@ Query.getNativeQuery method and the protected Record constructor change
 type. The rest of the public API is unchanged.
 
 * Remove the libyaz4j Debian package. The yaz4j package is now
-architecture independent and depends on the YAZ runtime library.
+architecture independent and depends on the YAZ runtime library and on
+the default Java runtime if it is Java 22 or later, or OpenJDK 25
+otherwise. Build packages with OpenJDK 25. Stop building packages for
+Debian bookworm, which does not provide Java 22 or later.
 
 * Test with Java 22 and 25 in GitHub Actions.
 
