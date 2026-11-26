@@ -3,8 +3,9 @@
 [yaz4j] is a Java binding for the
 high-level, client-side portion of the [YAZ] toolkit known as the ZOOM API.
 With yaz4j you can program clients for YAZ-supported protocols like Z39.50,
-SRU/W and Solr. yaz4j includes a native component and supports Linux
-and Windows.
+SRU/W and Solr. yaz4j calls the YAZ shared library directly using the
+Java Foreign Function and Memory API, so it is pure Java and needs no
+native component of its own. It requires Java 22 or later.
 
 yaz4j is covered by the
 [Revised BSD](https://www.indexdata.com/licences/revised-bsd) license.
@@ -56,7 +57,7 @@ For Ubuntu refer to
 When done, proceed with
 
     sudo apt update
-    sudo apt install yaz4j libyaz4j
+    sudo apt install yaz4j
 
 ## Windows
 
@@ -66,8 +67,10 @@ yaz4j is part of the YAZ package for Windows.
 
 # Compilation from source
 
-You will need JDK, [Maven](https://maven.apache.org),
-[SWIG](http://swig.org) and [YAZ] development packages.
+You will need JDK 22 or later and [Maven](https://maven.apache.org).
+The tests also need the [YAZ] shared library installed (for example,
+`apt install libyaz5` or `brew install yaz`). No C compiler, SWIG or
+YAZ development headers are required.
 
 For compilation of YAZ please consult YAZ [manual].
 
@@ -75,54 +78,32 @@ For compilation of YAZ please consult YAZ [manual].
 
     git clone https://github.com/indexdata/yaz4j.git
 
-In all cases you'll have to invoke the Maven command `mvn` to
-compile yaz4j. For example
+Compile, test and package with:
 
     mvn install
 
-After running `mvn install`, the result is the Java
-archive `target/yaz4j-VERSION.jar` and a shared object (JNI) in
-directory `target/native`.
+The result is the Java archive `target/yaz4j-VERSION.jar`. The same JAR
+works on every platform where YAZ is installed.
 
-As an option, the shared object may be bundled with the JAR file.
-Thus, the jar can be distributed as self-contained - provided that the
-platform is the same. Enable this by selecting profile `bundle` with
-Maven. Use something like:
+# Running
 
-    mvn -Pbundle install
+yaz4j loads the YAZ shared library at runtime. It looks for the usual
+library names (`libyaz.so.5` on Linux, `libyaz.5.dylib` on macOS,
+`yaz5.dll` on Windows) in each `java.library.path` directory, a few
+common install locations (Homebrew on macOS, `C:\Program Files\YAZ\bin`
+on Windows) and the system's dynamic linker search path. To use a
+specific library, set the `yaz4j.library` system property:
 
-The bundled shared object is stored in directory
-`native/${os.name}/${os.arch}`  - for example `Linux/amd64/libyaz4j.so`.
+    java -Dyaz4j.library=/opt/yaz/lib/libyaz.so.5 ...
 
-## Unix
+Calling native code is a restricted operation. To avoid JDK warnings
+(and, in future JDKs, errors), run applications with:
 
-On Unix, the `yaz-config` utility is used to get compiler flags and
-linker libraries for the shared object. Usually it's enough
-to install as whole. If there are packages for YAZ already, use
-install the "devel" package or "dev" package.
+    java --enable-native-access=ALL-UNNAMED ...
 
-## Windows
-
-Besides the exact same requirements as in the Unix case (JDK, Maven, SWIG,
-YAZ), you will need the Visual Studio to compile yaz4j. Since you
-are not using the YAZ installer you are probably also compiling YAZ
-on your own. Use same compiler for yaz4j as you use for YAZ.
-
-Use the command prompt provided with the Windows SDK, navigate to the yaz4j
-source directory and run:
-
-    mvn install
-
-Default 64-bit YAZ installer location, that is`C:\Program Files\YAZ`,
-is assumed for the `yaz.path` property. Nothing is assumed for `swig`, 
-so you either need to specify an absolute path or update the `PATH` 
-environment variable to include the directory containing 
-`swig.exe`. Both can be specified with:
-
-    mvn -Dyaz.path=/path/to/yaz/installdir -Dswig=/path/to/swig/binary install
-
-The compiled jar file ends up in `target/yaz4j-version.jar` while the
-native library in `target/native/yaz4j.dll`.
+or, when yaz4j is on the module path, `--enable-native-access=` followed by
+the name of the module that contains yaz4j. The yaz4j JAR's manifest already
+enables native access when it is run directly with `java -jar`.
 
 ## Using Maven
 

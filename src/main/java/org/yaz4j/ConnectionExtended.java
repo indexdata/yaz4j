@@ -1,8 +1,6 @@
 package org.yaz4j;
 
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_options_p;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_package_p;
-import org.yaz4j.jni.yaz4jlib;
+import java.lang.foreign.MemorySegment;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -31,8 +29,8 @@ public class ConnectionExtended extends Connection {
    */
   public Package getPackage(String type) {
     check();
-    SWIGTYPE_p_ZOOM_options_p options = yaz4jlib.ZOOM_options_create();
-    SWIGTYPE_p_ZOOM_package_p yazPackage = yaz4jlib.ZOOM_connection_package(
+    MemorySegment options = ZoomNative.optionsCreate();
+    MemorySegment yazPackage = ZoomNative.connectionPackage(
       zoomConnection, options);
     Package pack = new Package(yazPackage, this, type);
     packages.add(pack);

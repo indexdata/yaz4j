@@ -4,28 +4,23 @@ import java.io.Closeable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.yaz4j.exception.ZoomException;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_scanset_p;
-import org.yaz4j.jni.SWIGTYPE_p_size_t;
-import org.yaz4j.jni.yaz4jlib;
+import java.lang.foreign.MemorySegment;
 
 public class ScanSet implements Closeable, Iterable<ScanTerm> {
 
-  private SWIGTYPE_p_ZOOM_scanset_p scanSet;
+  private MemorySegment scanSet;
   private long size = 0;
 
-  ScanSet(SWIGTYPE_p_ZOOM_scanset_p scanSet) {
+  ScanSet(MemorySegment scanSet) {
     this.scanSet = scanSet;
-    size = yaz4jlib.ZOOM_scanset_size(scanSet);
+    size = ZoomNative.scansetSize(scanSet);
   }
 
   public ScanTerm get(long index) {
     check();
-    SWIGTYPE_p_size_t occ = yaz4jlib.new_size_tp();
-    SWIGTYPE_p_size_t length = yaz4jlib.new_size_tp();
-    String term = yaz4jlib.ZOOM_scanset_term(scanSet, (long) index, occ, length);
-    long occurences = yaz4jlib.size_tp_value(occ);
-    yaz4jlib.delete_size_tp(occ);
-    yaz4jlib.delete_size_tp(length);
+    long[] occ = new long[1];
+    String term = ZoomNative.scansetTerm(scanSet, index, occ);
+    long occurences = occ[0];
     return new ScanTerm(term, occurences);
   }
 
@@ -42,7 +37,7 @@ public class ScanSet implements Closeable, Iterable<ScanTerm> {
   @Override
   public void close() {
     if (scanSet != null) {
-      yaz4jlib.ZOOM_scanset_destroy(scanSet);
+      ZoomNative.scansetDestroy(scanSet);
       scanSet = null;
     }
   }

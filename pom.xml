@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.yaz4j</groupId>
   <artifactId>yaz4j</artifactId>
-  <version>1.7.0-SNAPSHOT</version>
+  <version>2.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <!-- Project Information -->
   <name>yaz4j</name>
@@ -67,7 +67,6 @@
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <native.dir>${basedir}/target/native</native.dir>
     <!-- The site directory is writable by the deployment account, but owned by root. -->
     <maven.site.chmod>false</maven.site.chmod>
   </properties>
@@ -97,8 +96,7 @@
         2. Prepare the release, selecting the release and next development versions:
              mvn -DautoVersionSubmodules=true release:clean release:prepare
         3. Build from the local release tag and publish artifacts and documentation:
-             mvn release:perform -DreleaseProfiles=bundle -Darguments="-Dmaven.site.chmod=false"
-           The bundle profile includes the native library in the published JAR.
+             mvn release:perform -Darguments="-Dmaven.site.chmod=false"
            The arguments option passes the site setting to the forked Maven build.
            Disable chmod because the deployment account can write to the site
            directory but does not own it and cannot change its permissions.
@@ -121,68 +119,13 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
-        <executions>
-          <execution>
-            <id>generate-sources</id>
-            <phase>generate-sources</phase>
-            <inherited>false</inherited>
-            <configuration>
-              <target>
-                <echo message="swig using CFLAGS: ${yaz.cflags}" />
-                <mkdir dir="target/generated-sources/java/org/yaz4j/jni" />
-                <mkdir dir="target/generated-sources/native" />
-                <mkdir dir="${native.dir}" />
-                <exec failonerror="true" executable="${swig}">
-                  <arg value="-Isrc/main/native" />
-                  <arg line="${yaz.cflags}" />
-                  <arg value="-I/usr/include" />
-                  <arg value="-outdir" />
-                  <arg value="${basedir}/target/generated-sources/java/org/yaz4j/jni" />
-                  <arg value="-package" />
-                  <arg value="org.yaz4j.jni" />
-                  <arg value="-o" />
-                  <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
-                  <arg value="-c++" />
-                  <arg value="-java" />
-                  <arg value="src/main/swig/libyaz4j.i" />
-                </exec>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.1</version>
         <configuration>
           <forkMode>once</forkMode>
-          <argLine>"-Djava.library.path=${native.dir}"</argLine>
+          <argLine>--enable-native-access=ALL-UNNAMED</argLine>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.0.0</version>
-        <executions>
-          <execution>
-            <id>include-generated-sources</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>target/generated-sources/java</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -190,11 +133,8 @@
         <version>3.13.0</version>
         <configuration>
           <encoding>UTF-8</encoding>
-          <release>8</release>
-          <compilerArgs>
-            <!-- Keep Java 8 compatibility without obsolete-option warnings. -->
-            <arg>-Xlint:-options</arg>
-          </compilerArgs>
+          <!-- The Foreign Function and Memory API is final as of Java 22. -->
+          <release>22</release>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
         </configuration>
@@ -209,223 +149,15 @@
               <mainClass>org.yaz4j.ZoomCLI</mainClass>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
+            <manifestEntries>
+              <!-- Allow calls into YAZ without warnings when run with java -jar. -->
+              <Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
+            </manifestEntries>
           </archive>
         </configuration>
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <!-- puts so in jar and is then loaded with LoadLib.load -->
-      <id>bundle</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-resources-plugin</artifactId>
-            <version>3.1.0</version>
-            <executions>
-              <execution>
-                <id>copy-resources</id>
-                <phase>process-classes</phase>
-                <goals>
-                  <goal>copy-resources</goal>
-                </goals>
-                <configuration>
-                  <outputDirectory>${project.build.outputDirectory}/native/${os.name}/${os.arch}</outputDirectory>
-                  <resources>
-                    <resource>
-                      <directory>${native.dir}</directory>
-                      <filtering>false</filtering>
-                    </resource>
-                  </resources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>unix</id>
-      <activation>
-        <os>
-          <family>unix</family>
-        </os>
-      </activation>
-      <properties>
-        <yaz.config>${basedir}/yaz-config-wrap.sh</yaz.config>
-        <swig>swig</swig>
-        <native.file>libyaz4j.so</native.file>
-        <compiler>g++</compiler>
-        <compiler.flags>-O</compiler.flags>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>write-yaz-properties</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target>
-                    <exec failonerror="true" executable="${yaz.config}" outputproperty="yaz.cflags">
-                      <arg value="--cflags" />
-                    </exec>
-                    <exec failonerror="true" executable="${yaz.config}" outputproperty="yaz.libs">
-                      <arg value="--libs" />
-                    </exec>
-                    <mkdir dir="${basedir}/target" />
-                    <propertyfile file="${basedir}/target/yaz.properties" comment="YAZ COMPILER/LINKER FLAGS">
-                      <entry key="yaz.cflags" value="${yaz.cflags}" />
-                      <entry key="yaz.libs" value="${yaz.libs}" />
-                    </propertyfile>
-                  </target>
-                </configuration>
-              </execution>
-              <execution>
-                <id>compile-zoom-extra</id>
-                <phase>compile</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target>
-                    <exec failonerror="true" executable="${compiler}">
-                      <arg value="-fPIC" />
-                      <arg line="${compiler.flags}" />
-                      <arg value="-Wno-deprecated-declarations" />
-                      <arg value="-I${java.home}/include" />
-                      <arg value="-I${java.home}/include/linux" />
-                      <arg value="-I${basedir}/src/main/native" />
-                      <arg line="${yaz.cflags}" />
-                      <arg value="-c" />
-                      <arg value="${basedir}/src/main/native/zoom-extra.cpp" />
-                      <arg value="-o" />
-                      <arg value="${basedir}/target/zoom-extra.o" />
-                    </exec>
-                    <exec failonerror="true" executable="${compiler}">
-                      <arg value="-fPIC" />
-                      <arg line="${compiler.flags}" />
-                      <arg value="-Wno-deprecated-declarations" />
-                      <arg value="-I${java.home}/include" />
-                      <arg value="-I${java.home}/include/linux" />
-                      <arg value="-I${basedir}/src/main/native" />
-                      <arg line="${yaz.cflags}" />
-                      <arg value="-c" />
-                      <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
-                      <arg value="-o" />
-                      <arg value="${basedir}/target/libyaz4j.o" />
-                    </exec>
-                    <exec failonerror="true" executable="${compiler}">
-                      <arg value="-shared" />
-                      <arg line="${compiler.flags}" />
-                      <arg value="-o" />
-                      <arg value="${native.dir}/${native.file}" />
-                      <arg value="${basedir}/target/libyaz4j.o" />
-                      <arg value="${basedir}/target/zoom-extra.o" />
-                      <arg line="${yaz.libs}" />
-                    </exec>
-                  </target>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>properties-maven-plugin</artifactId>
-            <version>1.0.0</version>
-            <executions>
-              <execution>
-                <id>read-yaz-properties</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>read-project-properties</goal>
-                </goals>
-                <configuration>
-                  <files>
-                    <file>${basedir}/target/yaz.properties</file>
-                  </files>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>win</id>
-      <activation>
-        <os>
-          <family>windows</family>
-        </os>
-      </activation>
-      <properties>
-        <!-- SWIG file name - just "swig" if it's in the PATH -->
-        <swig>swig</swig>
-        <!-- resulting DLL - bad idea to change this -->
-        <native.file>yaz4j.dll</native.file>
-        <yaz.path>c:\Program Files\YAZ</yaz.path>
-        <!-- import library -->
-        <yaz.lib>${yaz.path}\lib\yaz5.lib</yaz.lib>
-        <!-- CFLAGS with include directory for YAZ -->
-        <yaz.cflags>-I${yaz.path}\include</yaz.cflags>
-        <jdk.include>${java.home}\include</jdk.include>
-        <!-- in some cases ..\include -->
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>compile-zoom-extra</id>
-                <phase>compile</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target>
-                    <echo message="Using java_home=${java.home}" />
-                    <exec failonerror="true" executable="cl">
-                      <arg value="/DWIN32" />
-                      <arg value="-I${jdk.include}" />
-                      <arg value="-I${jdk.include}/win32" />
-                      <arg value="-I${basedir}/src/main/native" />
-                      <arg value="${yaz.cflags}" />
-                      <arg value="/Fo${basedir}/target/zoom-extra.obj" />
-                      <arg value="-c" />
-                      <arg value="${basedir}/src/main/native/zoom-extra.cpp" />
-                    </exec>
-                    <exec failonerror="true" executable="cl">
-                      <arg value="/DWIN32" />
-                      <arg value="-I${jdk.include}" />
-                      <arg value="-I${jdk.include}/win32" />
-                      <arg value="-I${basedir}/src/main/native" />
-                      <arg value="${yaz.cflags}" />
-                      <arg value="/Fo${basedir}/target/libyaz4j.obj" />
-                      <arg value="-c" />
-                      <arg value="${basedir}/target/generated-sources/native/libyaz4j.cpp" />
-                    </exec>
-                    <exec failonerror="true" executable="link">
-                      <arg value="/dll" />
-                      <arg value="/out:${native.dir}/${native.file}" />
-                      <arg value="${basedir}/target/libyaz4j.obj" />
-                      <arg value="${basedir}/target/zoom-extra.obj" />
-                      <arg value="${yaz.lib}" />
-                    </exec>
-                  </target>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
   <reporting>
     <plugins>
       <plugin>

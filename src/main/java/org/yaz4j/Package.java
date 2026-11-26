@@ -1,8 +1,7 @@
 package org.yaz4j;
 
 import org.yaz4j.exception.ZoomException;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_package_p;
-import org.yaz4j.jni.yaz4jlib;
+import java.lang.foreign.MemorySegment;
 
 import java.io.Closeable;
 
@@ -18,10 +17,10 @@ import java.io.Closeable;
  */
 public class Package implements Closeable {
   private ConnectionExtended conn;
-  private SWIGTYPE_p_ZOOM_package_p pack;
+  private MemorySegment pack;
   private final String type;
 
-  Package(SWIGTYPE_p_ZOOM_package_p pack, ConnectionExtended conn, String type) {
+  Package(MemorySegment pack, ConnectionExtended conn, String type) {
     if (type == null)
       throw new IllegalArgumentException("type cannot be null");
     this.type = type;
@@ -39,7 +38,7 @@ public class Package implements Closeable {
     if (key == null)
       throw new IllegalArgumentException("option name cannot be null");
     check();
-    yaz4jlib.ZOOM_package_option_set(pack, key, value);
+    ZoomNative.packageOptionSet(pack, key, value);
     return this;
   }
 
@@ -52,7 +51,7 @@ public class Package implements Closeable {
     if (key == null)
       throw new IllegalArgumentException("option name cannot be null");
     check();
-    return yaz4jlib.ZOOM_package_option_get(pack, key);
+    return ZoomNative.packageOptionGet(pack, key);
   }
 
   /**
@@ -60,7 +59,7 @@ public class Package implements Closeable {
    */
   public void send() throws ZoomException {
     check();
-    yaz4jlib.ZOOM_package_send(pack, type);
+    ZoomNative.packageSend(pack, type);
     ZoomException e = conn.getZoomException();
     if (e != null) {
       throw e;
@@ -76,7 +75,7 @@ public class Package implements Closeable {
   @Override
   public void close() {
     if (pack != null) {
-      yaz4jlib.ZOOM_package_destroy(pack);
+      ZoomNative.packageDestroy(pack);
       pack = null;
     }
     conn = null;

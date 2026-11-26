@@ -6,8 +6,7 @@
 package org.yaz4j;
 
 import org.yaz4j.exception.ZoomException;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_query_p;
-import org.yaz4j.jni.yaz4jlib;
+import java.lang.foreign.MemorySegment;
 
 /**
  *
@@ -19,8 +18,8 @@ public class PrefixQuery extends Query {
     super(prefixQuery);
   }
 
-  int createQuery(SWIGTYPE_p_ZOOM_query_p nativeQuery, String queryString) {
-    return yaz4jlib.ZOOM_query_prefix(nativeQuery, queryString);
+  int createQuery(MemorySegment nativeQuery, String queryString) {
+    return ZoomNative.queryPrefix(nativeQuery, queryString);
   }
 
 }

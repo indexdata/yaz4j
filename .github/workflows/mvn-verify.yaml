@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['11', '21', '25']
+        java: ['22', '25']
 
     steps:
       - name: Check out source
@@ -36,10 +36,10 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Install YAZ and SWIG
+      - name: Install YAZ
         run: |
           sudo apt-get update
-          sudo apt-get install --yes --no-install-recommends libyaz-dev swig
+          sudo apt-get install --yes --no-install-recommends libyaz-dev
 
       - name: Test queries without initializing a connection first
         run: mvn --batch-mode --no-transfer-progress -Dtest=QueryTest test
