@@ -105,6 +105,37 @@ or, when yaz4j is on the module path, `--enable-native-access=` followed by
 the name of the module that contains yaz4j. The yaz4j JAR's manifest already
 enables native access when it is run directly with `java -jar`.
 
+## Threads
+
+yaz4j calls block the calling thread inside YAZ until the server responds.
+This includes connecting, searching, scanning, retrieving records and sending
+packages. Use a connection, and the result sets, records and scan sets
+created from it, from one thread at a time. Different connections may be used
+from different threads.
+
+Do not call yaz4j from virtual threads. A virtual thread that is blocked in
+native code cannot release its carrier thread, so each pending yaz4j call
+occupies one of the few carrier threads (by default, one per CPU core). A few
+slow servers can then stall every other virtual thread in the application.
+This also applies to servlet containers and frameworks configured to handle
+requests on virtual threads. Run yaz4j calls on platform threads instead, for
+example on a fixed-size thread pool:
+
+```java
+ExecutorService yazPool = Executors.newFixedThreadPool(16);
+
+String record = yazPool.submit(() -> {
+  try (Connection con = new Connection("z3950.indexdata.com/gils", 0)) {
+    con.setSyntax("sutrs");
+    con.connect();
+    return con.search(new PrefixQuery("@attr 1=4 utah")).getRecord(0).render();
+  }
+}).get();
+```
+
+Copy the data you need, as `render()` does here, before the connection is
+closed, because closing a connection also closes its result sets and records.
+
 ## Using Maven
 
 If you are using Maven to build your application you can include Index Data's
