@@ -18,6 +18,7 @@ import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.SymbolLookup;
 import java.lang.invoke.MethodHandle;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -174,10 +175,40 @@ final class ZoomNative {
 
   private static SymbolLookup tryPath(Path path, List<String> tried) {
     try {
+      if (isWindows())
+        loadWithDependencies(path);
       return SymbolLookup.libraryLookup(path, Arena.global());
     } catch (IllegalArgumentException e) {
       tried.add(path.toString());
       return null;
+    }
+  }
+
+  private static boolean isWindows() {
+    return System.getProperty("os.name", "").toLowerCase(Locale.ROOT).startsWith("windows");
+  }
+
+  private static final int LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008;
+
+  /**
+   * Windows does not look in the directory of a DLL loaded by path for the
+   * DLLs it depends on, such as libxml2.dll and iconv-2.dll next to
+   * yaz5.dll. Load the DLL with LoadLibraryExW and
+   * LOAD_WITH_ALTERED_SEARCH_PATH, which does. The libraryLookup that follows
+   * then reuses the already loaded module, and reports any failure.
+   */
+  private static void loadWithDependencies(Path path) {
+    SymbolLookup kernel32 = SymbolLookup.libraryLookup("kernel32", Arena.global());
+    MethodHandle loadLibraryExW = LINKER.downcallHandle(
+      kernel32.find("LoadLibraryExW").orElseThrow(),
+      FunctionDescriptor.of(ADDRESS, ADDRESS, ADDRESS, JAVA_INT));
+    try (Arena arena = Arena.ofConfined()) {
+      MemorySegment file = arena.allocateFrom(path.toAbsolutePath().toString(),
+        StandardCharsets.UTF_16LE);
+      MemorySegment ignored = (MemorySegment) loadLibraryExW.invokeExact(file,
+        MemorySegment.NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+    } catch (Throwable t) {
+      throw rethrow(t);
     }
   }
 

@@ -84,12 +84,19 @@ jobs:
         run: mvn --batch-mode --no-transfer-progress -DskipTests package
 
       # The installer adds YAZ to PATH in the registry, which does not affect
-      # this job's steps. Check whether yaz4j finds YAZ and its dependent DLLs
-      # without PATH, using its default install location search.
+      # this job's steps. Check that yaz4j finds YAZ in its default install
+      # location, and the DLLs YAZ depends on, without PATH.
       - name: Load YAZ without PATH
-        continue-on-error: true
         shell: pwsh
         run: java --enable-native-access=ALL-UNNAMED -cp target\classes org.yaz4j.ZoomCLI z3950.indexdata.com/gils "@attr 1=4 utah"
+
+      # Copy YAZ to a directory that yaz4j does not search by default, so
+      # only yaz4j.library can find it there.
+      - name: Load YAZ with yaz4j.library without PATH
+        shell: pwsh
+        run: |
+          Copy-Item -Recurse "$env:YAZ_HOME\bin" C:\yaz-copy
+          java --enable-native-access=ALL-UNNAMED "-Dyaz4j.library=C:\yaz-copy\yaz5.dll" -cp target\classes org.yaz4j.ZoomCLI z3950.indexdata.com/gils "@attr 1=4 utah"
 
       - name: Add YAZ to PATH
         shell: pwsh

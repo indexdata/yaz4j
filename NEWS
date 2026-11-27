@@ -15,7 +15,9 @@ platforms, where size_t is not 64 bits.
 * Load the YAZ library at runtime. Use the yaz4j.library system property
 if it is set. Otherwise search for the platform's usual YAZ library names
 (libyaz.so.5, libyaz.5.dylib or yaz5.dll) in java.library.path and common
-install locations, then in the dynamic linker search path.
+install locations, then in the dynamic linker search path. On Windows,
+also find the DLLs that YAZ depends on in the directory of yaz5.dll, so
+YAZ does not need to be on PATH.
 
 * Applications that use yaz4j from the classpath should run with
 --enable-native-access=ALL-UNNAMED to avoid JDK warnings about restricted

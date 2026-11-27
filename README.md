@@ -104,6 +104,10 @@ specific library, set the `yaz4j.library` system property:
 
     java -Dyaz4j.library=/opt/yaz/lib/libyaz.so.5 ...
 
+On Windows, yaz4j loads the DLLs that YAZ depends on, such as
+`libxml2.dll`, from the directory of `yaz5.dll` before searching `PATH`,
+so YAZ does not need to be on `PATH`.
+
 Calling native code is a restricted operation. To avoid JDK warnings
 (and, in future JDKs, errors), run applications with:
 
