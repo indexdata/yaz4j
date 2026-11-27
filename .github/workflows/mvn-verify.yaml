@@ -47,14 +47,63 @@ jobs:
       - name: Run the Maven verify phase
         run: mvn --batch-mode --no-transfer-progress verify
 
+  verify-windows:
+    name: Verify (Windows, Java 25)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      YAZ_VERSION: 5.38.1
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v6
+        with:
+          java-version: '25'
+          distribution: temurin
+          cache: maven
+
+      - name: Install YAZ
+        shell: pwsh
+        run: |
+          Invoke-WebRequest "https://ftp.indexdata.com/pub/yaz/win64/yaz_$env:YAZ_VERSION.exe" -OutFile yaz-setup.exe
+          Start-Process -Wait -FilePath .\yaz-setup.exe -ArgumentList '/S'
+          $yazHome = (Get-ItemProperty 'HKLM:\SOFTWARE\Index Data\YAZ').'(default)'
+          Write-Output "YAZ installed in $yazHome"
+          Get-ChildItem "$yazHome\bin" -Filter *.dll | Select-Object -ExpandProperty Name
+          "YAZ_HOME=$yazHome" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+
+      - name: Compile
+        run: mvn --batch-mode --no-transfer-progress -DskipTests package
+
+      # The installer adds YAZ to PATH in the registry, which does not affect
+      # this job's steps. Check whether yaz4j finds YAZ and its dependent DLLs
+      # without PATH, using its default install location search.
+      - name: Load YAZ without PATH
+        continue-on-error: true
+        shell: pwsh
+        run: java --enable-native-access=ALL-UNNAMED -cp target\classes org.yaz4j.ZoomCLI z3950.indexdata.com/gils "@attr 1=4 utah"
+
+      - name: Add YAZ to PATH
+        shell: pwsh
+        run: '"$env:YAZ_HOME\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH'
+
+      - name: Run the Maven verify phase
+        run: mvn --batch-mode --no-transfer-progress verify
+
   mvn-verify:
     name: mvn-verify
-    needs: verify
+    needs: [verify, verify-windows]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
-      - name: Require all Java versions to pass
+      - name: Require all verify jobs to pass
         env:
           VERIFY_RESULT: ${{ needs.verify.result }}
-        run: test "$VERIFY_RESULT" = success
+          VERIFY_WINDOWS_RESULT: ${{ needs.verify-windows.result }}
+        run: test "$VERIFY_RESULT" = success && test "$VERIFY_WINDOWS_RESULT" = success
