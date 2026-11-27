@@ -51,13 +51,13 @@ OS-independent jar archive (yaz4j/target/yaz4j-VERSION.jar). If we were
 writing a command line Java application, like any other external Java library,
 the jar would have to be placed on your application classpath. yaz4j finds the
 YAZ library in the standard system locations. If YAZ is installed elsewhere,
-point yaz4j to it with the yaz4j.library system property. Calling native code
-is a restricted operation in Java, so also enable native access to avoid
-warnings:
+add its library directory to the java.library.path system property. Calling
+native code is a restricted operation in Java, so also enable native access to
+avoid warnings:
 
     java --enable-native-access=ALL-UNNAMED -cp /path/to/yaz4j-*.jar MyApp
     java --enable-native-access=ALL-UNNAMED \
-      -Dyaz4j.library=/path/to/libyaz.so.5 -cp /path/to/yaz4j-*.jar MyApp
+      -Djava.library.path=/path/to/yaz/lib -cp /path/to/yaz4j-*.jar MyApp
 
 ### SETTING UP THE DEVELOPMENT ENVIRONMENT
 
@@ -72,7 +72,7 @@ script and putting the following lines in there:
     export CATALINA_OPTS
 
 If YAZ is not installed in a standard system location, also add
-`-Dyaz4j.library=/path/to/libyaz.so.5` to CATALINA_OPTS.
+`-Djava.library.path=/path/to/yaz/lib` to CATALINA_OPTS.
 
 On Windows:
 

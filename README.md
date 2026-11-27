@@ -99,10 +99,11 @@ yaz4j loads the YAZ shared library at runtime. It looks for the usual
 library names (`libyaz.so.5` on Linux, `libyaz.5.dylib` on macOS,
 `yaz5.dll` on Windows) in each `java.library.path` directory, a few
 common install locations (Homebrew on macOS, `C:\Program Files\YAZ\bin`
-on Windows) and the system's dynamic linker search path. To use a
-specific library, set the `yaz4j.library` system property:
+on Windows) and the system's dynamic linker search path. If YAZ is
+installed elsewhere, or to use a specific YAZ installation, add its
+library directory to `java.library.path`, which is searched first:
 
-    java -Dyaz4j.library=/opt/yaz/lib/libyaz.so.5 ...
+    java -Djava.library.path=/opt/yaz/lib ...
 
 On Windows, yaz4j loads the DLLs that YAZ depends on, such as
 `libxml2.dll`, from the directory of `yaz5.dll` before searching `PATH`,

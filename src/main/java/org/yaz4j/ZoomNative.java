@@ -30,9 +30,8 @@ import java.util.Locale;
  * API. ZOOM handles (connections, result sets, records, ...) are represented
  * as zero-length {@link MemorySegment}s wrapping the native pointer.
  *
- * <p>The YAZ shared library is located by trying, in order, the path or name
- * given by the {@code yaz4j.library} system property, or the platform's usual
- * YAZ library names in each {@code java.library.path} directory, a few common
+ * <p>The YAZ shared library is located by trying the platform's usual YAZ
+ * library names in each {@code java.library.path} directory, a few common
  * install locations, and finally the system's dynamic linker search path.
  */
 final class ZoomNative {
@@ -145,15 +144,7 @@ final class ZoomNative {
 
   private static SymbolLookup loadYaz() {
     List<String> tried = new ArrayList<>();
-    String override = System.getProperty("yaz4j.library");
-    List<String> names = override != null ? List.of(override) : defaultLibraryNames();
-    for (String name : names) {
-      if (name.contains("/") || name.contains(File.separator)) {
-        SymbolLookup lookup = tryPath(Path.of(name), tried);
-        if (lookup != null)
-          return lookup;
-        continue;
-      }
+    for (String name : defaultLibraryNames()) {
       for (String dir : searchDirs()) {
         Path file = Path.of(dir, name);
         if (Files.isRegularFile(file)) {
@@ -170,7 +161,7 @@ final class ZoomNative {
       }
     }
     throw new UnsatisfiedLinkError("Unable to load the YAZ library (tried " + tried
-      + "). Install YAZ or set -Dyaz4j.library=/path/to/libyaz");
+      + "). Install YAZ or add its library directory to java.library.path");
   }
 
   private static SymbolLookup tryPath(Path path, List<String> tried) {

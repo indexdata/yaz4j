@@ -90,13 +90,14 @@ jobs:
         shell: pwsh
         run: java --enable-native-access=ALL-UNNAMED -cp target\classes org.yaz4j.ZoomCLI z3950.indexdata.com/gils "@attr 1=4 utah"
 
-      # Copy YAZ to a directory that yaz4j does not search by default, so
-      # only yaz4j.library can find it there.
-      - name: Load YAZ with yaz4j.library without PATH
+      # Move YAZ out of its default install location, so only
+      # java.library.path can find it, and its dependencies only next to it.
+      - name: Load YAZ through java.library.path without PATH
         shell: pwsh
         run: |
-          Copy-Item -Recurse "$env:YAZ_HOME\bin" C:\yaz-copy
-          java --enable-native-access=ALL-UNNAMED "-Dyaz4j.library=C:\yaz-copy\yaz5.dll" -cp target\classes org.yaz4j.ZoomCLI z3950.indexdata.com/gils "@attr 1=4 utah"
+          Move-Item "$env:YAZ_HOME" C:\yaz-moved
+          "YAZ_HOME=C:\yaz-moved" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+          java --enable-native-access=ALL-UNNAMED "-Djava.library.path=C:\yaz-moved\bin" -cp target\classes org.yaz4j.ZoomCLI z3950.indexdata.com/gils "@attr 1=4 utah"
 
       - name: Add YAZ to PATH
         shell: pwsh
