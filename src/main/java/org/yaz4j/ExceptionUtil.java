@@ -6,9 +6,7 @@
 package org.yaz4j;
 
 import org.yaz4j.exception.*;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_connection_p;
-import org.yaz4j.jni.yaz4jlib;
-import org.yaz4j.jni.yaz4jlibConstants;
+import java.lang.foreign.MemorySegment;
 
 /**
  * Utility class to map ZOOM errors into ZoomExceptions
@@ -16,37 +14,37 @@ import org.yaz4j.jni.yaz4jlibConstants;
  */
 class ExceptionUtil {
 
-  static ZoomException getError(SWIGTYPE_p_ZOOM_connection_p zoomConnection,
+  static ZoomException getError(MemorySegment zoomConnection,
     String host, int port) {
 
     String fHost = host + (port == 0 ? "" : ":" + port);
 
-    int errorCode = yaz4jlib.ZOOM_connection_errcode(zoomConnection);
+    int errorCode = ZoomNative.connectionErrcode(zoomConnection);
     String message;
     switch (errorCode) {
-      case yaz4jlibConstants.ZOOM_ERROR_NONE:
+      case ZoomNative.ZOOM_ERROR_NONE:
         return null;
-      case yaz4jlib.ZOOM_ERROR_CONNECT:
+      case ZoomNative.ZOOM_ERROR_CONNECT:
         message = String.format("Connection could not be made to %s", fHost);
         return new ConnectionUnavailableException(message);
-      case yaz4jlib.ZOOM_ERROR_INVALID_QUERY:
+      case ZoomNative.ZOOM_ERROR_INVALID_QUERY:
         message = String.format(
           "The query requested is not valid or not supported");
         return new InvalidQueryException(message);
-      case yaz4jlib.ZOOM_ERROR_INIT:
+      case ZoomNative.ZOOM_ERROR_INIT:
         message = String.format("Server %s rejected our init request", fHost);
         return new InitRejectedException(message);
-      case yaz4jlib.ZOOM_ERROR_TIMEOUT:
+      case ZoomNative.ZOOM_ERROR_TIMEOUT:
         message = String.format("Server %s timed out handling our request", fHost);
         return new ConnectionTimeoutException(message);
-      case yaz4jlib.ZOOM_ERROR_MEMORY:
-      case yaz4jlib.ZOOM_ERROR_ENCODE:
-      case yaz4jlib.ZOOM_ERROR_DECODE:
-      case yaz4jlib.ZOOM_ERROR_CONNECTION_LOST:
-      case yaz4jlib.ZOOM_ERROR_INTERNAL:
-      case yaz4jlib.ZOOM_ERROR_UNSUPPORTED_PROTOCOL:
-      case yaz4jlib.ZOOM_ERROR_UNSUPPORTED_QUERY:
-        message = yaz4jlib.ZOOM_connection_errmsg(zoomConnection);
+      case ZoomNative.ZOOM_ERROR_MEMORY:
+      case ZoomNative.ZOOM_ERROR_ENCODE:
+      case ZoomNative.ZOOM_ERROR_DECODE:
+      case ZoomNative.ZOOM_ERROR_CONNECTION_LOST:
+      case ZoomNative.ZOOM_ERROR_INTERNAL:
+      case ZoomNative.ZOOM_ERROR_UNSUPPORTED_PROTOCOL:
+      case ZoomNative.ZOOM_ERROR_UNSUPPORTED_QUERY:
+        message = ZoomNative.connectionErrmsg(zoomConnection);
         return new ZoomImplementationException("A fatal error occurred in Yaz: "
           + errorCode + " - " + message);
       default:

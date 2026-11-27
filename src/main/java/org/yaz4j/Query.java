@@ -6,8 +6,7 @@
 package org.yaz4j;
 
 import org.yaz4j.exception.ZoomException;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_query_p;
-import org.yaz4j.jni.yaz4jlib;
+import java.lang.foreign.MemorySegment;
 
 /**
  * @see <a href="http://www.indexdata.com/yaz/doc/zoom.query.html">YAZ ZOOM Query</a>
@@ -22,8 +21,8 @@ public abstract class Query {
     if (queryString == null)
       throw new IllegalArgumentException("query string cannot be null");
     this.queryString = queryString;
-    SWIGTYPE_p_ZOOM_query_p nativeQuery = getNativeQuery();
-    yaz4jlib.ZOOM_query_destroy(nativeQuery);
+    MemorySegment nativeQuery = getNativeQuery();
+    ZoomNative.queryDestroy(nativeQuery);
   }
   
   public void sortBy(String strategy, String criteria) throws ZoomException {
@@ -31,26 +30,26 @@ public abstract class Query {
       throw new IllegalArgumentException("strategy string cannot be null");
     this.strategy = strategy;
     this.criteria = criteria;
-    SWIGTYPE_p_ZOOM_query_p nativeQuery = getNativeQuery();
-    yaz4jlib.ZOOM_query_destroy(nativeQuery);
+    MemorySegment nativeQuery = getNativeQuery();
+    ZoomNative.queryDestroy(nativeQuery);
   }
 
-  abstract int createQuery(SWIGTYPE_p_ZOOM_query_p nativeQuery, String queryString);
+  abstract int createQuery(MemorySegment nativeQuery, String queryString);
 
-  protected SWIGTYPE_p_ZOOM_query_p getNativeQuery() throws ZoomException {
-    SWIGTYPE_p_ZOOM_query_p nativeQuery = yaz4jlib.ZOOM_query_create();
+  protected MemorySegment getNativeQuery() throws ZoomException {
+    MemorySegment nativeQuery = ZoomNative.queryCreate();
     if (createQuery(nativeQuery, queryString) != 0) {
-      yaz4jlib.ZOOM_query_destroy(nativeQuery);
+      ZoomNative.queryDestroy(nativeQuery);
       throw new ZoomException("invalid query " + queryString);
     }
     if (strategy != null && criteria != null) {
-      int ret = yaz4jlib.ZOOM_query_sortby2(nativeQuery, strategy, criteria);
+      int ret = ZoomNative.querySortby2(nativeQuery, strategy, criteria);
       if (ret == -1) {
-        yaz4jlib.ZOOM_query_destroy(nativeQuery);
+        ZoomNative.queryDestroy(nativeQuery);
         throw new ZoomException("invalid sort strategy " + strategy);
       }
       if (ret == -2) {
-        yaz4jlib.ZOOM_query_destroy(nativeQuery);
+        ZoomNative.queryDestroy(nativeQuery);
         throw new ZoomException("invalid sort criteria " + criteria);
       }
     }

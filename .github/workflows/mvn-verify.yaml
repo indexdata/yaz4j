@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['11', '21', '25']
+        java: ['25']
 
     steps:
       - name: Check out source
@@ -36,10 +36,10 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Install YAZ and SWIG
+      - name: Install YAZ
         run: |
           sudo apt-get update
-          sudo apt-get install --yes --no-install-recommends libyaz-dev swig
+          sudo apt-get install --yes --no-install-recommends libyaz-dev
 
       - name: Test queries without initializing a connection first
         run: mvn --batch-mode --no-transfer-progress -Dtest=QueryTest test
@@ -47,14 +47,104 @@ jobs:
       - name: Run the Maven verify phase
         run: mvn --batch-mode --no-transfer-progress verify
 
+  verify-windows:
+    name: Verify (Windows, Java 25)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      YAZ_VERSION: 5.38.1
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v6
+        with:
+          java-version: '25'
+          distribution: temurin
+          cache: maven
+
+      - name: Install YAZ
+        shell: pwsh
+        run: |
+          Invoke-WebRequest "https://ftp.indexdata.com/pub/yaz/win64/yaz_$env:YAZ_VERSION.exe" -OutFile yaz-setup.exe
+          Start-Process -Wait -FilePath .\yaz-setup.exe -ArgumentList '/S'
+          $dll = Get-ChildItem -Path "$env:ProgramFiles\YAZ*", "${env:ProgramFiles(x86)}\YAZ*", 'C:\YAZ*' `
+            -Filter yaz5.dll -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $dll) { throw 'yaz5.dll not found after installing YAZ' }
+          $yazHome = $dll.Directory.Parent.FullName
+          Write-Output "YAZ installed in $yazHome"
+          Get-ChildItem "$yazHome\bin" -Filter *.dll | Select-Object -ExpandProperty Name
+          "YAZ_HOME=$yazHome" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+
+      - name: Compile
+        run: mvn --batch-mode --no-transfer-progress -DskipTests package
+
+      # The installer adds YAZ to PATH in the registry, which does not affect
+      # this job's steps. Check that yaz4j finds YAZ in its default install
+      # location, and the DLLs YAZ depends on, without PATH.
+      - name: Load YAZ without PATH
+        shell: pwsh
+        run: java --enable-native-access=ALL-UNNAMED -cp target\classes org.yaz4j.ZoomCLI z3950.indexdata.com/gils "@attr 1=4 utah"
+
+      # Move YAZ out of its default install location, so only
+      # java.library.path can find it, and its dependencies only next to it.
+      - name: Load YAZ through java.library.path without PATH
+        shell: pwsh
+        run: |
+          Move-Item "$env:YAZ_HOME" C:\yaz-moved
+          "YAZ_HOME=C:\yaz-moved" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+          java --enable-native-access=ALL-UNNAMED "-Djava.library.path=C:\yaz-moved\bin" -cp target\classes org.yaz4j.ZoomCLI z3950.indexdata.com/gils "@attr 1=4 utah"
+
+      - name: Add YAZ to PATH
+        shell: pwsh
+        run: '"$env:YAZ_HOME\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH'
+
+      - name: Run the Maven verify phase
+        run: mvn --batch-mode --no-transfer-progress verify
+
+  verify-macos:
+    name: Verify (macOS, Java 25)
+    runs-on: macos-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v6
+        with:
+          java-version: '25'
+          distribution: temurin
+          cache: maven
+
+      # Homebrew's library directory is not on java.library.path, so this
+      # checks that yaz4j finds YAZ in its Homebrew search location.
+      - name: Install YAZ
+        run: brew install yaz
+
+      - name: Run the Maven verify phase
+        run: mvn --batch-mode --no-transfer-progress verify
+
   mvn-verify:
     name: mvn-verify
-    needs: verify
+    needs: [verify, verify-windows, verify-macos]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
-      - name: Require all Java versions to pass
+      - name: Require all verify jobs to pass
         env:
           VERIFY_RESULT: ${{ needs.verify.result }}
-        run: test "$VERIFY_RESULT" = success
+          VERIFY_WINDOWS_RESULT: ${{ needs.verify-windows.result }}
+          VERIFY_MACOS_RESULT: ${{ needs.verify-macos.result }}
+        run: >-
+          test "$VERIFY_RESULT" = success &&
+          test "$VERIFY_WINDOWS_RESULT" = success &&
+          test "$VERIFY_MACOS_RESULT" = success

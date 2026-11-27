@@ -7,10 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.yaz4j.exception.ZoomException;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_record_p;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_resultset_p;
-import org.yaz4j.jni.SWIGTYPE_p_p_ZOOM_record_p;
-import org.yaz4j.jni.yaz4jlib;
+import java.lang.foreign.MemorySegment;
 
 /**
  * This class represents a "buffered handle" to the result set created on the
@@ -34,13 +31,13 @@ import org.yaz4j.jni.yaz4jlib;
 public class ResultSet implements Closeable, Iterable<Record> {
 
   private Connection conn;
-  private SWIGTYPE_p_ZOOM_resultset_p resultSet;
+  private MemorySegment resultSet;
   private long size = 0;
   private List<Record> records = new LinkedList<>(); // all records returned by this set
 
-  ResultSet(SWIGTYPE_p_ZOOM_resultset_p resultSet, Connection conn) {
+  ResultSet(MemorySegment resultSet, Connection conn) {
     this.resultSet = resultSet;
-    size = yaz4jlib.ZOOM_resultset_size(this.resultSet);
+    size = ZoomNative.resultsetSize(this.resultSet);
     this.conn = conn;
   }
 
@@ -51,7 +48,7 @@ public class ResultSet implements Closeable, Iterable<Record> {
    */
   public String option(String name) {
     check();
-    return yaz4jlib.ZOOM_resultset_option_get(resultSet, name);
+    return ZoomNative.resultsetOptionGet(resultSet, name);
   }
 
   /**
@@ -64,19 +61,19 @@ public class ResultSet implements Closeable, Iterable<Record> {
     if (name == null)
       throw new IllegalArgumentException("option name cannot be null");
     check();
-    yaz4jlib.ZOOM_resultset_option_set(resultSet, name, value);
+    ZoomNative.resultsetOptionSet(resultSet, name, value);
     return this;
   }
 
   public Record getRecord(long index) throws ZoomException {
     check();
-    SWIGTYPE_p_ZOOM_record_p nativeRecord =
-      yaz4jlib.ZOOM_resultset_record(resultSet, index);
+    MemorySegment nativeRecord =
+      ZoomNative.resultsetRecord(resultSet, index);
     //may be out of range or unsupported syntax
-    if (nativeRecord == null) {
+    if (ZoomNative.isNull(nativeRecord)) {
       return null;
     }
-    int errorCode = yaz4jlib.ZOOM_record_error(nativeRecord, null, null, null);
+    int errorCode = ZoomNative.recordError(nativeRecord);
     if (errorCode != 0) {
       throw new ZoomException("Record exception, code " + errorCode);
     }
@@ -96,19 +93,17 @@ public class ResultSet implements Closeable, Iterable<Record> {
   public List<Record> getRecords(long start, int count) throws ZoomException {
     check();
     List<Record> out = new ArrayList<Record>(count);
-    SWIGTYPE_p_p_ZOOM_record_p recs = yaz4jlib.new_zoomRecordArray(count);
-    yaz4jlib.ZOOM_resultset_records(resultSet, recs, start, count);
+    MemorySegment[] recs = ZoomNative.resultsetRecords(resultSet, start, count);
     ZoomException err = conn.getZoomException();
     if (err != null) { 
       throw err;
     }
     for (int i = 0; i < count; i++) {
-      SWIGTYPE_p_ZOOM_record_p nativeRecord =
-        yaz4jlib.zoomRecordArray_getitem(recs, i);
-      if (nativeRecord == null) {
+      MemorySegment nativeRecord = recs[i];
+      if (ZoomNative.isNull(nativeRecord)) {
         continue;
       }
-      int errorCode = yaz4jlib.ZOOM_record_error(nativeRecord, null, null, null);
+      int errorCode = ZoomNative.recordError(nativeRecord);
       if (errorCode != 0) {
         throw new ZoomException("Record exception, code " + errorCode);
       }
@@ -157,7 +152,7 @@ public class ResultSet implements Closeable, Iterable<Record> {
     if (spec == null)
       throw new IllegalArgumentException("sort spec cannot be null");
     check();
-    int ret = yaz4jlib.ZOOM_resultset_sort1(resultSet, type, spec);
+    int ret = ZoomNative.resultsetSort1(resultSet, type, spec);
     if (ret != 0) throw new ZoomException("Sorting resultset failed");
     return this;
   }
@@ -180,7 +175,7 @@ public class ResultSet implements Closeable, Iterable<Record> {
     }
     records.clear();
     if (resultSet != null) {
-      yaz4jlib.ZOOM_resultset_destroy(resultSet);
+      ZoomNative.resultsetDestroy(resultSet);
       resultSet = null;
     }
     conn = null;

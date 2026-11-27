@@ -4,10 +4,13 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+include /usr/share/dpkg/architecture.mk
+
+# The distribution's default JDK may predate Java 22, so build with the
+# newest installed OpenJDK, which Build-Depends ensures is Java 22 or later.
+JAVA_HOME := $(shell ls -d /usr/lib/jvm/java-*-openjdk-$(DEB_BUILD_ARCH)/bin/javac 2>/dev/null \
+	| sort -V | tail -n 1 | sed 's,/bin/javac$$,,')
+export JAVA_HOME
+
 %:
 	dh $@
-
-override_dh_auto_install:
-	dh_auto_install
-	mkdir -p debian/tmp/usr/lib/${DEB_HOST_MULTIARCH}
-	cp target/native/libyaz4j.so debian/tmp/usr/lib/${DEB_HOST_MULTIARCH}

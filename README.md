@@ -3,8 +3,10 @@
 [yaz4j] is a Java binding for the
 high-level, client-side portion of the [YAZ] toolkit known as the ZOOM API.
 With yaz4j you can program clients for YAZ-supported protocols like Z39.50,
-SRU/W and Solr. yaz4j includes a native component and supports Linux
-and Windows.
+SRU/W and Solr. yaz4j calls the YAZ shared library directly using the
+Java Foreign Function and Memory API, so it is pure Java and needs no
+native component of its own. It requires a 64-bit Java 22 or later and
+a 64-bit YAZ library.
 
 yaz4j is covered by the
 [Revised BSD](https://www.indexdata.com/licences/revised-bsd) license.
@@ -56,18 +58,27 @@ For Ubuntu refer to
 When done, proceed with
 
     sudo apt update
-    sudo apt install yaz4j libyaz4j
+    sudo apt install yaz4j
+
+The package depends on the distribution's default Java runtime if it is
+Java 22 or later, and otherwise on any Java 22 or later runtime, such as
+OpenJDK 25. The newer runtime then becomes the `java` command, unless the
+system has been set to use a specific older Java with `update-alternatives`.
+In that case, run applications with the newer Java binary, for example
+`/usr/lib/jvm/java-25-openjdk-amd64/bin/java`, or select it with
+`sudo update-alternatives --config java`.
 
 ## Windows
 
-yaz4j is part of the YAZ package for Windows.
-[32-bit](https://ftp.indexdata.com/pub/yaz/win32/)
-[64-bit](https://ftp.indexdata.com/pub/yaz/win64/).
+Install the [64-bit YAZ package for Windows](https://ftp.indexdata.com/pub/yaz/win64/).
+32-bit YAZ cannot be used, because yaz4j requires a 64-bit JVM.
 
 # Compilation from source
 
-You will need JDK, [Maven](https://maven.apache.org),
-[SWIG](http://swig.org) and [YAZ] development packages.
+You will need JDK 22 or later and [Maven](https://maven.apache.org).
+The tests also need the [YAZ] shared library installed (for example,
+`apt install libyaz5` or `brew install yaz`). No C compiler, SWIG or
+YAZ development headers are required.
 
 For compilation of YAZ please consult YAZ [manual].
 
@@ -75,54 +86,68 @@ For compilation of YAZ please consult YAZ [manual].
 
     git clone https://github.com/indexdata/yaz4j.git
 
-In all cases you'll have to invoke the Maven command `mvn` to
-compile yaz4j. For example
+Compile, test and package with:
 
     mvn install
 
-After running `mvn install`, the result is the Java
-archive `target/yaz4j-VERSION.jar` and a shared object (JNI) in
-directory `target/native`.
+The result is the Java archive `target/yaz4j-VERSION.jar`. The same JAR
+works on every 64-bit platform where YAZ is installed.
 
-As an option, the shared object may be bundled with the JAR file.
-Thus, the jar can be distributed as self-contained - provided that the
-platform is the same. Enable this by selecting profile `bundle` with
-Maven. Use something like:
+# Running
 
-    mvn -Pbundle install
+yaz4j loads the YAZ shared library at runtime. It looks for the usual
+library names (`libyaz.so.5` on Linux, `libyaz.5.dylib` on macOS,
+`yaz5.dll` on Windows) in each `java.library.path` directory, a few
+common install locations (Homebrew on macOS, `C:\Program Files\YAZ\bin`
+on Windows) and the system's dynamic linker search path. If YAZ is
+installed elsewhere, or to use a specific YAZ installation, add its
+library directory to `java.library.path`, which is searched first:
 
-The bundled shared object is stored in directory
-`native/${os.name}/${os.arch}`  - for example `Linux/amd64/libyaz4j.so`.
+    java -Djava.library.path=/opt/yaz/lib ...
 
-## Unix
+On Windows, yaz4j loads the DLLs that YAZ depends on, such as
+`libxml2.dll`, from the directory of `yaz5.dll` before searching `PATH`,
+so YAZ does not need to be on `PATH`.
 
-On Unix, the `yaz-config` utility is used to get compiler flags and
-linker libraries for the shared object. Usually it's enough
-to install as whole. If there are packages for YAZ already, use
-install the "devel" package or "dev" package.
+Calling native code is a restricted operation. To avoid JDK warnings
+(and, in future JDKs, errors), run applications with:
 
-## Windows
+    java --enable-native-access=ALL-UNNAMED ...
 
-Besides the exact same requirements as in the Unix case (JDK, Maven, SWIG,
-YAZ), you will need the Visual Studio to compile yaz4j. Since you
-are not using the YAZ installer you are probably also compiling YAZ
-on your own. Use same compiler for yaz4j as you use for YAZ.
+or, when yaz4j is on the module path, `--enable-native-access=` followed by
+the name of the module that contains yaz4j. The yaz4j JAR's manifest already
+enables native access when it is run directly with `java -jar`.
 
-Use the command prompt provided with the Windows SDK, navigate to the yaz4j
-source directory and run:
+## Threads
 
-    mvn install
+yaz4j calls block the calling thread inside YAZ until the server responds.
+This includes connecting, searching, scanning, retrieving records and sending
+packages. Use a connection, and the result sets, records and scan sets
+created from it, from one thread at a time. Different connections may be used
+from different threads.
 
-Default 64-bit YAZ installer location, that is`C:\Program Files\YAZ`,
-is assumed for the `yaz.path` property. Nothing is assumed for `swig`, 
-so you either need to specify an absolute path or update the `PATH` 
-environment variable to include the directory containing 
-`swig.exe`. Both can be specified with:
+Do not call yaz4j from virtual threads. A virtual thread that is blocked in
+native code cannot release its carrier thread, so each pending yaz4j call
+occupies one of the few carrier threads (by default, one per CPU core). A few
+slow servers can then stall every other virtual thread in the application.
+This also applies to servlet containers and frameworks configured to handle
+requests on virtual threads. Run yaz4j calls on platform threads instead, for
+example on a fixed-size thread pool:
 
-    mvn -Dyaz.path=/path/to/yaz/installdir -Dswig=/path/to/swig/binary install
+```java
+ExecutorService yazPool = Executors.newFixedThreadPool(16);
 
-The compiled jar file ends up in `target/yaz4j-version.jar` while the
-native library in `target/native/yaz4j.dll`.
+String record = yazPool.submit(() -> {
+  try (Connection con = new Connection("z3950.indexdata.com/gils", 0)) {
+    con.setSyntax("sutrs");
+    con.connect();
+    return con.search(new PrefixQuery("@attr 1=4 utah")).getRecord(0).render();
+  }
+}).get();
+```
+
+Copy the data you need, as `render()` does here, before the connection is
+closed, because closing a connection also closes its result sets and records.
 
 ## Using Maven
 

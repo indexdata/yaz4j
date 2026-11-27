@@ -1,3 +1,46 @@
+--- 2.0.0 (unreleased)
+
+* Replace the SWIG-generated JNI bindings with the Java Foreign Function
+and Memory API. yaz4j now calls the YAZ shared library directly and no
+longer includes a native component of its own. The same JAR works on
+every 64-bit platform where YAZ is installed. Building yaz4j no longer
+requires a C compiler, SWIG or YAZ development headers.
+
+* Require Java 22 or later, the first release in which the Foreign
+Function and Memory API is final.
+
+* Require a 64-bit JVM and YAZ library. yaz4j fails to load on 32-bit
+platforms, where size_t is not 64 bits.
+
+* Load the YAZ library at runtime. Search for the platform's usual YAZ
+library names (libyaz.so.5, libyaz.5.dylib or yaz5.dll) in
+java.library.path and common install locations, then in the dynamic
+linker search path. On Windows,
+also find the DLLs that YAZ depends on in the directory of yaz5.dll, so
+YAZ does not need to be on PATH.
+
+* Applications that use yaz4j from the classpath should run with
+--enable-native-access=ALL-UNNAMED to avoid JDK warnings about restricted
+native calls. The yaz4j JAR manifest enables native access when the JAR
+is run directly with java -jar.
+
+* Remove LoadLib and the bundle Maven profile, which embedded the native
+library in the JAR. The unix and win Maven profiles are also removed.
+
+* Represent native ZOOM handles as java.lang.foreign.MemorySegment. The
+protected Connection.zoomConnection field, the protected
+Query.getNativeQuery method and the protected Record constructor change
+type. The rest of the public API is unchanged.
+
+* Remove the libyaz4j Debian package. The yaz4j package is now
+architecture independent and depends on the YAZ runtime library and on
+the default Java runtime if it is Java 22 or later, or otherwise on any
+Java 22 or later runtime. Build packages with the newest installed
+OpenJDK, which must be Java 22 or later. Stop building packages for
+Debian bookworm, which does not provide Java 22 or later.
+
+* Test with Java 25 on Linux, Windows and macOS in GitHub Actions.
+
 --- 1.6.1 2026/11/23
 
 * Fix native library initialization when queries are used before a

@@ -6,11 +6,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.yaz4j.exception.ZoomException;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_connection_p;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_query_p;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_resultset_p;
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_scanset_p;
-import org.yaz4j.jni.yaz4jlib;
+import java.lang.foreign.MemorySegment;
 
 /**
  * Class representing an on-going communication with an IR server.
@@ -43,7 +39,7 @@ import org.yaz4j.jni.yaz4jlib;
 public class Connection implements Closeable {
   private final String host;
   private final int port;
-  protected SWIGTYPE_p_ZOOM_connection_p zoomConnection;
+  protected MemorySegment zoomConnection;
   private List<ResultSet> resultSets = new LinkedList<>(); // all result sets returned
   private List<ScanSet> scanSets = new LinkedList<>(); // all scan sets returned
 
@@ -64,7 +60,7 @@ public class Connection implements Closeable {
       throw new IllegalArgumentException("host cannot be null");
     this.host = host;
     this.port = port;
-    zoomConnection = yaz4jlib.ZOOM_connection_create(null);
+    zoomConnection = ZoomNative.connectionCreate();
   }
 
   protected void check() {
@@ -89,13 +85,13 @@ public class Connection implements Closeable {
     if (queryType == null)
       throw new IllegalArgumentException("queryType cannot be null");
     check();
-    SWIGTYPE_p_ZOOM_query_p yazQuery = null;
+    MemorySegment yazQuery = null;
     if (queryType == QueryType.CQLQuery) {
-      yazQuery = yaz4jlib.ZOOM_query_create();
-      yaz4jlib.ZOOM_query_cql(yazQuery, query);
+      yazQuery = ZoomNative.queryCreate();
+      ZoomNative.queryCql(yazQuery, query);
     } else if (queryType == QueryType.PrefixQuery) {
-      yazQuery = yaz4jlib.ZOOM_query_create();
-      yaz4jlib.ZOOM_query_prefix(yazQuery, query);
+      yazQuery = ZoomNative.queryCreate();
+      ZoomNative.queryPrefix(yazQuery, query);
     }
     return search(yazQuery);
   }
@@ -113,23 +109,23 @@ public class Connection implements Closeable {
     if (query == null)
       throw new IllegalArgumentException("query cannot be null");
     check();
-    SWIGTYPE_p_ZOOM_query_p nativeQuery = query.getNativeQuery();
+    MemorySegment nativeQuery = query.getNativeQuery();
     return search(nativeQuery);
   }
 
-  private ResultSet search(SWIGTYPE_p_ZOOM_query_p nativeQuery) throws ZoomException {
+  private ResultSet search(MemorySegment nativeQuery) throws ZoomException {
     try {
-      SWIGTYPE_p_ZOOM_resultset_p yazResultSet = yaz4jlib.ZOOM_connection_search(zoomConnection, nativeQuery);
+      MemorySegment yazResultSet = ZoomNative.connectionSearch(zoomConnection, nativeQuery);
       ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
       if (err != null) {
-        yaz4jlib.ZOOM_resultset_destroy(yazResultSet);
+        ZoomNative.resultsetDestroy(yazResultSet);
         throw err;
       }
       ResultSet set = new ResultSet(yazResultSet, this);
       resultSets.add(set);
       return set;
     } finally {
-      yaz4jlib.ZOOM_query_destroy(nativeQuery);
+      ZoomNative.queryDestroy(nativeQuery);
     }
   }
 
@@ -146,7 +142,7 @@ public class Connection implements Closeable {
     if (query == null)
       throw new IllegalArgumentException("query cannot be null");
     check();
-    return scan(yaz4jlib.ZOOM_connection_scan(zoomConnection, query));
+    return scan(ZoomNative.connectionScan(zoomConnection, query));
   }
   
     /**
@@ -161,19 +157,19 @@ public class Connection implements Closeable {
     if (query == null)
       throw new IllegalArgumentException("query cannot be null");
     check();
-    SWIGTYPE_p_ZOOM_query_p nativeQuery = query.getNativeQuery();
+    MemorySegment nativeQuery = query.getNativeQuery();
     try {
-      ScanSet scanSet = scan(yaz4jlib.ZOOM_connection_scan1(zoomConnection, nativeQuery));
+      ScanSet scanSet = scan(ZoomNative.connectionScan1(zoomConnection, nativeQuery));
       return scanSet;
     } finally {
-      yaz4jlib.ZOOM_query_destroy(nativeQuery);
+      ZoomNative.queryDestroy(nativeQuery);
     }
   }
 
-  private ScanSet scan(SWIGTYPE_p_ZOOM_scanset_p yazScanSet) throws ZoomException {
+  private ScanSet scan(MemorySegment yazScanSet) throws ZoomException {
     ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
     if (err != null) {
-      yaz4jlib.ZOOM_scanset_destroy(yazScanSet);
+      ZoomNative.scansetDestroy(yazScanSet);
       throw err;
     }
     ScanSet set = new ScanSet(yazScanSet);
@@ -187,7 +183,7 @@ public class Connection implements Closeable {
    */
   public void connect() throws ZoomException {
     check();
-    yaz4jlib.ZOOM_connection_connect(zoomConnection, host, port);
+    ZoomNative.connectionConnect(zoomConnection, host, port);
     ZoomException err = ExceptionUtil.getError(zoomConnection, host, port);
     if (err != null) {
       throw err;
@@ -208,7 +204,7 @@ public class Connection implements Closeable {
     }
     scanSets.clear();
     if (zoomConnection != null) {
-      yaz4jlib.ZOOM_connection_destroy(zoomConnection);
+      ZoomNative.connectionDestroy(zoomConnection);
       zoomConnection = null;
     }
   }
@@ -235,7 +231,7 @@ public class Connection implements Closeable {
     if (name == null)
       throw new IllegalArgumentException("option name cannot be null");
     check();
-    yaz4jlib.ZOOM_connection_option_set(zoomConnection, name, value);
+    ZoomNative.connectionOptionSet(zoomConnection, name, value);
     return this;
   }
 
@@ -248,7 +244,7 @@ public class Connection implements Closeable {
     if (name == null)
       throw new IllegalArgumentException("option name cannot be null");
     check();
-    return yaz4jlib.ZOOM_connection_option_get(zoomConnection, name);
+    return ZoomNative.connectionOptionGet(zoomConnection, name);
   }
 
   /**
