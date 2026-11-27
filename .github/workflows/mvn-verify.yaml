@@ -106,9 +106,35 @@ jobs:
       - name: Run the Maven verify phase
         run: mvn --batch-mode --no-transfer-progress verify
 
+  verify-macos:
+    name: Verify (macOS, Java 25)
+    runs-on: macos-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v6
+        with:
+          java-version: '25'
+          distribution: temurin
+          cache: maven
+
+      # Homebrew's library directory is not on java.library.path, so this
+      # checks that yaz4j finds YAZ in its Homebrew search location.
+      - name: Install YAZ
+        run: brew install yaz
+
+      - name: Run the Maven verify phase
+        run: mvn --batch-mode --no-transfer-progress verify
+
   mvn-verify:
     name: mvn-verify
-    needs: [verify, verify-windows]
+    needs: [verify, verify-windows, verify-macos]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 1
@@ -117,4 +143,8 @@ jobs:
         env:
           VERIFY_RESULT: ${{ needs.verify.result }}
           VERIFY_WINDOWS_RESULT: ${{ needs.verify-windows.result }}
-        run: test "$VERIFY_RESULT" = success && test "$VERIFY_WINDOWS_RESULT" = success
+          VERIFY_MACOS_RESULT: ${{ needs.verify-macos.result }}
+        run: >-
+          test "$VERIFY_RESULT" = success &&
+          test "$VERIFY_WINDOWS_RESULT" = success &&
+          test "$VERIFY_MACOS_RESULT" = success
