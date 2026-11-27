@@ -72,7 +72,10 @@ jobs:
         run: |
           Invoke-WebRequest "https://ftp.indexdata.com/pub/yaz/win64/yaz_$env:YAZ_VERSION.exe" -OutFile yaz-setup.exe
           Start-Process -Wait -FilePath .\yaz-setup.exe -ArgumentList '/S'
-          $yazHome = (Get-ItemProperty 'HKLM:\SOFTWARE\Index Data\YAZ').'(default)'
+          $dll = Get-ChildItem -Path "$env:ProgramFiles\YAZ*", "${env:ProgramFiles(x86)}\YAZ*", 'C:\YAZ*' `
+            -Filter yaz5.dll -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $dll) { throw 'yaz5.dll not found after installing YAZ' }
+          $yazHome = $dll.Directory.Parent.FullName
           Write-Output "YAZ installed in $yazHome"
           Get-ChildItem "$yazHome\bin" -Filter *.dll | Select-Object -ExpandProperty Name
           "YAZ_HOME=$yazHome" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
