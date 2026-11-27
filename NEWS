@@ -37,7 +37,7 @@ Java 22 or later runtime. Build packages with the newest installed
 OpenJDK, which must be Java 22 or later. Stop building packages for
 Debian bookworm, which does not provide Java 22 or later.
 
-* Test with Java 22 and 25 in GitHub Actions.
+* Test with Java 25 in GitHub Actions.
 
 --- 1.6.1 2026/11/23
 

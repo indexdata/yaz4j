@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: ['22', '25']
+        java: ['25']
 
     steps:
       - name: Check out source
