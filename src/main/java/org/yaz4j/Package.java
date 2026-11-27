@@ -22,8 +22,6 @@ public class Package implements Closeable {
   private final String type;
 
   Package(SWIGTYPE_p_ZOOM_package_p pack, ConnectionExtended conn, String type) {
-    if (type == null)
-      throw new IllegalArgumentException("type cannot be null");
     this.type = type;
     this.pack = pack;
     this.conn = conn;

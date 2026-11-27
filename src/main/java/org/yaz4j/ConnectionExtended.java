@@ -1,6 +1,5 @@
 package org.yaz4j;
 
-import org.yaz4j.jni.SWIGTYPE_p_ZOOM_options_p;
 import org.yaz4j.jni.SWIGTYPE_p_ZOOM_package_p;
 import org.yaz4j.jni.yaz4jlib;
 
@@ -31,9 +30,10 @@ public class ConnectionExtended extends Connection {
    */
   public Package getPackage(String type) {
     check();
-    SWIGTYPE_p_ZOOM_options_p options = yaz4jlib.ZOOM_options_create();
+    if (type == null)
+      throw new IllegalArgumentException("type cannot be null");
     SWIGTYPE_p_ZOOM_package_p yazPackage = yaz4jlib.ZOOM_connection_package(
-      zoomConnection, options);
+      zoomConnection, null);
     Package pack = new Package(yazPackage, this, type);
     packages.add(pack);
     return pack;
