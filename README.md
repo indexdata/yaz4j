@@ -61,10 +61,10 @@ When done, proceed with
     sudo apt install yaz4j
 
 The package depends on the distribution's default Java runtime if it is
-Java 22 or later, and otherwise installs OpenJDK 25. OpenJDK 25 then
-becomes the `java` command, unless the system has been set to use a
-specific older Java with `update-alternatives`. In that case, run
-applications with the Java 25 binary, for example
+Java 22 or later, and otherwise on any Java 22 or later runtime, such as
+OpenJDK 25. The newer runtime then becomes the `java` command, unless the
+system has been set to use a specific older Java with `update-alternatives`.
+In that case, run applications with the newer Java binary, for example
 `/usr/lib/jvm/java-25-openjdk-amd64/bin/java`, or select it with
 `sudo update-alternatives --config java`.
 

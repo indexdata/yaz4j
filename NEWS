@@ -32,8 +32,9 @@ type. The rest of the public API is unchanged.
 
 * Remove the libyaz4j Debian package. The yaz4j package is now
 architecture independent and depends on the YAZ runtime library and on
-the default Java runtime if it is Java 22 or later, or OpenJDK 25
-otherwise. Build packages with OpenJDK 25. Stop building packages for
+the default Java runtime if it is Java 22 or later, or otherwise on any
+Java 22 or later runtime. Build packages with the newest installed
+OpenJDK, which must be Java 22 or later. Stop building packages for
 Debian bookworm, which does not provide Java 22 or later.
 
 * Test with Java 22 and 25 in GitHub Actions.

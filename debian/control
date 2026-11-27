@@ -4,7 +4,7 @@ Standards-Version: 3.6.2
 Maintainer: Adam Dickmeiss <adam@indexdata.dk>
 Priority: extra
 Build-Depends: debhelper-compat (= 13),
- libyaz5-dev, maven, openjdk-25-jdk-headless,
+ libyaz5-dev, maven, java-sdk-headless (>= 22),
  maven-debian-helper, junit4,
  libsurefire-java, libmaven-jar-plugin-java
 
@@ -12,7 +12,7 @@ Package: yaz4j
 Section: libs
 Architecture: all
 Depends: ${maven:Depends}, ${misc:Depends}, libyaz5,
- default-jre-headless (>= 2:1.22) | openjdk-25-jre-headless
+ default-jre-headless (>= 2:1.22) | java-runtime-headless (>= 22)
 Description: Z39.50 client for JAVA
  YAZ4J is a client-side Z39.50/SRU/Solr library for information
  retrieval. It is based on the ZOOM API of YAZ.

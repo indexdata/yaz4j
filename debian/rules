@@ -6,9 +6,11 @@
 
 include /usr/share/dpkg/architecture.mk
 
-# The distribution's default JDK may predate Java 22, so build with
-# OpenJDK 25 from Build-Depends instead.
-export JAVA_HOME = /usr/lib/jvm/java-25-openjdk-$(DEB_BUILD_ARCH)
+# The distribution's default JDK may predate Java 22, so build with the
+# newest installed OpenJDK, which Build-Depends ensures is Java 22 or later.
+JAVA_HOME := $(shell ls -d /usr/lib/jvm/java-*-openjdk-$(DEB_BUILD_ARCH)/bin/javac 2>/dev/null \
+	| sort -V | tail -n 1 | sed 's,/bin/javac$$,,')
+export JAVA_HOME
 
 %:
 	dh $@
